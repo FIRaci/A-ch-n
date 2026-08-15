@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arknights Chibi Dormitory 2.5D · Phòng Ký Túc Xá & Furniture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
+    <script src="spine-webgl.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="operators_data.js"></script>
+    <script src="furniture_data.js"></script>
+    <script src="dorm_engine.js"></script>
+    <style>
+        :root {
+            --bg: #0a0d14;
+            --bg2: #121824;
+            --card: rgba(20, 27, 41, 0.92);
+            --border: rgba(255, 255, 255, 0.08);
+            --bh: rgba(0, 210, 255, 0.45);
+            --ac: #00d2ff;
+            --ag: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            --glow: rgba(0, 210, 255, 0.28);
+            --text: #f0f4fc;
+            --mt: #8b9bb4;
+            --r6: #ff7675; --r5: #fdcb6e; --r4: #a29bfe; --r3: #74b9ff;
+            --rad: 14px; --rsm: 8px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 15% 20%, rgba(0,210,255,.07) 0, transparent 40%),
+                              radial-gradient(circle at 85% 80%, rgba(58,123,213,.07) 0, transparent 40%);
+        }
+
+        /* ── Header ──────────────────────────────────────── */
+        header {
+            padding: 14px 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            background: rgba(10, 13, 20, 0.92);
+            backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-logo {
+            width: 40px; height: 40px; border-radius: 10px; background: var(--ag);
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 0 18px var(--glow);
+        }
+        .brand h1 {
+            font-size: 18px; font-weight: 800; letter-spacing: -0.4px;
+            background: linear-gradient(90deg, #fff, #8ec5fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .brand-sub { font-size: 10px; color: var(--ac); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+        .nav { display: flex; gap: 6px; background: var(--bg2); padding: 4px; border-radius: var(--rsm); border: 1px solid var(--border); }
+        .tab-btn {
+            background: transparent; border: none; color: var(--mt); padding: 7px 14px; font-size: 12px; font-weight: 600;
+            border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; text-decoration: none;
+        }
+        .tab-btn:hover, .tab-btn.active { color: #fff; background: rgba(255, 255, 255, 0.08); }
+        .tab-btn.active { color: var(--ac); background: rgba(0, 210, 255, 0.12); }
+
+        /* ── Main Layout ──────────────────────────────────── */
+        main {
+            flex: 1; display: grid;
+            grid-template-columns: 280px 1fr 340px;
+            gap: 18px; padding: 18px 24px;
+            max-width: 1720px; margin: 0 auto; width: 100%;
+        }
+
+        .panel {
+            background: var(--card); border: 1px solid var(--border); border-radius: var(--rad);
+            padding: 16px; display: flex; flex-direction: column; gap: 14px;
+            backdrop-filter: blur(12px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+        }
+
+        .panel-title {
+            font-size: 13px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: space-between;
+            padding-bottom: 10px; border-bottom: 1px solid var(--border);
+        }
+        .panel-title span { display: flex; align-items: center; gap: 8px; }
+
+        /* ── Left Panel: Themes & Operators ──────────────── */
+        .search-box {
+            background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rsm);
+            padding: 8px 12px; display: flex; align-items: center; gap: 8px;
+        }
+        .search-box input {
+            background: transparent; border: none; color: #fff; font-size: 12px; outline: none; width: 100%;
+        }
+        .theme-list {
+            display: flex; flex-direction: column; gap: 6px; max-height: 480px; overflow-y: auto; padding-right: 4px;
+        }
+        .theme-item {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: var(--rsm);
+            padding: 10px 12px; cursor: pointer; transition: all 0.18s; display: flex; flex-direction: column; gap: 4px;
+        }
+        .theme-item:hover, .theme-item.active { background: rgba(0, 210, 255, 0.09); border-color: var(--ac); }
+        .theme-item.active { box-shadow: 0 0 12px var(--glow); }
+        .theme-item-name { font-size: 12px; font-weight: 700; color: #fff; }
+        .theme-item-sub { font-size: 10px; color: var(--mt); display: flex; justify-content: space-between; }
+
+        /* ── Center Stage: 2.5D Dorm Room ────────────────── */
+        .stage-wrap {
+            position: relative; border-radius: var(--rad); overflow: hidden;
+            border: 1px solid var(--border); background: #060910;
+            display: flex; flex-direction: column; min-height: 560px;
+        }
+        .stage-canvas-container {
+            position: relative; flex: 1; width: 100%; height: 100%; min-height: 520px;
+        }
+        #dorm-2d-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; cursor: pointer;
+        }
+        #dorm-gl-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;
+        }
+
+        .stage-bar {
+            position: absolute; top: 14px; left: 14px; right: 14px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 10; pointer-events: none;
+        }
+        .comfort-badge {
+            background: rgba(10, 14, 23, 0.88); backdrop-filter: blur(12px);
+            border: 1px solid rgba(253, 203, 110, 0.4); border-radius: 20px;
+            padding: 6px 14px; font-size: 12px; font-weight: 700; color: #fdcb6e;
+            display: flex; align-items: center; gap: 8px; box-shadow: 0 0 14px rgba(253, 203, 110, 0.2);
+            pointer-events: auto;
+        }
+        .stage-actions { display: flex; gap: 8px; pointer-events: auto; }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border); color: #fff;
+            padding: 7px 13px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;
+        }
+        .btn:hover { background: rgba(255, 255, 255, 0.16); border-color: var(--ac); }
+        .btn-ac { background: var(--ag); border-color: transparent; box-shadow: 0 0 12px var(--glow); }
+        .btn-ac:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .hint-bar {
+            position: absolute; bottom: 12px; left: 12px; right: 12px;
+            background: rgba(10, 14, 23, 0.88); backdrop-filter: blur(12px);
+            border: 1px solid var(--border); border-radius: var(--rsm);
+            padding: 8px 14px; font-size: 11px; color: var(--mt);
+            display: flex; align-items: center; justify-content: space-between; z-index: 10;
+        }
+
+        /* ── Right Panel: Furniture Inventory & Sandbox ──── */
+        .cat-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+        .cat-btn {
+            background: var(--bg2); border: 1px solid var(--border); color: var(--mt);
+            padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;
+            transition: all 0.18s;
+        }
+        .cat-btn.active, .cat-btn:hover { color: #fff; border-color: var(--ac); background: rgba(0, 210, 255, 0.12); }
+
+        .furn-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+            max-height: 480px; overflow-y: auto; padding-right: 4px;
+        }
+        .furn-card {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: var(--rsm);
+            padding: 8px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+            cursor: pointer; transition: all 0.2s; position: relative; text-align: center;
+        }
+        .furn-card:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--bh); transform: translateY(-2px); }
+        .furn-card img { width: 56px; height: 56px; object-fit: contain; }
+        .furn-card-name { font-size: 10px; font-weight: 600; color: #fff; line-height: 1.2; }
+        .furn-card-badge {
+            position: absolute; top: 4px; right: 4px; font-size: 8px; font-weight: 700;
+            padding: 1px 4px; border-radius: 4px; background: rgba(0, 210, 255, 0.18); color: var(--ac);
+        }
+
+        /* ── Selected Furniture Control Overlay ─────────── */
+        .furn-ctrl-box {
+            background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rsm);
+            padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        }
+
+        /* ── Toast ───────────────────────────────────────── */
+        .toast {
+            position: fixed; bottom: 20px; right: 20px; background: rgba(10, 14, 23, 0.95);
+            border: 1px solid var(--ac); border-radius: var(--rsm); padding: 10px 18px;
+            color: #fff; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 0 20px var(--glow); z-index: 999; transform: translateY(100px); opacity: 0; transition: all 0.3s;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="brand">
+            <div class="brand-logo"><i data-lucide="home" color="#fff" size="22"></i></div>
+            <div>
+                <h1>ARKNIGHTS DORMITORY 2.5D</h1>
+                <div class="brand-sub">KÝ TÚC XÁ & FURNITURE SANDBOX</div>
+            </div>
+        </div>
+
+        <nav class="nav">
+            <a href="index.html" class="tab-btn"><i data-lucide="sparkles" size="14"></i> Spine Hub</a>
+            <a href="index2.html" class="tab-btn active"><i data-lucide="layout-grid" size="14"></i> Dormitory 2.5D</a>
+        </nav>
+    </header>
+
+    <!-- Main Body -->
+    <main>
+        <!-- Left: Themes & Operator Selector -->
+        <aside class="panel">
+            <div class="panel-title">
+                <span><i data-lucide="palette" size="14" color="var(--ac)"></i> Chủ Đề Furniture (135+)</span>
+            </div>
+
+            <div class="search-box">
+                <i data-lucide="search" size="14" color="var(--mt)"></i>
+                <input type="text" id="theme-search" placeholder="Tìm bộ chủ đề...">
+            </div>
+
+            <div class="theme-list" id="theme-list">
+                <!-- Injected via JS -->
+            </div>
+
+            <div class="panel-title" style="margin-top: 8px;">
+                <span><i data-lucide="user" size="14" color="var(--ac)"></i> Nhân Vật Ký Túc Xá</span>
+            </div>
+            <select id="op-sel" class="btn" style="width: 100%; background: var(--bg2);">
+                <option value="char_002_amiya">阿米娅 (Amiya)</option>
+                <option value="char_102_texas">德克萨斯 (Texas)</option>
+                <option value="char_350_surtr">史尔特尔 (Surtr)</option>
+                <option value="char_222_bpipe">风笛 (Bagpipe)</option>
+            </select>
+        </aside>
+
+        <!-- Center: 2.5D Room Stage -->
+        <section class="stage-wrap">
+            <div class="stage-bar">
+                <div class="comfort-badge">
+                    <i data-lucide="sparkles" size="14"></i>
+                    <span>Điểm Không Khí: <b id="comfort-val">0</b></span>
+                </div>
+                <div class="stage-actions">
+                    <button class="btn" id="btn-clear-room"><i data-lucide="trash-2" size="12"></i> Xóa Hết</button>
+                    <button class="btn btn-ac" id="btn-random-roam"><i data-lucide="play" size="12"></i> Cho Đi Dạo</button>
+                </div>
+            </div>
+
+            <div class="stage-canvas-container">
+                <canvas id="dorm-2d-canvas"></canvas>
+                <canvas id="dorm-gl-canvas"></canvas>
+            </div>
+
+            <div class="hint-bar">
+                <span>💡 <b>Mẹo tương tác:</b> Bấm lên sàn để di chuyển · Bấm vào Giường (Ngủ) · Ghế (Ngồi) · Bấm vào Amiya (Thả tim)</span>
+                <span id="agent-status" style="color: var(--ac); font-weight: 700;">Amiya · Đang nghỉ ngơi</span>
+            </div>
+        </section>
+
+        <!-- Right: Furniture Inventory Palette & Controls -->
+        <aside class="panel">
+            <div class="panel-title">
+                <span><i data-lucide="package" size="14" color="var(--ac)"></i> Kho Đồ (2,780+ Món)</span>
+                <span id="furn-count" style="font-size: 11px; color: var(--mt);">0 Món</span>
+            </div>
+
+            <div class="cat-tabs" id="cat-tabs">
+                <button class="cat-btn active" data-cat="ALL">Tất Cả</button>
+                <button class="cat-btn" data-cat="BED">Giường (Sleep)</button>
+                <button class="cat-btn" data-cat="SEAT">Ghế/Sofa (Sit)</button>
+                <button class="cat-btn" data-cat="TABLE">Bàn</button>
+                <button class="cat-btn" data-cat="INTERACTIVE">Tương Tác</button>
+                <button class="cat-btn" data-cat="DECORATION">Trang Trí</button>
+            </div>
+
+            <div class="search-box">
+                <i data-lucide="search" size="14" color="var(--mt)"></i>
+                <input type="text" id="furn-search" placeholder="Tìm tên món đồ...">
+            </div>
+
+            <!-- Selected Furniture Tool -->
+            <div class="furn-ctrl-box" id="furn-ctrl" style="display: none;">
+                <span id="selected-furn-name" style="font-size: 11px; font-weight: 700; color: #fff;">Chưa chọn</span>
+                <div style="display: flex; gap: 4px;">
+                    <button class="btn" id="btn-flip-furn" title="Xoay (Flip)"><i data-lucide="flip-horizontal" size="12"></i> Xoay</button>
+                    <button class="btn" id="btn-del-furn" title="Xóa" style="color: var(--r6);"><i data-lucide="x" size="12"></i></button>
+                </div>
+            </div>
+
+            <div class="furn-grid" id="furn-grid">
+                <!-- Injected via JS -->
+            </div>
+        </aside>
+    </main>
+
+    <div class="toast" id="toast">
+        <i data-lucide="check-circle" size="16" color="var(--ac)"></i>
+        <span id="toast-text">Thông báo</span>
+    </div>
+
+    <script>
+    /* ═══════════════════════════════════════════════════════════
+       DORMITORY APP LOGIC (Integrates SOLID DormEngine)
+    ═══════════════════════════════════════════════════════════ */
+    let world = null;
+    let mainAgent = null;
+    let curCat = 'ALL';
+    const CDN = 'https://torappu.prts.wiki/assets/char_spine/';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        lucide.createIcons();
+
+        // 1. Initialize Dorm World Engine
+        const c2d = document.getElementById('dorm-2d-canvas');
+        const cgl = document.getElementById('dorm-gl-canvas');
+        world = new DormEngine.DormWorld(c2d, cgl);
+        world.start();
+
+        // 2. Render Themes & Furniture Palette
+        renderThemes();
+        renderFurniturePalette();
+
+        // 3. Load Amiya Spine Model & Spawn into Dorm
+        await loadDormOperator('char_002_amiya', '阿米娅');
+
+        // 4. Setup Theme 1 as Default Preset
+        applyTheme('furni_set_warehouse');
+
+        // 5. Setup UI Event Listeners
+        setupEventListeners();
+    });
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-text').textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    /* ── Operator Spine Loading ──────────────────────────── */
+    async function loadDormOperator(opId, opNameCn) {
+        document.getElementById('agent-status').textContent = `${opNameCn} · Đang tải Spine...`;
+        try {
+            // Fetch meta.json
+            const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+            let metaUrl = isLocal ? `/api/local-meta?name=${encodeURIComponent(opNameCn)}` : `${CDN}${opId}/meta.json`;
+            let metaRes = await fetch(metaUrl).catch(() => null);
+            if (!metaRes || !metaRes.ok) {
+                metaRes = await fetch(`${CDN}${opId}/meta.json`);
+            }
+            const meta = await metaRes.json();
+
+            // Resolve base Dorm Chibi model
+            const skinData = meta?.skin?.['默认'] || Object.values(meta?.skin || {})[0] || {};
+            const modelDat = skinData['基建'] || Object.values(skinData)[0];
+            const prefix = meta?.prefix || `${CDN}${opId}/`;
+            const fileRel = modelDat?.file;
+
+            // Load .skel + .atlas + .png
+            const directPrefix = `${prefix}${fileRel}`;
+            const [skelBuf, atlasText, pngBlob] = await Promise.all([
+                fetch(`${directPrefix}.skel`).then(r => r.arrayBuffer()),
+                fetch(`${directPrefix}.atlas`).then(r => r.text()),
+                fetch(`${directPrefix}.png`).then(r => r.blob())
+            ]);
+
+            const img = await new Promise((res, rej) => {
+                const url = URL.createObjectURL(pngBlob);
+                const i = new Image();
+                i.onload = () => { URL.revokeObjectURL(url); res(i); };
+                i.src = url;
+            });
+
+            // Parse atlas & skeleton with our bugfixed Spine runtime
+            const atlas = new spine.TextureAtlas(atlasText, () => new spine.webgl.GLTexture(world.gl, img));
+            const loader = new spine.AtlasAttachmentLoader(atlas);
+            const reader = new spine.SkeletonBinary(loader);
+            reader.scale = 0.5;
+            const skelData = reader.readSkeletonData(new Uint8Array(skelBuf));
+
+            const skel = new spine.Skeleton(skelData);
+            skel.setToSetupPose();
+            skel.updateWorldTransform();
+
+            const stateData = new spine.AnimationStateData(skelData);
+            const state = new spine.AnimationState(stateData);
+
+            // Create OperatorAgent
+            world.agents = [];
+            mainAgent = new DormEngine.OperatorAgent({ id: opId, name_cn: opNameCn }, { skel, state }, 5, 4);
+            world.agents.push(mainAgent);
+
+            document.getElementById('agent-status').textContent = `${opNameCn} · Sẵn sàng tương tác ♡`;
+            showToast(`✓ Đã đưa ${opNameCn} vào Ký Túc Xá!`);
+        } catch (e) {
+            console.error('Failed to load operator into dorm:', e);
+            document.getElementById('agent-status').textContent = `Lỗi tải ${opNameCn}: ${e.message}`;
+        }
+    }
+
+    /* ── Render Themes List ──────────────────────────────── */
+    function renderThemes() {
+        const list = document.getElementById('theme-list');
+        const themes = window.ALL_FURNITURE_DATA?.themes || [];
+        const q = (document.getElementById('theme-search').value || '').toLowerCase();
+
+        list.innerHTML = '';
+        themes.filter(t => !q || t.name.toLowerCase().includes(q)).forEach(t => {
+            const item = document.createElement('div');
+            item.className = 'theme-item';
+            item.innerHTML = `
+                <div class="theme-item-name">${t.name}</div>
+                <div class="theme-item-sub">
+                    <span>${t.items_count} món</span>
+                    <span>+${t.comfort} Điểm</span>
+                </div>
+            `;
+            item.onclick = () => {
+                document.querySelectorAll('.theme-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                applyTheme(t.id);
+            };
+            list.appendChild(item);
+        });
+    }
+
+    /* ── Apply Theme Preset into Room ────────────────────── */
+    function applyTheme(themeId) {
+        const themes = window.ALL_FURNITURE_DATA?.themes || [];
+        const furnitures = window.ALL_FURNITURE_DATA?.furnitures || {};
+        const theme = themes.find(t => t.id === themeId) || themes[0];
+        if (!theme) return;
+
+        world.clearFurniture();
+
+        // Preset placement coordinates across room grid
+        const slots = [
+            { gx: 1, gy: 1 }, { gx: 5, gy: 1 }, { gx: 8, gy: 1 },
+            { gx: 1, gy: 4 }, { gx: 5, gy: 4 }, { gx: 9, gy: 4 },
+            { gx: 2, gy: 6 }, { gx: 6, gy: 6 }
+        ];
+
+        let idx = 0;
+        for (const fid of theme.furniture_ids) {
+            const fData = furnitures[fid];
+            if (!fData || fData.location === 'WALL' || fData.location === 'CEILING') continue;
+            if (idx >= slots.length) break;
+
+            const slot = slots[idx++];
+            const item = new DormEngine.FurnitureItem(fData, slot.gx, slot.gy);
+            world.addFurniture(item);
+        }
+
+        updateComfort();
+        showToast(`✓ Đã áp dụng chủ đề: ${theme.name}`);
+    }
+
+    /* ── Render Furniture Palette (Right Panel) ──────────── */
+    function renderFurniturePalette() {
+        const grid = document.getElementById('furn-grid');
+        const furnitures = Object.values(window.ALL_FURNITURE_DATA?.furnitures || {});
+        const q = (document.getElementById('furn-search').value || '').toLowerCase();
+
+        grid.innerHTML = '';
+        const filtered = furnitures.filter(f => {
+            const matchCat = (curCat === 'ALL' || f.category === curCat);
+            const matchQuery = (!q || f.name.toLowerCase().includes(q));
+            return matchCat && matchQuery;
+        }).slice(0, 72); // Pagination limit for super fast DOM rendering
+
+        document.getElementById('furn-count').textContent = `${filtered.length} Món`;
+
+        filtered.forEach(f => {
+            const card = document.createElement('div');
+            card.className = 'furn-card';
+            card.innerHTML = `
+                <span class="furn-card-badge">${f.category}</span>
+                <img src="${f.icon}" loading="lazy" alt="${f.name}">
+                <div class="furn-card-name">${f.name}</div>
+            `;
+            card.onclick = () => spawnFurnitureToRoom(f);
+            grid.appendChild(card);
+        });
+    }
+
+    function spawnFurnitureToRoom(fData) {
+        // Find empty grid cell
+        const cell = world.grid.getRandomWalkableCell();
+        const item = new DormEngine.FurnitureItem(fData, cell.gx, cell.gy);
+        world.addFurniture(item);
+        world.selectedFurniture = item;
+        updateSelectedFurnitureBox();
+        updateComfort();
+        showToast(`✓ Đã thêm: ${fData.name}`);
+    }
+
+    function updateComfort() {
+        document.getElementById('comfort-val').textContent = world.getComfortScore();
+    }
+
+    function updateSelectedFurnitureBox() {
+        const box = document.getElementById('furn-ctrl');
+        if (world.selectedFurniture) {
+            box.style.display = 'flex';
+            document.getElementById('selected-furn-name').textContent = `Đang chọn: ${world.selectedFurniture.name}`;
+        } else {
+            box.style.display = 'none';
+        }
+    }
+
+    /* ── Event Listeners (Canvas Click & Controls) ────────── */
+    function setupEventListeners() {
+        const canvas = document.getElementById('dorm-2d-canvas');
+
+        // Click on 2.5D Room Floor
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const sx = e.clientX - rect.left;
+            const sy = e.clientY - rect.top;
+
+            // 1. Check if clicked on Amiya / Operator directly
+            if (mainAgent) {
+                const aPos = world.grid.gridToScreen(mainAgent.gx, mainAgent.gy);
+                if (Math.hypot(sx - aPos.x, sy - aPos.y) < 45) {
+                    mainAgent.setAnimation(DormEngine.AgentState.INTERACTING, false);
+                    mainAgent.showBubble('Doktah! Amiya ở đây ♡', 3.0);
+                    mainAgent.spawnHeart();
+                    document.getElementById('agent-status').textContent = `Amiya · Tương tác cùng Doktah ♡`;
+                    return;
+                }
+            }
+
+            // 2. Check if clicked on any Furniture in room
+            for (let i = world.furnitures.length - 1; i >= 0; i--) {
+                const f = world.furnitures[i];
+                const fPos = world.grid.gridToScreen(f.gx + f.width / 2, f.gy + f.depth / 2);
+                if (Math.hypot(sx - fPos.x, sy - fPos.y) < 42) {
+                    world.selectedFurniture = f;
+                    updateSelectedFurnitureBox();
+                    if (mainAgent) {
+                        mainAgent.interactWith(f, world.grid);
+                        document.getElementById('agent-status').textContent = `Amiya · Tương tác với ${f.name}`;
+                    }
+                    return;
+                }
+            }
+
+            // 3. Clicked on empty Floor tile -> Command move
+            const gridCell = world.grid.screenToGrid(sx, sy);
+            if (mainAgent) {
+                world.selectedFurniture = null;
+                updateSelectedFurnitureBox();
+                mainAgent.targetFurniture = null;
+                mainAgent.moveTo(gridCell.gx, gridCell.gy);
+                document.getElementById('agent-status').textContent = `Amiya · Di chuyển tới (${gridCell.gx}, ${gridCell.gy})`;
+            }
+        });
+
+        // Theme Search
+        document.getElementById('theme-search').addEventListener('input', renderThemes);
+
+        // Furniture Search & Category Tabs
+        document.getElementById('furn-search').addEventListener('input', renderFurniturePalette);
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                curCat = btn.dataset.cat;
+                renderFurniturePalette();
+            });
+        });
+
+        // Operator Selector
+        document.getElementById('op-sel').addEventListener('change', (e) => {
+            const opt = e.target.options[e.target.selectedIndex];
+            loadDormOperator(e.target.value, opt.text.split(' ')[0]);
+        });
+
+        // Selected Furniture Controls: Flip & Delete
+        document.getElementById('btn-flip-furn').addEventListener('click', () => {
+            if (world.selectedFurniture) {
+                world.selectedFurniture.flipped = !world.selectedFurniture.flipped;
+                showToast(`✓ Đã xoay: ${world.selectedFurniture.name}`);
+            }
+        });
+
+        document.getElementById('btn-del-furn').addEventListener('click', () => {
+            if (world.selectedFurniture) {
+                world.removeFurniture(world.selectedFurniture);
+                updateSelectedFurnitureBox();
+                updateComfort();
+                showToast(`✓ Đã xóa món đồ`);
+            }
+        });
+
+        // Clear Room
+        document.getElementById('btn-clear-room').addEventListener('click', () => {
+            world.clearFurniture();
+            updateSelectedFurnitureBox();
+            updateComfort();
+            showToast('✓ Đã xóa toàn bộ đồ trong phòng');
+        });
+
+        // Random Roam
+        document.getElementById('btn-random-roam').addEventListener('click', () => {
+            if (mainAgent) {
+                mainAgent.targetFurniture = null;
+                const cell = world.grid.getRandomWalkableCell();
+                mainAgent.moveTo(cell.gx, cell.gy);
+                mainAgent.showBubble('Đi dạo ngắm phòng nào ~', 2.5);
+            }
+        });
+    }
+    </script>
+</body>
+</html>
