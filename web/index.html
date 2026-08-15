@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
     <!--
         spine-webgl 3.8.99 — raw WebGL runtime.
         We fetch .skel/.atlas/.png ourselves through the proxy, pass a pre-loaded
@@ -355,11 +356,13 @@ let dormRafId    = null;
 let dormLastTs   = null;
 
 /* ═══════════════════════════════════════════════════════════
-   PROXY
+   PROXY & CDN RESOLUTION
+   On localhost, uses local Python server /api/proxy.
+   On GitHub Pages / static hosting, fetches directly from torappu CDN (which has CORS enabled).
 ═══════════════════════════════════════════════════════════ */
-const isHttp = location.protocol.startsWith('http');
+const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 function proxy(url) {
-    return isHttp ? `/api/proxy?url=${encodeURIComponent(url)}` : url;
+    return isLocal ? `/api/proxy?url=${encodeURIComponent(url)}` : url;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -421,10 +424,33 @@ function buildLocalUrls(opNameCn, baseName) {
 
 /* ═══════════════════════════════════════════════════════════
    ASSET LOADING — fetch all 3 files, build GLTexture manually
-   Tries local files first, falls back to CDN proxy.
+   Tries local files first, falls back to CDN proxy / direct CDN.
 ═══════════════════════════════════════════════════════════ */
+async function fetchWithFallback(url, directUrl, isArrayBuffer, isBlob) {
+    try {
+        const r = await fetch(url);
+        if (r.ok) {
+            if (isArrayBuffer) return r.arrayBuffer();
+            if (isBlob) return r.blob();
+            return r.text();
+        }
+    } catch(e) {}
+    // Fallback to direct URL if proxy or relative path failed
+    if (directUrl && directUrl !== url) {
+        const r2 = await fetch(directUrl);
+        if (r2.ok) {
+            if (isArrayBuffer) return r2.arrayBuffer();
+            if (isBlob) return r2.blob();
+            return r2.text();
+        }
+        throw new Error(`HTTP ${r2.status} khi tải ${directUrl}`);
+    }
+    throw new Error(`Không thể tải: ${url}`);
+}
+
 async function loadSpineAssets(glCtx, prefix, fileRel, scale = 0.5, localUrls = null) {
     let skelUrl, atlasUrl, pngUrl;
+    const directPrefix = `${prefix}${fileRel}`;
 
     if (localUrls) {
         // Use pre-resolved local file URLs
@@ -432,16 +458,16 @@ async function loadSpineAssets(glCtx, prefix, fileRel, scale = 0.5, localUrls = 
         atlasUrl = localUrls.atlasUrl;
         pngUrl   = localUrls.pngUrl;
     } else {
-        skelUrl  = proxy(`${prefix}${fileRel}.skel`);
-        atlasUrl = proxy(`${prefix}${fileRel}.atlas`);
-        pngUrl   = proxy(`${prefix}${fileRel}.png`);
+        skelUrl  = proxy(`${directPrefix}.skel`);
+        atlasUrl = proxy(`${directPrefix}.atlas`);
+        pngUrl   = proxy(`${directPrefix}.png`);
     }
 
-    // Parallel fetch
+    // Parallel fetch with auto fallback to direct CDN
     const [skelBuf, atlasText, pngBlob] = await Promise.all([
-        fetch(skelUrl).then(r  => { if (!r.ok) throw new Error(`.skel: HTTP ${r.status} — ${skelUrl}`); return r.arrayBuffer(); }),
-        fetch(atlasUrl).then(r => { if (!r.ok) throw new Error(`.atlas: HTTP ${r.status}`); return r.text(); }),
-        fetch(pngUrl).then(r   => { if (!r.ok) throw new Error(`.png: HTTP ${r.status}`);  return r.blob(); })
+        fetchWithFallback(skelUrl, `${directPrefix}.skel`, true, false),
+        fetchWithFallback(atlasUrl, `${directPrefix}.atlas`, false, false),
+        fetchWithFallback(pngUrl, `${directPrefix}.png`, false, true)
     ]);
 
     // Decode PNG blob → HTMLImageElement (required by GLTexture)
@@ -581,10 +607,14 @@ async function loadOperator(op, skinName, modelType, animName) {
             } catch(e) { /* fall through to CDN */ }
         }
 
-        // Fallback: fetch from CDN via proxy
+        // Fallback: fetch from CDN via proxy or direct
         if (!metaLoaded) {
             setOverlay('loading', 'Đang tải meta.json từ CDN...');
-            const metaRes = await fetch(proxy(`${CDN}${op.id}/meta.json`));
+            const directUrl = `${CDN}${op.id}/meta.json`;
+            let metaRes = await fetch(proxy(directUrl)).catch(() => null);
+            if (!metaRes || !metaRes.ok) {
+                metaRes = await fetch(directUrl);
+            }
             if (!metaRes.ok) throw new Error(`meta.json HTTP ${metaRes.status}`);
             meta = await metaRes.json();
         }
