@@ -208,6 +208,12 @@
                 <span class="badge" id="badge-model" style="color:#00d2ff">基建</span>
             </div>
             <div class="badge-row">
+                <div style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:6px;padding:2px 6px;gap:4px;">
+                    <button class="btn" style="padding:2px 6px;font-size:11px;" onclick="changeZoom(0.85)" title="Thu nhỏ (Cuộn chuột xuống)">-</button>
+                    <span id="zoom-val" style="font-size:11px;font-weight:700;color:var(--ac);min-width:38px;text-align:center;">100%</span>
+                    <button class="btn" style="padding:2px 6px;font-size:11px;" onclick="changeZoom(1.15)" title="Phóng to (Cuộn chuột lên)">+</button>
+                    <button class="btn" style="padding:2px 6px;font-size:11px;" onclick="resetView()" title="Căn giữa 100% (Nhấp đúp chuột)"><i data-lucide="maximize-2" size="11"></i></button>
+                </div>
                 <button class="btn btn-ac" onclick="downloadOp()"><i data-lucide="download-cloud" size="13"></i> Tải về máy</button>
             </div>
         </div>
@@ -236,6 +242,7 @@
                 </div>
             </div>
             <div class="ctrl-row">
+                <span style="font-size:11px;color:var(--mt);margin-right:6px;">💡 Cuộn chuột để phóng to/nhỏ · Kéo chuột để di chuyển</span>
                 <button class="btn" onclick="copyCmd()"><i data-lucide="terminal" size="13"></i> Copy lệnh Python</button>
             </div>
         </div>
@@ -403,49 +410,43 @@ function findLocalFiles(opNameCn, skinName, modelType) {
 
 function buildLocalUrls(opNameCn, baseName) {
     const enc = encodeURIComponent(opNameCn);
-    const encFile = encodeURIComponent(baseName);
-    const isLocalServer = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-    if (isLocalServer) {
-        return {
-            skelUrl:  `/api/local-file?name=${enc}&file=${encFile}.skel`,
-            atlasUrl: `/api/local-file?name=${enc}&file=${encFile}.atlas`,
-            pngUrl:   `/api/local-file?name=${enc}&file=${encFile}.png`,
-            baseName
-        };
-    } else {
-        return {
-            skelUrl:  `../downloads/${enc}/${encFile}.skel`,
-            atlasUrl: `../downloads/${enc}/${encFile}.atlas`,
-            pngUrl:   `../downloads/${enc}/${encFile}.png`,
-            baseName
-        };
-    }
-}
+    const en/* ═══════════════════════════════════════════════════════════
+   ASSET CACHING SYSTEM (Fast Instant Skin & Animation Switching)
+═══════════════════════════════════════════════════════════ */
+const _assetCache = {
+    meta: new Map(),
+    buffer: new Map(),
+    text: new Map(),
+    image: new Map(),
+    skelData: new Map()
+};
 
 /* ═══════════════════════════════════════════════════════════
-   ASSET LOADING — fetch all 3 files, build GLTexture manually
-   Tries local files first, falls back to CDN proxy / direct CDN.
+   CAMERA ZOOM & PAN INTERACTIVE SYSTEM
 ═══════════════════════════════════════════════════════════ */
-async function fetchWithFallback(url, directUrl, isArrayBuffer, isBlob) {
-    try {
-        const r = await fetch(url);
-        if (r.ok) {
-            if (isArrayBuffer) return r.arrayBuffer();
-            if (isBlob) return r.blob();
-            return r.text();
-        }
-    } catch(e) {}
-    // Fallback to direct URL if proxy or relative path failed
-    if (directUrl && directUrl !== url) {
-        const r2 = await fetch(directUrl);
-        if (r2.ok) {
-            if (isArrayBuffer) return r2.arrayBuffer();
-            if (isBlob) return r2.blob();
-            return r2.text();
-        }
-        throw new Error(`HTTP ${r2.status} khi tải ${directUrl}`);
-    }
-    throw new Error(`Không thể tải: ${url}`);
+let userZoom = 1.0;
+let panX = 0;
+let panY = 0;
+let isPanning = false;
+let startPanX = 0;
+let startPanY = 0;
+
+function changeZoom(factor) {
+    userZoom = Math.max(0.3, Math.min(3.5, userZoom * factor));
+    updateZoomDisplay();
+}
+
+function resetView() {
+    userZoom = 1.0;
+    panX = 0;
+    panY = 0;
+    updateZoomDisplay();
+    showToast('✓ Đã căn giữa khung hình 100%');
+}
+
+function updateZoomDisplay() {
+    const el = document.getElementById('zoom-val');
+    if (el) el.textContent = `${Math.round(userZoom * 100)}%`;
 }
 
 async function loadSpineAssets(glCtx, prefix, fileRel, scale = 0.5, localUrls = null) {
@@ -453,7 +454,6 @@ async function loadSpineAssets(glCtx, prefix, fileRel, scale = 0.5, localUrls = 
     const directPrefix = `${prefix}${fileRel}`;
 
     if (localUrls) {
-        // Use pre-resolved local file URLs
         skelUrl  = localUrls.skelUrl;
         atlasUrl = localUrls.atlasUrl;
         pngUrl   = localUrls.pngUrl;
@@ -463,22 +463,54 @@ async function loadSpineAssets(glCtx, prefix, fileRel, scale = 0.5, localUrls = 
         pngUrl   = proxy(`${directPrefix}.png`);
     }
 
-    // Parallel fetch with auto fallback to direct CDN
+    const cacheKey = directPrefix;
+
+    // Check pre-parsed SkeletonData cache for instant switching
+    if (_assetCache.skelData.has(cacheKey)) {
+        const cached = _assetCache.skelData.get(cacheKey);
+        const skel = new spine.Skeleton(cached.skelData);
+        skel.setToSetupPose();
+        skel.updateWorldTransform();
+
+        const stateData = new spine.AnimationStateData(cached.skelData);
+        stateData.defaultMix = 0.25;
+        const state = new spine.AnimationState(stateData);
+
+        return {
+            skel,
+            state,
+            skelData: cached.skelData,
+            bounds: cached.bounds
+        };
+    }
+
+    // Parallel fetch with in-memory caching
+    const fetchCached = async (url, directUrl, isArrayBuffer, isBlob) => {
+        const key = directUrl || url;
+        if (isArrayBuffer && _assetCache.buffer.has(key)) return _assetCache.buffer.get(key);
+        if (!isArrayBuffer && !isBlob && _assetCache.text.has(key)) return _assetCache.text.get(key);
+
+        const data = await fetchWithFallback(url, directUrl, isArrayBuffer, isBlob);
+        if (isArrayBuffer) _assetCache.buffer.set(key, data);
+        else if (!isBlob) _assetCache.text.set(key, data);
+        return data;
+    };
+
     const [skelBuf, atlasText, pngBlob] = await Promise.all([
-        fetchWithFallback(skelUrl, `${directPrefix}.skel`, true, false),
-        fetchWithFallback(atlasUrl, `${directPrefix}.atlas`, false, false),
+        fetchCached(skelUrl, `${directPrefix}.skel`, true, false),
+        fetchCached(atlasUrl, `${directPrefix}.atlas`, false, false),
         fetchWithFallback(pngUrl, `${directPrefix}.png`, false, true)
     ]);
 
-    // Decode PNG blob → HTMLImageElement (required by GLTexture)
-    const pngImg = await blobToImage(pngBlob);
+    // Decode PNG blob → HTMLImageElement
+    let pngImg;
+    if (_assetCache.image.has(cacheKey)) {
+        pngImg = _assetCache.image.get(cacheKey);
+    } else {
+        pngImg = await blobToImage(pngBlob);
+        _assetCache.image.set(cacheKey, pngImg);
+    }
 
-    /*
-     * TextureAtlas constructor: new TextureAtlas(atlasText, textureLoader)
-     * textureLoader(path) is called with the PNG filename from the atlas.
-     * We ignore `path` entirely — we already have the correct image loaded.
-     * This is the key trick that bypasses ALL relative URL issues.
-     */
     const atlas = new spine.TextureAtlas(atlasText, (_path) => {
         return new spine.webgl.GLTexture(glCtx, pngImg);
     });
@@ -502,16 +534,21 @@ async function loadSpineAssets(glCtx, prefix, fileRel, scale = 0.5, localUrls = 
     const size   = new spine.Vector2();
     skel.getBounds(offset, size, [], new Float32Array(2 * 1000), new spine.SkeletonClipping());
 
+    const b = {
+        cx: offset.x + size.x / 2,
+        cy: offset.y + size.y / 2,
+        w:  Math.max(size.x, 140),
+        h:  Math.max(size.y, 180)
+    };
+
+    // Cache the parsed skelData and bounds for instant replay
+    _assetCache.skelData.set(cacheKey, { skelData, bounds: b });
+
     return {
         skel,
         state,
         skelData,
-        bounds: {
-            cx: offset.x + size.x / 2,
-            cy: offset.y + size.y / 2,
-            w:  size.x,
-            h:  size.y
-        }
+        bounds: b
     };
 }
 
@@ -526,11 +563,50 @@ function blobToImage(blob) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   MAIN SPINE RENDERER  — requestAnimationFrame loop
+   MAIN SPINE RENDERER — requestAnimationFrame loop
 ═══════════════════════════════════════════════════════════ */
 function startRenderLoop(canvas) {
     if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
     lastTs = performance.now() / 1000;
+
+    // Attach interactive zoom & pan listeners once
+    if (!canvas._hasControls) {
+        canvas._hasControls = true;
+
+        // Mouse Wheel Zoom
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const factor = e.deltaY < 0 ? 1.12 : 0.89;
+            changeZoom(factor);
+        }, { passive: false });
+
+        // Mouse Pan Drag
+        canvas.addEventListener('mousedown', (e) => {
+            if (e.button === 0) {
+                isPanning = true;
+                startPanX = e.clientX - panX;
+                startPanY = e.clientY - panY;
+                canvas.style.cursor = 'grabbing';
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isPanning) {
+                panX = e.clientX - startPanX;
+                panY = e.clientY - startPanY;
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isPanning) {
+                isPanning = false;
+                canvas.style.cursor = 'grab';
+            }
+        });
+
+        // Double click to reset view
+        canvas.addEventListener('dblclick', resetView);
+    }
 
     function loop() {
         if (!skeleton || !animState || !renderer || !gl) return;
@@ -545,7 +621,7 @@ function startRenderLoop(canvas) {
 
         // Advance time
         const now   = performance.now() / 1000;
-        const delta = Math.min(now - lastTs, 0.064);  // cap delta at ~15fps minimum
+        const delta = Math.min(now - lastTs, 0.064);
         lastTs = now;
 
         if (!paused) {
@@ -554,18 +630,22 @@ function startRenderLoop(canvas) {
             skeleton.updateWorldTransform();
         }
 
-        // ── Camera: center on skeleton bounds, fit with padding ──
-        const vpW   = canvas.width;
-        const vpH   = canvas.height;
+        // ── Camera: comfortable natural framing (full body from ears to boots) ──
+        const vpW = canvas.width;
+        const vpH = canvas.height;
         renderer.camera.viewportWidth  = vpW;
         renderer.camera.viewportHeight = vpH;
-        const fitPad = Math.max(1 - 2 * ANIM_PAD, 0.1);
-        const zoomX  = (bounds.w || 100) / (vpW * fitPad);
-        const zoomY  = (bounds.h || 100) / (vpH * fitPad);
-        renderer.camera.position.x = bounds.cx;
-        renderer.camera.position.y = bounds.cy;
-        renderer.camera.zoom       = Math.max(zoomX, zoomY);
-        // NOTE: renderer.begin() internally calls camera.update() after we set position/zoom
+
+        // Comfortable 46% viewport framing to prevent gigantic auto-zoom
+        const comfortableScale = 0.46;
+        const baseZoomX = (bounds.w || 140) / (vpW * comfortableScale);
+        const baseZoomY = (bounds.h || 180) / (vpH * comfortableScale);
+        const baseZoom  = Math.max(baseZoomX, baseZoomY);
+
+        // Apply pan translation in world space (scaled with zoom)
+        renderer.camera.position.x = bounds.cx - (panX * baseZoom) / userZoom;
+        renderer.camera.position.y = bounds.cy + (panY * baseZoom) / userZoom;
+        renderer.camera.zoom       = baseZoom / userZoom;
 
         // ── Render ──
         gl.clearColor(0, 0, 0, 0);
@@ -586,30 +666,31 @@ function startRenderLoop(canvas) {
    MAIN VIEWER: LOAD OPERATOR
 ═══════════════════════════════════════════════════════════ */
 async function loadOperator(op, skinName, modelType, animName) {
-    setOverlay('loading', 'Đang tải meta.json...');
+    setOverlay('loading', 'Đang tải thông tin...');
 
-    // Stop previous render loop
     if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
 
     try {
-        // Try local meta.json first (if operator has been downloaded)
         let metaLoaded = false;
-        if (localFiles[op.name_cn]?.has_meta) {
+
+        // Check in-memory meta cache first
+        if (_assetCache.meta.has(op.id)) {
+            meta = _assetCache.meta.get(op.id);
+            metaLoaded = true;
+        } else if (localFiles[op.name_cn]?.has_meta) {
             try {
                 const isLocalServer = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
                 const metaUrl = isLocalServer ? `/api/local-meta?name=${encodeURIComponent(op.name_cn)}` : `../downloads/${encodeURIComponent(op.name_cn)}/meta.json`;
                 const localMetaRes = await fetch(metaUrl);
                 if (localMetaRes.ok) {
                     meta = await localMetaRes.json();
+                    _assetCache.meta.set(op.id, meta);
                     metaLoaded = true;
-                    setOverlay('loading', '✓ Meta cục bộ · Đang tải model...');
                 }
             } catch(e) { /* fall through to CDN */ }
         }
 
-        // Fallback: fetch from CDN via proxy or direct
         if (!metaLoaded) {
-            setOverlay('loading', 'Đang tải meta.json từ CDN...');
             const directUrl = `${CDN}${op.id}/meta.json`;
             let metaRes = await fetch(proxy(directUrl)).catch(() => null);
             if (!metaRes || !metaRes.ok) {
@@ -617,6 +698,7 @@ async function loadOperator(op, skinName, modelType, animName) {
             }
             if (!metaRes.ok) throw new Error(`meta.json HTTP ${metaRes.status}`);
             meta = await metaRes.json();
+            _assetCache.meta.set(op.id, meta);
         }
 
         buildSkinSel(meta);
@@ -628,9 +710,7 @@ async function loadOperator(op, skinName, modelType, animName) {
 
 async function renderOperator(op, opMeta, skinName, modelType, animName) {
     const skins     = opMeta?.skin || {};
-    // Find skin data — fallback chain: exact skin → first skin
     const skinData  = skins[skinName] || skins[Object.keys(skins)[0]] || {};
-    // Find model data — fallback chain: exact model → first model in skin
     const modelDat  = skinData[modelType] || skinData[Object.keys(skinData)[0]];
 
     const prefix  = opMeta?.prefix || `${CDN}${op.id}/`;
@@ -638,39 +718,26 @@ async function renderOperator(op, opMeta, skinName, modelType, animName) {
 
     const canvas  = document.getElementById('spine-canvas');
 
-    // Init (or reuse) WebGL context
     if (!gl) {
         gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false });
         if (!gl) throw new Error('WebGL không được hỗ trợ trong trình duyệt này!');
         renderer = new spine.webgl.SceneRenderer(canvas, gl);
     }
 
-    // ── Try LOCAL files first ──
-    // Check if operator has local files downloaded
     const localUrls = findLocalFiles(op.name_cn, skinName, modelType);
 
-    if (localUrls) {
-        setOverlay('loading', `📂 Đang đọc file cục bộ: ${localUrls.baseName}...`);
-    } else if (fileRel) {
-        setOverlay('loading', 'Đang tải .skel + .atlas + .png qua CDN proxy...');
-    } else {
+    if (!localUrls && !fileRel) {
         throw new Error(`Không tìm thấy model '${modelType}' cho skin '${skinName}'`);
     }
 
-    let result;
-    if (localUrls) {
-        // Load from local server directly
-        result = await loadSpineAssets(gl, prefix, fileRel, 0.5, localUrls);
-    } else {
-        // Load from CDN via proxy
-        result = await loadSpineAssets(gl, prefix, fileRel, 0.5, null);
-    }
+    setOverlay('loading', `Đang kết xuất ${op.name_cn}...`);
+
+    const result = await loadSpineAssets(gl, prefix, fileRel, 0.5, localUrls);
 
     skeleton  = result.skel;
     animState = result.state;
     bounds    = result.bounds;
 
-    // Set animation
     const available = result.skelData.animations.map(a => a.name);
     const anim      = available.includes(animName) ? animName : (available[0] || '');
     if (anim) {
@@ -678,14 +745,13 @@ async function renderOperator(op, opMeta, skinName, modelType, animName) {
         curAnim = anim;
     }
     animState.timeScale = speed;
-    if (paused) animState.update(0);  // don't advance on first frame if paused
+    if (paused) animState.update(0);
 
     buildAnimGrid(available);
     setOverlay(null);
     startRenderLoop(canvas);
     const src = localUrls ? '💾 Local' : '🌐 CDN';
-    showToast(`✓ ${op.name_cn} · ${modelType} · ${anim} [${src}]`);
-}
+    }
 
 /* ═══════════════════════════════════════════════════════════
    OPERATOR LIST
@@ -862,17 +928,20 @@ async function checkDl() {
  */
 async function loadLocalFilesList() {
     try {
-        let r = await fetch('/api/local-list').catch(() => null);
+        let r = null;
+        if (isLocal) {
+            r = await fetch('/api/local-list').catch(() => null);
+        }
         if (!r || !r.ok) {
-            r = await fetch('local_list.json');
+            r = await fetch('local_list.json').catch(() => null);
         }
         if (r && r.ok) {
             localFiles = await r.json();
-            dlList = Object.keys(localFiles).filter(k => localFiles[k].skel_files?.length > 0);
+            dlList = Object.keys(localFiles).filter(k => localFiles[k]?.skel_files?.length > 0);
             document.getElementById('dl-txt').textContent = `${dlList.length} Đã Tải`;
             renderList(visOps());
         }
-    } catch(e) { console.warn('local-list not available:', e); }
+    } catch(e) {}
 }
 
 /* ═══════════════════════════════════════════════════════════
