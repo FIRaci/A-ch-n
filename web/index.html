@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arknights Chibi Spine Hub · 454+ Operators</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!--
+        spine-webgl 3.8.99 — raw WebGL runtime.
+        We fetch .skel/.atlas/.png ourselves through the proxy, pass a pre-loaded
+        Image to TextureAtlas so the atlas never has to resolve relative paths.
+    -->
+    <script src="spine-webgl.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="operators_data.js"></script>
+    <style>
+        :root{
+
+            --bg:#0a0d14; --bg2:#121824; --card:rgba(20,27,41,.9);
+            --border:rgba(255,255,255,.08); --bh:rgba(0,210,255,.45);
+            --ac:#00d2ff; --ag:linear-gradient(135deg,#00d2ff,#3a7bd5);
+            --glow:rgba(0,210,255,.28); --text:#f0f4fc; --mt:#8b9bb4;
+            --r6:#ff7675;--r5:#fdcb6e;--r4:#a29bfe;--r3:#74b9ff;
+            --rad:14px; --rsm:8px;
+        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+            display:flex;flex-direction:column;overflow-x:hidden;
+            background-image:radial-gradient(circle at 15% 20%,rgba(0,210,255,.07) 0,transparent 40%),
+                             radial-gradient(circle at 85% 80%,rgba(58,123,213,.07) 0,transparent 40%)}
+
+        /* ── Header ──────────────────────────────────────── */
+        header{padding:14px 26px;display:flex;align-items:center;justify-content:space-between;
+            border-bottom:1px solid var(--border);background:rgba(10,13,20,.92);backdrop-filter:blur(16px);
+            position:sticky;top:0;z-index:100}
+        .brand{display:flex;align-items:center;gap:12px}
+        .brand-logo{width:40px;height:40px;border-radius:10px;background:var(--ag);
+            display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px var(--glow)}
+        .brand h1{font-size:18px;font-weight:800;letter-spacing:-.4px;
+            background:linear-gradient(90deg,#fff,#8ec5fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .brand-sub{font-size:10px;color:var(--ac);text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
+        .nav{display:flex;gap:6px;background:var(--bg2);padding:4px;border-radius:var(--rsm);border:1px solid var(--border)}
+        .tab-btn{background:transparent;border:none;color:var(--mt);padding:7px 14px;font-size:12px;font-weight:600;
+            border-radius:6px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+        .tab-btn:hover{color:var(--text)} .tab-btn.active{background:var(--ag);color:#fff;box-shadow:0 2px 12px var(--glow)}
+
+        /* ── Main layout ─────────────────────────────────── */
+        main{flex:1;padding:18px 26px;max-width:1700px;margin:0 auto;width:100%;
+            display:grid;grid-template-columns:340px 1fr 330px;gap:18px}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad);
+            padding:16px;backdrop-filter:blur(16px);display:flex;flex-direction:column;gap:12px}
+        .card-header{display:flex;align-items:center;justify-content:space-between;
+            border-bottom:1px solid var(--border);padding-bottom:10px}
+        .card-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+
+        /* ── Op list ─────────────────────────────────────── */
+        .search-box{position:relative}
+        .search-box input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rsm);
+            padding:9px 12px 9px 36px;color:#fff;font-size:13px;outline:none;transition:all .2s}
+        .search-box input:focus{border-color:var(--ac);box-shadow:0 0 10px var(--glow)}
+        .search-box i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--mt);pointer-events:none}
+        .filter-tags{display:flex;gap:5px;flex-wrap:wrap}
+        .tag-btn{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--mt);
+            padding:3px 9px;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s}
+        .tag-btn:hover{background:rgba(255,255,255,.1);color:#fff} .tag-btn.active{background:var(--ac);color:#0a0d14;border-color:var(--ac)}
+        .op-list{overflow-y:auto;max-height:calc(100vh - 290px);display:flex;flex-direction:column;gap:5px}
+        .op-list::-webkit-scrollbar{width:4px} .op-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:4px}
+        .op-item{display:flex;align-items:center;gap:10px;padding:7px 11px;background:rgba(255,255,255,.02);
+            border:1px solid transparent;border-radius:var(--rsm);cursor:pointer;transition:all .18s}
+        .op-item:hover{background:rgba(255,255,255,.06);border-color:var(--bh);transform:translateX(2px)}
+        .op-item.active{background:rgba(0,210,255,.13);border-color:var(--ac);box-shadow:0 0 14px var(--glow)}
+        .op-av{width:38px;height:38px;border-radius:7px;background:#182030;display:flex;align-items:center;
+            justify-content:center;font-weight:800;font-size:13px;border:1px solid var(--border);flex-shrink:0}
+        .op-av.s6{border-color:var(--r6);color:var(--r6)} .op-av.s5{border-color:var(--r5);color:var(--r5)}
+        .op-av.s4{border-color:var(--r4);color:var(--r4)} .op-av.s3{border-color:var(--r3);color:var(--r3)}
+        .op-info{flex:1;overflow:hidden}
+        .op-cn{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
+        .op-en{font-size:10px;color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .dl-badge{font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(46,213,115,.18);color:#2ed573;border:1px solid rgba(46,213,115,.35);font-weight:700;flex-shrink:0}
+
+        /* ── Viewport ────────────────────────────────────── */
+        .viewport{position:relative;border-radius:var(--rad);border:1px solid var(--border);
+            overflow:hidden;min-height:580px;background:#080c16;display:flex;flex-direction:column}
+        .vp-toolbar{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start;z-index:20}
+        .badge-row{display:flex;gap:7px;align-items:center}
+        .badge{background:rgba(0,0,0,.72);backdrop-filter:blur(8px);padding:5px 11px;border-radius:18px;font-size:11px;font-weight:600;border:1px solid var(--border);color:#fff}
+
+        /* Transparent grid background (like sprite editors) to show alpha clearly */
+        #spine-canvas{
+            flex:1;display:block;width:100%;min-height:480px;
+            background:
+                linear-gradient(45deg,#1a1f2e 25%,transparent 25%) -10px 0/20px 20px,
+                linear-gradient(-45deg,#1a1f2e 25%,transparent 25%) -10px 0/20px 20px,
+                linear-gradient(45deg,transparent 75%,#1a1f2e 75%) 0 0/20px 20px,
+                linear-gradient(-45deg,transparent 75%,#1a1f2e 75%) 0 0/20px 20px;
+            background-color:#141928;
+        }
+        .vp-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+            text-align:center;color:var(--mt);z-index:15;pointer-events:none}
+        .vp-overlay.hidden{display:none}
+        .spinner{width:36px;height:36px;border:3px solid rgba(0,210,255,.2);border-top-color:var(--ac);
+            border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        /* ── Initial loading cover (while Spine WebGL loads) ── */
+        #spine-loading-cover{position:fixed;inset:0;background:var(--bg);
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+            z-index:9999;gap:16px;transition:opacity .4s}
+        #spine-loading-cover.hidden{opacity:0;pointer-events:none}
+        #spine-loading-cover .big-spinner{width:52px;height:52px;border:4px solid rgba(0,210,255,.2);
+            border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
+        #spine-loading-cover p{font-size:14px;color:var(--mt);font-weight:600}
+        .vp-controls{position:absolute;bottom:12px;left:12px;right:12px;background:rgba(10,14,23,.88);
+            backdrop-filter:blur(14px);padding:11px 15px;border-radius:var(--rsm);border:1px solid var(--border);
+            display:flex;align-items:center;justify-content:space-between;gap:14px;z-index:20}
+        .ctrl-row{display:flex;align-items:center;gap:8px}
+        .btn{background:rgba(255,255,255,.07);border:1px solid var(--border);color:#fff;padding:7px 13px;
+            border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;
+            display:inline-flex;align-items:center;gap:6px;transition:all .2s}
+        .btn:hover{background:rgba(255,255,255,.14);border-color:var(--ac)}
+        .btn-ac{background:var(--ag);border-color:transparent;box-shadow:0 0 12px var(--glow)}
+        .btn-ac:hover{opacity:.9;transform:translateY(-1px)}
+        .slider-wrap{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mt)}
+        .slider-wrap input[type=range]{accent-color:var(--ac);cursor:pointer;width:100px}
+
+        /* ── Right panel ─────────────────────────────────── */
+        .sel{width:100%;background:var(--bg2);border:1px solid var(--border);color:#fff;
+            padding:8px 11px;border-radius:6px;font-size:12px;outline:none;cursor:pointer}
+        .sel:focus{border-color:var(--ac)}
+        .lbl{font-size:10px;color:var(--mt);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;display:block}
+        .anim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+        .anim-btn{background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);
+            padding:9px 11px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;
+            display:flex;align-items:center;justify-content:space-between;transition:all .18s}
+        .anim-btn:hover{background:rgba(255,255,255,.08);border-color:var(--bh)}
+        .anim-btn.active{background:rgba(0,210,255,.16);border-color:var(--ac);color:var(--ac);box-shadow:0 0 10px var(--glow)}
+        .anim-btn:disabled{opacity:.3;cursor:not-allowed}
+        .code-box{background:#060910;border:1px solid var(--border);border-radius:6px;padding:11px;
+            font-family:'JetBrains Mono',monospace;font-size:11px;color:#a5b4fc;overflow-x:auto;line-height:1.55;user-select:all;cursor:copy}
+
+        /* ── Other tabs ──────────────────────────────────── */
+        .guide{display:none;grid-column:1/-1;gap:18px} .guide.vis{display:grid;grid-template-columns:repeat(3,1fr)}
+        .eng-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad);padding:22px;display:flex;flex-direction:column;gap:12px}
+        .eb{align-self:flex-start;padding:3px 9px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase}
+        .eb-web{background:rgba(0,210,255,.15);color:var(--ac)} .eb-god{background:rgba(71,140,191,.2);color:#478cbf} .eb-uni{background:rgba(255,255,255,.15);color:#fff}
+        .game-panel{grid-column:1/-1;display:none;background:#111622;border-radius:var(--rad);border:1px solid var(--border);padding:18px;flex-direction:column;gap:14px}
+        .game-panel.vis{display:flex}
+        .dorm{width:100%;height:440px;background:linear-gradient(180deg,#1e293b,#0f172a);border-radius:var(--rsm);position:relative;overflow:hidden;border:2px dashed rgba(255,255,255,.1)}
+        .dfloor{position:absolute;bottom:0;left:0;right:0;height:110px;background:linear-gradient(180deg,#334155,#1e293b);border-top:4px solid #475569}
+        .furn{position:absolute;bottom:28px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;font-size:11px;color:var(--mt);cursor:pointer;transition:all .2s}
+        .furn:hover{transform:scale(1.05);background:rgba(255,255,255,.1)}
+        .fbed{left:70px;width:145px;height:75px;border-color:#38bdf8} .fchair{right:130px;width:85px;height:85px;border-color:#a855f7}
+        .dorm-char{position:absolute;bottom:48px;left:300px;cursor:pointer;transition:all .4s ease;display:flex;flex-direction:column;align-items:center}
+        #dorm-canvas{background:transparent;display:block}
+        .toast{position:fixed;bottom:22px;right:22px;background:#1a2236;color:#fff;padding:11px 18px;border-radius:8px;border-left:4px solid var(--ac);box-shadow:0 10px 30px rgba(0,0,0,.5);display:flex;align-items:center;gap:9px;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1)}
+        .toast.show{transform:translateY(0);opacity:1}
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        <div class="brand-logo"><i data-lucide="shield" color="#fff" size="22"></i></div>
+        <div>
+            <h1>Arknights Chibi Spine Hub</h1>
+            <span class="brand-sub">454+ Nhân Vật · Spine 3.8 WebGL · Live Render</span>
+        </div>
+    </div>
+    <nav class="nav">
+        <button class="tab-btn active" id="tb-viewer" onclick="switchTab('viewer')"><i data-lucide="eye" size="15"></i> Spine 2D Viewer</button>
+        <button class="tab-btn" id="tb-game"   onclick="switchTab('game')"><i data-lucide="gamepad-2" size="15"></i> Mini Game Demo</button>
+        <button class="tab-btn" id="tb-eng"    onclick="switchTab('eng')"><i data-lucide="cpu" size="15"></i> Chọn Game Engine</button>
+    </nav>
+</header>
+
+<!-- ══════════════  VIEWER TAB  ══════════════ -->
+<main id="tab-viewer">
+
+    <!-- Left: Op list -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title"><i data-lucide="users" size="17" color="#00d2ff"></i> Danh Sách 干员 (<span id="op-count">454</span>)</span>
+            <span style="font-size:11px;color:var(--mt)" id="dl-txt">0 Đã Tải</span>
+        </div>
+        <div class="search-box">
+            <i data-lucide="search" size="15"></i>
+            <input type="text" id="op-search" placeholder="Tìm tên Trung, Anh hoặc ID..." oninput="filterOps()">
+        </div>
+        <div class="filter-tags">
+            <button class="tag-btn active" onclick="setFilter('ALL',this)">Tất cả</button>
+            <button class="tag-btn" onclick="setFilter(6,this)">6 ★</button>
+            <button class="tag-btn" onclick="setFilter(5,this)">5 ★</button>
+            <button class="tag-btn" onclick="setFilter(4,this)">4 ★</button>
+            <button class="tag-btn" onclick="setFilter(3,this)">3 ★</button>
+            <button class="tag-btn" onclick="setFilter('DL',this)">Đã tải</button>
+        </div>
+        <div class="op-list" id="op-list"></div>
+    </div>
+
+    <!-- Center: WebGL Viewport -->
+    <div class="viewport" id="viewport">
+        <div class="vp-toolbar">
+            <div class="badge-row">
+                <span class="badge" id="badge-name">Đang nạp...</span>
+                <span class="badge" id="badge-rarity" style="color:#fdcb6e">-- ★</span>
+                <span class="badge" id="badge-model" style="color:#00d2ff">基建</span>
+            </div>
+            <div class="badge-row">
+                <button class="btn btn-ac" onclick="downloadOp()"><i data-lucide="download-cloud" size="13"></i> Tải về máy</button>
+            </div>
+        </div>
+
+        <!--
+            Main Spine WebGL canvas.
+            spine.webgl.SceneRenderer renders directly into this element.
+        -->
+        <canvas id="spine-canvas"></canvas>
+
+        <!-- Loading / error overlay -->
+        <div class="vp-overlay" id="vp-overlay">
+            <div class="spinner"></div>
+            <div style="font-size:13px;font-weight:600">Khởi tạo...</div>
+        </div>
+
+        <div class="vp-controls">
+            <div class="ctrl-row">
+                <button class="btn btn-ac" id="btn-pp" onclick="togglePause()">
+                    <i data-lucide="pause" size="13" id="icon-pp"></i><span id="lbl-pp">Tạm dừng</span>
+                </button>
+                <div class="slider-wrap">
+                    Tốc độ:
+                    <input type="range" id="speed-sl" min="0.1" max="2.0" step="0.1" value="1.0" oninput="setSpeed(this.value)">
+                    <span id="speed-lbl" style="min-width:30px">x1.0</span>
+                </div>
+            </div>
+            <div class="ctrl-row">
+                <button class="btn" onclick="copyCmd()"><i data-lucide="terminal" size="13"></i> Copy lệnh Python</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Controls -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title"><i data-lucide="play-square" size="17" color="#00d2ff"></i> Chuỗi Động Tác</span>
+        </div>
+        <div>
+            <label class="lbl">TRANG PHỤC (时装):</label>
+            <select class="sel" id="skin-sel" onchange="onSkinChange(this.value)"><option value="默认">默认 (Mặc định)</option></select>
+        </div>
+        <div>
+            <label class="lbl">MÔ HÌNH (模型组):</label>
+            <select class="sel" id="model-sel" onchange="onModelChange(this.value)">
+                <option value="基建" selected>基建 – Chibi SD (Default→Sleep)</option>
+                <option value="正面">正面 – Chiến đấu mặt trước</option>
+                <option value="背面">背面 – Chiến đấu mặt sau</option>
+            </select>
+        </div>
+        <div>
+            <label class="lbl">ĐỘNG TÁC:</label>
+            <div class="anim-grid" id="anim-grid"></div>
+        </div>
+        <div>
+            <label class="lbl">LỆNH CRAWLER PYTHON:</label>
+            <div class="code-box" id="cli-box" onclick="copyCmd()">python ak_crawler.py --name "..."</div>
+            <div style="font-size:10px;color:var(--mt);margin-top:4px">↑ Click để copy</div>
+        </div>
+    </div>
+</main>
+
+<!-- ══════════════  GAME TAB  ══════════════ -->
+<div class="game-panel" id="tab-game">
+    <div>
+        <h2>🎮 Arknights Dormitory Chibi Playground</h2>
+        <p style="font-size:13px;color:var(--mt);margin-top:4px">Click nhân vật → Interact · Click Giường → Sleep · Click Ghế → Sit</p>
+    </div>
+    <div class="dorm">
+        <div class="furn fbed" onclick="dormAnim('Sleep')"><i data-lucide="bed" size="20" color="#38bdf8"></i><span style="font-weight:700;margin-top:4px;font-size:11px">Sleep</span></div>
+        <div class="furn fchair" onclick="dormAnim('Sit')"><i data-lucide="armchair" size="20" color="#a855f7"></i><span style="font-weight:700;margin-top:4px;font-size:11px">Sit</span></div>
+        <div class="dfloor"></div>
+        <div class="dorm-char" id="dorm-char" onclick="dormAnim('Interact')">
+            <div style="background:rgba(0,0,0,.7);border:1px solid var(--border);padding:2px 9px;border-radius:10px;font-size:10px;text-align:center;margin-bottom:5px" id="dorm-status">Default (Idle)</div>
+            <canvas id="dorm-canvas" width="220" height="240"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════  ENGINE TAB  ══════════════ -->
+<div class="guide" id="tab-eng">
+    <div class="eng-card">
+        <span class="eb eb-web">Tốt nhất cho Web Game</span>
+        <h3>1. PixiJS + @pixi-spine</h3>
+        <p style="font-size:13px;color:var(--mt);line-height:1.6">Web Game chạy thẳng trình duyệt, không cần cài đặt. PixiJS renderer 2D WebGL nhanh nhất thế giới, hỗ trợ Spine 3.8 binary trực tiếp.</p>
+        <ul style="font-size:13px;color:var(--mt);margin-left:16px;line-height:1.7"><li>~100–200KB/nhân vật · 60fps mượt mà</li><li>Idle→Move→Sit chuyển tức thì</li><li>Deploy Vercel / GitHub Pages 1 click</li></ul>
+    </div>
+    <div class="eng-card">
+        <span class="eb eb-god">Tốt nhất cho App Game</span>
+        <h3>2. Godot Engine 4</h3>
+        <p style="font-size:13px;color:var(--mt);line-height:1.6">Xuất APK Android, iOS, Windows, Web từ cùng codebase. Godot 4 siêu nhẹ (~50MB), GDScript dễ học như Python.</p>
+        <ul style="font-size:13px;color:var(--mt);margin-left:16px;line-height:1.7"><li>Plugin godot-spine / SpriteFrames</li><li>Build Tower Defense / Ký Túc Xá nhanh</li><li>Miễn phí 100% · MIT License</li></ul>
+    </div>
+    <div class="eng-card">
+        <span class="eb eb-uni">Chuẩn Công Nghiệp Gacha</span>
+        <h3>3. Unity + Spine-Unity 3.8</h3>
+        <p style="font-size:13px;color:var(--mt);line-height:1.6">Thư viện chính thức từ Esoteric Software. Kéo thả .skel/.atlas/.png vào Assets → tự động tạo Animation Clips.</p>
+        <ul style="font-size:13px;color:var(--mt);margin-left:16px;line-height:1.7"><li>State Machine · IK · Mesh deform</li><li>Gacha RPG / Auto-battler lớn</li><li>C# scripting mạnh mẽ</li></ul>
+    </div>
+</div>
+
+<div class="toast" id="toast"><i data-lucide="check-circle-2" size="17" color="#2ed573"></i><span id="toast-text"></span></div>
+
+<!-- Spine runtime loading cover -->
+<div id="spine-loading-cover">
+    <div class="big-spinner"></div>
+    <p>Đang tải Spine WebGL runtime...</p>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════ */
+const OPS        = window.ALL_OPERATORS || [];
+const CDN        = 'https://torappu.prts.wiki/assets/char_spine/';
+const ANIM_LIST  = ['Default','Interact','Move','Relax','Sit','Sleep'];
+const ANIM_PAD   = 0.12;  // 12% padding around skeleton in viewport
+
+let dlList       = [];       // list of downloaded operator name_cn
+let localFiles   = {};       // { '阿米娅': { skel_files: [...], has_meta: true } }
+let filterVal    = 'ALL';
+let curOp        = null;
+let curSkin      = '默认';
+let curModel     = '基建';
+let curAnim      = 'Default';
+let speed        = 1.0;
+let paused       = false;
+let meta         = null;
+
+// WebGL render context (main viewer)
+let gl           = null;
+let renderer     = null;
+let skeleton     = null;
+let animState    = null;
+let bounds       = null;   // { cx, cy, w, h }
+let rafId        = null;
+let lastTs       = null;
+
+// WebGL render context (dorm)
+let dormGl       = null;
+let dormRenderer = null;
+let dormSkel     = null;
+let dormState    = null;
+let dormBounds   = null;
+let dormRafId    = null;
+let dormLastTs   = null;
+
+/* ═══════════════════════════════════════════════════════════
+   PROXY
+═══════════════════════════════════════════════════════════ */
+const isHttp = location.protocol.startsWith('http');
+function proxy(url) {
+    return isHttp ? `/api/proxy?url=${encodeURIComponent(url)}` : url;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOCAL FILE HELPERS
+   Detect if operator files are already downloaded locally.
+   Local file naming: downloads/<name_cn>/<name_cn>_<skin>_<model>.skel
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Try to find a local skel file for this operator/skin/model.
+ * Returns { skelUrl, atlasUrl, pngUrl, baseName } or null.
+ */
+function findLocalFiles(opNameCn, skinName, modelType) {
+    const info = localFiles[opNameCn];
+    if (!info || !info.skel_files) return null;
+
+    // Try exact pattern: <name>_<skin>_<model>.skel
+    const exactName = `${opNameCn}_${skinName}_${modelType}`;
+    if (info.skel_files.includes(`${exactName}.skel`)) {
+        return buildLocalUrls(opNameCn, exactName);
+    }
+
+    // Try without skin prefix: <name>_<model>.skel
+    const shortName = `${opNameCn}_${modelType}`;
+    if (info.skel_files.includes(`${shortName}.skel`)) {
+        return buildLocalUrls(opNameCn, shortName);
+    }
+
+    // Fallback: find any skel file that includes the model type
+    const match = info.skel_files.find(f => f.endsWith(`_${modelType}.skel`));
+    if (match) {
+        const baseName = match.replace('.skel', '');
+        return buildLocalUrls(opNameCn, baseName);
+    }
+
+    return null;
+}
+
+function buildLocalUrls(opNameCn, baseName) {
+    const enc = encodeURIComponent(opNameCn);
+    const encFile = encodeURIComponent(baseName);
+    const isLocalServer = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (isLocalServer) {
+        return {
+            skelUrl:  `/api/local-file?name=${enc}&file=${encFile}.skel`,
+            atlasUrl: `/api/local-file?name=${enc}&file=${encFile}.atlas`,
+            pngUrl:   `/api/local-file?name=${enc}&file=${encFile}.png`,
+            baseName
+        };
+    } else {
+        return {
+            skelUrl:  `../downloads/${enc}/${encFile}.skel`,
+            atlasUrl: `../downloads/${enc}/${encFile}.atlas`,
+            pngUrl:   `../downloads/${enc}/${encFile}.png`,
+            baseName
+        };
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ASSET LOADING — fetch all 3 files, build GLTexture manually
+   Tries local files first, falls back to CDN proxy.
+═══════════════════════════════════════════════════════════ */
+async function loadSpineAssets(glCtx, prefix, fileRel, scale = 0.5, localUrls = null) {
+    let skelUrl, atlasUrl, pngUrl;
+
+    if (localUrls) {
+        // Use pre-resolved local file URLs
+        skelUrl  = localUrls.skelUrl;
+        atlasUrl = localUrls.atlasUrl;
+        pngUrl   = localUrls.pngUrl;
+    } else {
+        skelUrl  = proxy(`${prefix}${fileRel}.skel`);
+        atlasUrl = proxy(`${prefix}${fileRel}.atlas`);
+        pngUrl   = proxy(`${prefix}${fileRel}.png`);
+    }
+
+    // Parallel fetch
+    const [skelBuf, atlasText, pngBlob] = await Promise.all([
+        fetch(skelUrl).then(r  => { if (!r.ok) throw new Error(`.skel: HTTP ${r.status} — ${skelUrl}`); return r.arrayBuffer(); }),
+        fetch(atlasUrl).then(r => { if (!r.ok) throw new Error(`.atlas: HTTP ${r.status}`); return r.text(); }),
+        fetch(pngUrl).then(r   => { if (!r.ok) throw new Error(`.png: HTTP ${r.status}`);  return r.blob(); })
+    ]);
+
+    // Decode PNG blob → HTMLImageElement (required by GLTexture)
+    const pngImg = await blobToImage(pngBlob);
+
+    /*
+     * TextureAtlas constructor: new TextureAtlas(atlasText, textureLoader)
+     * textureLoader(path) is called with the PNG filename from the atlas.
+     * We ignore `path` entirely — we already have the correct image loaded.
+     * This is the key trick that bypasses ALL relative URL issues.
+     */
+    const atlas = new spine.TextureAtlas(atlasText, (_path) => {
+        return new spine.webgl.GLTexture(glCtx, pngImg);
+    });
+
+    const loader   = new spine.AtlasAttachmentLoader(atlas);
+    const reader   = new spine.SkeletonBinary(loader);
+    reader.scale   = scale;
+
+    const skelData = reader.readSkeletonData(new Uint8Array(skelBuf));
+
+    const skel = new spine.Skeleton(skelData);
+    skel.setToSetupPose();
+    skel.updateWorldTransform();
+
+    const stateData = new spine.AnimationStateData(skelData);
+    stateData.defaultMix = 0.25;
+    const state = new spine.AnimationState(stateData);
+
+    // Bounds for camera fit
+    const offset = new spine.Vector2();
+    const size   = new spine.Vector2();
+    skel.getBounds(offset, size, [], new Float32Array(2 * 1000), new spine.SkeletonClipping());
+
+    return {
+        skel,
+        state,
+        skelData,
+        bounds: {
+            cx: offset.x + size.x / 2,
+            cy: offset.y + size.y / 2,
+            w:  size.x,
+            h:  size.y
+        }
+    };
+}
+
+function blobToImage(blob) {
+    return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload  = () => { URL.revokeObjectURL(url); resolve(img); };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('PNG decode failed')); };
+        img.src = url;
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN SPINE RENDERER  — requestAnimationFrame loop
+═══════════════════════════════════════════════════════════ */
+function startRenderLoop(canvas) {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    lastTs = performance.now() / 1000;
+
+    function loop() {
+        if (!skeleton || !animState || !renderer || !gl) return;
+
+        // Resize canvas to match CSS layout
+        const cw = canvas.clientWidth  || canvas.width;
+        const ch = Math.max(canvas.clientHeight || canvas.height, 200);
+        if (canvas.width !== cw || canvas.height !== ch) {
+            canvas.width  = cw;
+            canvas.height = ch;
+        }
+
+        // Advance time
+        const now   = performance.now() / 1000;
+        const delta = Math.min(now - lastTs, 0.064);  // cap delta at ~15fps minimum
+        lastTs = now;
+
+        if (!paused) {
+            animState.update(delta);
+            animState.apply(skeleton);
+            skeleton.updateWorldTransform();
+        }
+
+        // ── Camera: center on skeleton bounds, fit with padding ──
+        const vpW   = canvas.width;
+        const vpH   = canvas.height;
+        renderer.camera.viewportWidth  = vpW;
+        renderer.camera.viewportHeight = vpH;
+        const fitPad = Math.max(1 - 2 * ANIM_PAD, 0.1);
+        const zoomX  = (bounds.w || 100) / (vpW * fitPad);
+        const zoomY  = (bounds.h || 100) / (vpH * fitPad);
+        renderer.camera.position.x = bounds.cx;
+        renderer.camera.position.y = bounds.cy;
+        renderer.camera.zoom       = Math.max(zoomX, zoomY);
+        // NOTE: renderer.begin() internally calls camera.update() after we set position/zoom
+
+        // ── Render ──
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.viewport(0, 0, vpW, vpH);
+
+        renderer.begin();
+        renderer.drawSkeleton(skeleton, true);   // premultipliedAlpha = true (AK assets)
+        renderer.end();
+
+        rafId = requestAnimationFrame(loop);
+    }
+
+    rafId = requestAnimationFrame(loop);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN VIEWER: LOAD OPERATOR
+═══════════════════════════════════════════════════════════ */
+async function loadOperator(op, skinName, modelType, animName) {
+    setOverlay('loading', 'Đang tải meta.json...');
+
+    // Stop previous render loop
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+
+    try {
+        // Try local meta.json first (if operator has been downloaded)
+        let metaLoaded = false;
+        if (localFiles[op.name_cn]?.has_meta) {
+            try {
+                const isLocalServer = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+                const metaUrl = isLocalServer ? `/api/local-meta?name=${encodeURIComponent(op.name_cn)}` : `../downloads/${encodeURIComponent(op.name_cn)}/meta.json`;
+                const localMetaRes = await fetch(metaUrl);
+                if (localMetaRes.ok) {
+                    meta = await localMetaRes.json();
+                    metaLoaded = true;
+                    setOverlay('loading', '✓ Meta cục bộ · Đang tải model...');
+                }
+            } catch(e) { /* fall through to CDN */ }
+        }
+
+        // Fallback: fetch from CDN via proxy
+        if (!metaLoaded) {
+            setOverlay('loading', 'Đang tải meta.json từ CDN...');
+            const metaRes = await fetch(proxy(`${CDN}${op.id}/meta.json`));
+            if (!metaRes.ok) throw new Error(`meta.json HTTP ${metaRes.status}`);
+            meta = await metaRes.json();
+        }
+
+        buildSkinSel(meta);
+        await renderOperator(op, meta, skinName, modelType, animName);
+    } catch(e) {
+        setOverlay('error', `Lỗi: ${e.message}`);
+    }
+}
+
+async function renderOperator(op, opMeta, skinName, modelType, animName) {
+    const skins     = opMeta?.skin || {};
+    // Find skin data — fallback chain: exact skin → first skin
+    const skinData  = skins[skinName] || skins[Object.keys(skins)[0]] || {};
+    // Find model data — fallback chain: exact model → first model in skin
+    const modelDat  = skinData[modelType] || skinData[Object.keys(skinData)[0]];
+
+    const prefix  = opMeta?.prefix || `${CDN}${op.id}/`;
+    const fileRel = modelDat?.file;
+
+    const canvas  = document.getElementById('spine-canvas');
+
+    // Init (or reuse) WebGL context
+    if (!gl) {
+        gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false });
+        if (!gl) throw new Error('WebGL không được hỗ trợ trong trình duyệt này!');
+        renderer = new spine.webgl.SceneRenderer(canvas, gl);
+    }
+
+    // ── Try LOCAL files first ──
+    // Check if operator has local files downloaded
+    const localUrls = findLocalFiles(op.name_cn, skinName, modelType);
+
+    if (localUrls) {
+        setOverlay('loading', `📂 Đang đọc file cục bộ: ${localUrls.baseName}...`);
+    } else if (fileRel) {
+        setOverlay('loading', 'Đang tải .skel + .atlas + .png qua CDN proxy...');
+    } else {
+        throw new Error(`Không tìm thấy model '${modelType}' cho skin '${skinName}'`);
+    }
+
+    let result;
+    if (localUrls) {
+        // Load from local server directly
+        result = await loadSpineAssets(gl, prefix, fileRel, 0.5, localUrls);
+    } else {
+        // Load from CDN via proxy
+        result = await loadSpineAssets(gl, prefix, fileRel, 0.5, null);
+    }
+
+    skeleton  = result.skel;
+    animState = result.state;
+    bounds    = result.bounds;
+
+    // Set animation
+    const available = result.skelData.animations.map(a => a.name);
+    const anim      = available.includes(animName) ? animName : (available[0] || '');
+    if (anim) {
+        animState.setAnimation(0, anim, true);
+        curAnim = anim;
+    }
+    animState.timeScale = speed;
+    if (paused) animState.update(0);  // don't advance on first frame if paused
+
+    buildAnimGrid(available);
+    setOverlay(null);
+    startRenderLoop(canvas);
+    const src = localUrls ? '💾 Local' : '🌐 CDN';
+    showToast(`✓ ${op.name_cn} · ${modelType} · ${anim} [${src}]`);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   OPERATOR LIST
+═══════════════════════════════════════════════════════════ */
+function visOps() {
+    const q = (document.getElementById('op-search').value || '').toLowerCase();
+    return OPS.filter(op => {
+        const m = !q || op.name_cn.toLowerCase().includes(q) || op.name_en.toLowerCase().includes(q) || op.id.toLowerCase().includes(q);
+        if (!m) return false;
+        if (filterVal === 'ALL') return true;
+        if (filterVal === 'DL')  return dlList.includes(op.name_cn);
+        return op.rarity === filterVal;
+    });
+}
+
+function renderList(list) {
+    const el = document.getElementById('op-list');
+    el.innerHTML = '';
+    document.getElementById('op-count').textContent = list.length;
+    list.forEach(op => {
+        const dl = dlList.includes(op.name_cn);
+        const d  = document.createElement('div');
+        d.className = `op-item${op.id === curOp?.id ? ' active' : ''}`;
+        d.onclick   = () => selectOp(op);
+        d.innerHTML = `
+          <div class="op-av s${Math.min(op.rarity,6)}">${op.name_cn.charAt(0)}</div>
+          <div class="op-info">
+            <div class="op-cn">${op.name_cn}${dl?'<span class="dl-badge">✓</span>':''}</div>
+            <div class="op-en">${op.name_en} · ${op.id}</div>
+          </div>`;
+        el.appendChild(d);
+    });
+}
+
+function filterOps() { renderList(visOps()); }
+function setFilter(val, btn) {
+    filterVal = val;
+    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderList(visOps());
+}
+
+function selectOp(op) {
+    curOp    = op;
+    curSkin  = '默认';
+    curModel = '基建';
+    curAnim  = 'Default';
+    document.getElementById('model-sel').value = '基建';
+    document.getElementById('badge-name').textContent   = `${op.name_cn} (${op.name_en})`;
+    document.getElementById('badge-rarity').textContent = `${op.rarity} ★`;
+    document.getElementById('badge-model').textContent  = '基建 (Chibi SD)';
+    document.getElementById('cli-box').textContent      = `python ak_crawler.py --name "${op.name_cn}"`;
+    renderList(visOps());
+    showToast(`Đã chọn: ${op.name_cn}`);
+    loadOperator(op, curSkin, curModel, curAnim);
+}
+
+function buildSkinSel(m) {
+    const sel = document.getElementById('skin-sel');
+    sel.innerHTML = '';
+    Object.keys(m?.skin || {'默认':{}}).forEach(s => {
+        const o = document.createElement('option');
+        o.value = o.textContent = s;
+        sel.appendChild(o);
+    });
+}
+
+function buildAnimGrid(available) {
+    const grid = document.getElementById('anim-grid');
+    grid.innerHTML = '';
+    const all = [...new Set([...ANIM_LIST, ...available])];
+    all.forEach(anim => {
+        const ok  = available.includes(anim);
+        const btn = document.createElement('button');
+        btn.className = `anim-btn${anim === curAnim ? ' active' : ''}`;
+        btn.disabled  = !ok;
+        btn.style.opacity = ok ? '1' : '0.3';
+        btn.innerHTML = `${anim} <i data-lucide="play" size="11"></i>`;
+        btn.onclick   = () => ok && playAnim(anim, btn);
+        grid.appendChild(btn);
+    });
+    lucide.createIcons();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CONTROLS
+═══════════════════════════════════════════════════════════ */
+function playAnim(animName, btn) {
+    curAnim = animName;
+    document.querySelectorAll('.anim-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    if (animState) {
+        try {
+            animState.setAnimation(0, animName, animName !== 'Interact');
+            if (animName === 'Interact') animState.addAnimation(0, 'Default', true, 0);
+        } catch(e) { showToast(`'${animName}' không có trong model này`); }
+    }
+}
+
+function setSpeed(val) {
+    speed = parseFloat(val);
+    document.getElementById('speed-lbl').textContent = `x${speed.toFixed(1)}`;
+    if (animState)     animState.timeScale     = speed;
+    if (dormState)     dormState.timeScale     = speed;
+}
+
+function togglePause() {
+    paused = !paused;
+    document.getElementById('lbl-pp').textContent = paused ? 'Tiếp tục' : 'Tạm dừng';
+    document.getElementById('icon-pp').setAttribute('data-lucide', paused ? 'play' : 'pause');
+    lucide.createIcons();
+}
+
+function onSkinChange(val) {
+    curSkin = val;
+    if (meta && curOp) renderOperator(curOp, meta, val, curModel, curAnim);
+}
+
+function onModelChange(val) {
+    curModel = val;
+    document.getElementById('badge-model').textContent = `${val} Model`;
+    if (meta && curOp) renderOperator(curOp, meta, curSkin, val, curAnim);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   OVERLAY
+═══════════════════════════════════════════════════════════ */
+function setOverlay(type, msg) {
+    const el  = document.getElementById('vp-overlay');
+    if (!type) { el.classList.add('hidden'); return; }
+    el.classList.remove('hidden');
+    el.innerHTML = type === 'error'
+        ? `<div style="font-size:13px;color:#ff7675;font-weight:600;max-width:290px">⚠ ${msg}</div>`
+        : `<div class="spinner"></div><div style="font-size:13px;font-weight:600">${msg}</div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DOWNLOAD
+═══════════════════════════════════════════════════════════ */
+async function downloadOp() {
+    if (!curOp) return;
+    showToast(`Đang tải về: ${curOp.name_cn}...`);
+    if (isHttp) {
+        try {
+            const r = await fetch(`/api/download?name=${encodeURIComponent(curOp.name_cn)}`);
+            const d = await r.json();
+            if (d.success) { showToast(`✓ Lưu vào downloads/${curOp.name_cn}/`); checkDl(); return; }
+        } catch(e) {}
+    }
+    copyCmd();
+}
+
+function copyCmd() {
+    if (!curOp) return;
+    const c = `python ak_crawler.py --name "${curOp.name_cn}"`;
+    navigator.clipboard.writeText(c).catch(()=>{});
+    showToast(`✓ Copied: ${c}`);
+}
+
+async function checkDl() {
+    try {
+        const r = await fetch('/api/downloaded');
+        if (r.ok) {
+            dlList = await r.json();
+            document.getElementById('dl-txt').textContent = `${dlList.length} Đã Tải`;
+            renderList(visOps());
+        }
+    } catch(e) {}
+}
+
+/**
+ * Load the list of all locally available operator files from the server.
+ * Populates localFiles map used by findLocalFiles().
+ */
+async function loadLocalFilesList() {
+    try {
+        let r = await fetch('/api/local-list').catch(() => null);
+        if (!r || !r.ok) {
+            r = await fetch('local_list.json');
+        }
+        if (r && r.ok) {
+            localFiles = await r.json();
+            dlList = Object.keys(localFiles).filter(k => localFiles[k].skel_files?.length > 0);
+            document.getElementById('dl-txt').textContent = `${dlList.length} Đã Tải`;
+            renderList(visOps());
+        }
+    } catch(e) { console.warn('local-list not available:', e); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DORM GAME (Mini Spine renderer in the game tab)
+═══════════════════════════════════════════════════════════ */
+function dormAnim(anim) {
+    const ch = document.getElementById('dorm-char');
+    const st = document.getElementById('dorm-status');
+    const labels = {Interact:'Chạm vào ♡', Sleep:'Ngủ zzz...', Sit:'Ngồi nghỉ'};
+    st.textContent = `${anim} (${labels[anim]||anim})`;
+    if (anim==='Sleep') { ch.style.left='120px'; ch.style.bottom='72px'; }
+    if (anim==='Sit')   { ch.style.left='calc(100% - 210px)'; ch.style.bottom='60px'; }
+    if (dormState) {
+        try {
+            dormState.setAnimation(0, anim, anim!=='Interact');
+            if (anim==='Interact') {
+                ch.style.transform='scale(1.2) translateY(-10px)';
+                setTimeout(()=>{
+                    ch.style.transform='';
+                    st.textContent='Default (Idle)';
+                    dormState?.setAnimation(0,'Default',true);
+                },900);
+            }
+        } catch(e){}
+    }
+}
+
+function startDormRenderLoop(canvas) {
+    if (dormRafId) { cancelAnimationFrame(dormRafId); dormRafId = null; }
+    dormLastTs = performance.now()/1000;
+    function dormLoop() {
+        if (!dormSkel || !dormState || !dormRenderer || !dormGl) return;
+        const now   = performance.now()/1000;
+        const delta = Math.min(now - dormLastTs, 0.064);
+        dormLastTs = now;
+        dormState.update(delta);
+        dormState.apply(dormSkel);
+        dormSkel.updateWorldTransform();
+
+        const vpW = canvas.width;
+        const vpH = canvas.height;
+        dormRenderer.camera.viewportWidth  = vpW;
+        dormRenderer.camera.viewportHeight = vpH;
+        const fitPad = Math.max(1 - 2 * ANIM_PAD, 0.1);
+        const zoomX  = (dormBounds.w || 100) / (vpW * fitPad);
+        const zoomY  = (dormBounds.h || 100) / (vpH * fitPad);
+        dormRenderer.camera.position.x = dormBounds.cx;
+        dormRenderer.camera.position.y = dormBounds.cy;
+        dormRenderer.camera.zoom       = Math.max(zoomX, zoomY);
+        dormGl.clearColor(0,0,0,0);
+        dormGl.clear(dormGl.COLOR_BUFFER_BIT);
+        dormGl.viewport(0,0,vpW,vpH);
+        dormRenderer.begin();
+        dormRenderer.drawSkeleton(dormSkel, true);
+        dormRenderer.end();
+        dormRafId = requestAnimationFrame(dormLoop);
+    }
+    dormRafId = requestAnimationFrame(dormLoop);
+}
+
+async function initDormSpine() {
+    if (!meta || !curOp) return;
+    if (dormRafId) { cancelAnimationFrame(dormRafId); dormRafId=null; }
+    const skins    = meta?.skin || {};
+    const skinData = skins['默认'] || skins[Object.keys(skins)[0]] || {};
+    const modelDat = skinData['基建'];
+    if (!modelDat) return;
+    const prefix  = meta?.prefix || `${CDN}${curOp.id}/`;
+    const fileRel = modelDat.file;
+    const canvas  = document.getElementById('dorm-canvas');
+    if (!dormGl) {
+        dormGl = canvas.getContext('webgl', {alpha:true, premultipliedAlpha:false});
+        if (!dormGl) return;
+        dormRenderer = new spine.webgl.SceneRenderer(canvas, dormGl);
+    }
+    try {
+        const localUrls = findLocalFiles(curOp.name_cn, '默认', '基建');
+        const r = await loadSpineAssets(dormGl, prefix, fileRel, 0.35, localUrls);
+        dormSkel   = r.skel;
+        dormState  = r.state;
+        dormBounds = r.bounds;
+        dormState.setAnimation(0,'Default',true);
+        startDormRenderLoop(canvas);
+    } catch(e) { console.log('Dorm error:', e); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════════════════════════════ */
+function switchTab(tab) {
+    document.getElementById('tab-viewer').style.display = tab==='viewer' ? 'grid' : 'none';
+    document.getElementById('tab-game').classList.toggle('vis', tab==='game');
+    document.getElementById('tab-eng').classList.toggle('vis', tab==='eng');
+    ['viewer','game','eng'].forEach(t => document.getElementById(`tb-${t}`).classList.toggle('active', t===tab));
+    if (tab==='game') setTimeout(initDormSpine, 80);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════ */
+let _tt;
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-text').textContent = msg;
+    t.classList.add('show');
+    clearTimeout(_tt);
+    _tt = setTimeout(()=>t.classList.remove('show'), 3200);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   WAIT FOR SPINE — poll until spine global is ready, then init
+═══════════════════════════════════════════════════════════ */
+function waitForSpine(callback, attempts = 0) {
+    if (typeof spine !== 'undefined' && spine.webgl && spine.webgl.SceneRenderer) {
+        // Hide loading cover
+        const cover = document.getElementById('spine-loading-cover');
+        if (cover) { cover.classList.add('hidden'); setTimeout(() => cover.remove(), 500); }
+        callback();
+    } else if (attempts < 100) {
+        // Retry every 100ms (max 10 seconds)
+        setTimeout(() => waitForSpine(callback, attempts + 1), 100);
+    } else {
+        const cover = document.getElementById('spine-loading-cover');
+        if (cover) cover.querySelector('p').textContent = '❌ Không thể tải Spine WebGL. Kiểm tra kết nối mạng và reload trang.';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    document.getElementById('tab-game').classList.remove('vis');
+    document.getElementById('tab-eng').classList.remove('vis');
+    buildAnimGrid([]);
+    renderList(visOps());
+
+    // Resize canvas when window resizes
+    window.addEventListener('resize', () => {
+        const c = document.getElementById('spine-canvas');
+        if (c && gl) { c.width=c.clientWidth; c.height=c.clientHeight; }
+    });
+
+    // Wait for Spine runtime to be available before loading any model
+    waitForSpine(async () => {
+        // Load local file inventory first
+        await loadLocalFilesList();
+
+        // Select first operator and load
+        const first = OPS.find(o => o.id==='char_002_amiya') || OPS[0];
+        if (first) selectOp(first);
+    });
+});
+</script>
+</body>
+</html>

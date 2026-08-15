@@ -1,0 +1,29 @@
+{
+  "史尔特尔": {
+    "skel_files": [
+      "史尔特尔_默认_基建.skel"
+    ],
+    "has_meta": true
+  },
+  "德克萨斯": {
+    "skel_files": [
+      "德克萨斯_基建.skel",
+      "德克萨斯_默认_基建.skel"
+    ],
+    "has_meta": true
+  },
+  "玛恩纳": {
+    "skel_files": [
+      "玛恩纳_基建.skel",
+      "玛恩纳_默认_基建.skel"
+    ],
+    "has_meta": true
+  },
+  "阿米娅": {
+    "skel_files": [
+      "阿米娅_基建.skel",
+      "阿米娅_默认_基建.skel"
+    ],
+    "has_meta": true
+  }
+}

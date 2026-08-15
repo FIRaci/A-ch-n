@@ -1,0 +1,3634 @@
+{
+  "char_285_medic2": {
+    "id": "char_285_medic2",
+    "name_cn": "Lancet-2",
+    "name_en": "Lancet-2",
+    "rarity": "TIER_1",
+    "profession": "MEDIC",
+    "skins_count": 2
+  },
+  "char_286_cast3": {
+    "id": "char_286_cast3",
+    "name_cn": "Castle-3",
+    "name_en": "Castle-3",
+    "rarity": "TIER_1",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_376_therex": {
+    "id": "char_376_therex",
+    "name_cn": "THRM-EX",
+    "name_en": "Thermal-EX",
+    "rarity": "TIER_1",
+    "profession": "SPECIAL",
+    "skins_count": 2
+  },
+  "char_4000_jnight": {
+    "id": "char_4000_jnight",
+    "name_cn": "正义骑士号",
+    "name_en": "\"Justice Knight\"",
+    "rarity": "TIER_1",
+    "profession": "SNIPER",
+    "skins_count": 2
+  },
+  "char_4077_palico": {
+    "id": "char_4077_palico",
+    "name_cn": "泰拉大陆调查团",
+    "name_en": "Terra Research Commission",
+    "rarity": "TIER_1",
+    "profession": "SNIPER",
+    "skins_count": 2
+  },
+  "char_4091_ulika": {
+    "id": "char_4091_ulika",
+    "name_cn": "U-Official",
+    "name_en": "U-Official",
+    "rarity": "TIER_1",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_4093_frston": {
+    "id": "char_4093_frston",
+    "name_cn": "Friston-3",
+    "name_en": "Friston-3",
+    "rarity": "TIER_1",
+    "profession": "TANK",
+    "skins_count": 1
+  },
+  "char_4136_phonor": {
+    "id": "char_4136_phonor",
+    "name_cn": "PhonoR-0",
+    "name_en": "PhonoR-0",
+    "rarity": "TIER_1",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_4188_confes": {
+    "id": "char_4188_confes",
+    "name_cn": "CONFESS-47",
+    "name_en": "CONFESS-47",
+    "rarity": "TIER_1",
+    "profession": "PIONEER",
+    "skins_count": 1
+  },
+  "char_4227_gallus": {
+    "id": "char_4227_gallus",
+    "name_cn": "GALLUS²",
+    "name_en": "GALLUS²",
+    "rarity": "TIER_1",
+    "profession": "CASTER",
+    "skins_count": 1
+  },
+  "char_4215_buddy": {
+    "id": "char_4215_buddy",
+    "name_cn": "罗德岛隐秘队",
+    "name_en": "Rhodes Island Recon",
+    "rarity": "TIER_1",
+    "profession": "PIONEER",
+    "skins_count": 2
+  },
+  "char_502_nblade": {
+    "id": "char_502_nblade",
+    "name_cn": "夜刀",
+    "name_en": "Yato",
+    "rarity": "TIER_2",
+    "profession": "PIONEER",
+    "skins_count": 1
+  },
+  "char_500_noirc": {
+    "id": "char_500_noirc",
+    "name_cn": "黑角",
+    "name_en": "Noir Corne",
+    "rarity": "TIER_2",
+    "profession": "TANK",
+    "skins_count": 1
+  },
+  "char_503_rang": {
+    "id": "char_503_rang",
+    "name_cn": "巡林者",
+    "name_en": "Rangers",
+    "rarity": "TIER_2",
+    "profession": "SNIPER",
+    "skins_count": 1
+  },
+  "char_501_durin": {
+    "id": "char_501_durin",
+    "name_cn": "杜林",
+    "name_en": "Durin",
+    "rarity": "TIER_2",
+    "profession": "CASTER",
+    "skins_count": 1
+  },
+  "char_009_12fce": {
+    "id": "char_009_12fce",
+    "name_cn": "12F",
+    "name_en": "12F",
+    "rarity": "TIER_2",
+    "profession": "CASTER",
+    "skins_count": 1
+  },
+  "char_123_fang": {
+    "id": "char_123_fang",
+    "name_cn": "芬",
+    "name_en": "Fang",
+    "rarity": "TIER_3",
+    "profession": "PIONEER",
+    "skins_count": 2
+  },
+  "char_240_wyvern": {
+    "id": "char_240_wyvern",
+    "name_cn": "香草",
+    "name_en": "Vanilla",
+    "rarity": "TIER_3",
+    "profession": "PIONEER",
+    "skins_count": 2
+  },
+  "char_504_rguard": {
+    "id": "char_504_rguard",
+    "name_cn": "预备干员-近战",
+    "name_en": "Reserve (Melee)",
+    "rarity": "TIER_3",
+    "profession": "PIONEER",
+    "skins_count": 1
+  },
+  "char_192_falco": {
+    "id": "char_192_falco",
+    "name_cn": "翎羽",
+    "name_en": "Plume",
+    "rarity": "TIER_3",
+    "profession": "PIONEER",
+    "skins_count": 2
+  },
+  "char_208_melan": {
+    "id": "char_208_melan",
+    "name_cn": "玫兰莎",
+    "name_en": "Melantha",
+    "rarity": "TIER_3",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_281_popka": {
+    "id": "char_281_popka",
+    "name_cn": "泡普卡",
+    "name_en": "Popukar",
+    "rarity": "TIER_3",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_209_ardign": {
+    "id": "char_209_ardign",
+    "name_cn": "卡缇",
+    "name_en": "Cardigan",
+    "rarity": "TIER_3",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_122_beagle": {
+    "id": "char_122_beagle",
+    "name_cn": "米格鲁",
+    "name_en": "Beagle",
+    "rarity": "TIER_3",
+    "profession": "TANK",
+    "skins_count": 2
+  },
+  "char_514_rdfend": {
+    "id": "char_514_rdfend",
+    "name_cn": "预备干员-重装",
+    "name_en": "Reserve (Defender)",
+    "rarity": "TIER_3",
+    "profession": "TANK",
+    "skins_count": 1
+  },
+  "char_284_spot": {
+    "id": "char_284_spot",
+    "name_cn": "斑点",
+    "name_en": "Spot",
+    "rarity": "TIER_3",
+    "profession": "TANK",
+    "skins_count": 2
+  },
+  "char_124_kroos": {
+    "id": "char_124_kroos",
+    "name_cn": "克洛丝",
+    "name_en": "Kroos",
+    "rarity": "TIER_3",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_211_adnach": {
+    "id": "char_211_adnach",
+    "name_cn": "安德切尔",
+    "name_en": "Adnachiel",
+    "rarity": "TIER_3",
+    "profession": "SNIPER",
+    "skins_count": 2
+  },
+  "char_507_rsnipe": {
+    "id": "char_507_rsnipe",
+    "name_cn": "预备干员-狙击",
+    "name_en": "Reserve (Sniper)",
+    "rarity": "TIER_3",
+    "profession": "SNIPER",
+    "skins_count": 1
+  },
+  "char_121_lava": {
+    "id": "char_121_lava",
+    "name_cn": "炎熔",
+    "name_en": "Lava",
+    "rarity": "TIER_3",
+    "profession": "CASTER",
+    "skins_count": 2
+  },
+  "char_120_hibisc": {
+    "id": "char_120_hibisc",
+    "name_cn": "芙蓉",
+    "name_en": "Hibiscus",
+    "rarity": "TIER_3",
+    "profession": "MEDIC",
+    "skins_count": 2
+  },
+  "char_212_ansel": {
+    "id": "char_212_ansel",
+    "name_cn": "安赛尔",
+    "name_en": "Ansel",
+    "rarity": "TIER_3",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_506_rmedic": {
+    "id": "char_506_rmedic",
+    "name_cn": "预备干员-后勤",
+    "name_en": "Reserve (Logistic)",
+    "rarity": "TIER_3",
+    "profession": "MEDIC",
+    "skins_count": 1
+  },
+  "char_210_stward": {
+    "id": "char_210_stward",
+    "name_cn": "史都华德",
+    "name_en": "Steward",
+    "rarity": "TIER_3",
+    "profession": "CASTER",
+    "skins_count": 2
+  },
+  "char_505_rcast": {
+    "id": "char_505_rcast",
+    "name_cn": "预备干员-术师",
+    "name_en": "Reserve (Caster)",
+    "rarity": "TIER_3",
+    "profession": "CASTER",
+    "skins_count": 1
+  },
+  "char_278_orchid": {
+    "id": "char_278_orchid",
+    "name_cn": "梓兰",
+    "name_en": "Orchid",
+    "rarity": "TIER_3",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_141_nights": {
+    "id": "char_141_nights",
+    "name_cn": "夜烟",
+    "name_en": "Haze",
+    "rarity": "TIER_4",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_604_ccast": {
+    "id": "char_604_ccast",
+    "name_cn": "预备干员-术师",
+    "name_en": "Reserve Operator - Caster",
+    "rarity": "TIER_4",
+    "profession": "CASTER",
+    "skins_count": 1
+  },
+  "char_109_fmout": {
+    "id": "char_109_fmout",
+    "name_cn": "远山",
+    "name_en": "Gitano",
+    "rarity": "TIER_4",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_253_greyy": {
+    "id": "char_253_greyy",
+    "name_cn": "格雷伊",
+    "name_en": "Greyy",
+    "rarity": "TIER_4",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_4051_akkord": {
+    "id": "char_4051_akkord",
+    "name_cn": "协律",
+    "name_en": "Akkord",
+    "rarity": "TIER_4",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_328_cammou": {
+    "id": "char_328_cammou",
+    "name_cn": "卡达",
+    "name_en": "Click",
+    "rarity": "TIER_4",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_469_indigo": {
+    "id": "char_469_indigo",
+    "name_cn": "深靛",
+    "name_en": "Indigo",
+    "rarity": "TIER_4",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_4004_pudd": {
+    "id": "char_4004_pudd",
+    "name_cn": "布丁",
+    "name_en": "Pudding",
+    "rarity": "TIER_4",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_235_jesica": {
+    "id": "char_235_jesica",
+    "name_cn": "杰西卡",
+    "name_en": "Jessica",
+    "rarity": "TIER_4",
+    "profession": "SNIPER",
+    "skins_count": 5
+  },
+  "char_126_shotst": {
+    "id": "char_126_shotst",
+    "name_cn": "流星",
+    "name_en": "Meteor",
+    "rarity": "TIER_4",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_190_clour": {
+    "id": "char_190_clour",
+    "name_cn": "红云",
+    "name_en": "Vermeil",
+    "rarity": "TIER_4",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_133_mm": {
+    "id": "char_133_mm",
+    "name_cn": "梅",
+    "name_en": "May",
+    "rarity": "TIER_4",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_603_csnipe": {
+    "id": "char_603_csnipe",
+    "name_cn": "预备干员-狙击",
+    "name_en": "Reserve Operator - Sniper",
+    "rarity": "TIER_4",
+    "profession": "SNIPER",
+    "skins_count": 1
+  },
+  "char_118_yuki": {
+    "id": "char_118_yuki",
+    "name_cn": "白雪",
+    "name_en": "ShiraYuki",
+    "rarity": "TIER_4",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_440_pinecn": {
+    "id": "char_440_pinecn",
+    "name_cn": "松果",
+    "name_en": "Pinecone",
+    "rarity": "TIER_4",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_302_glaze": {
+    "id": "char_302_glaze",
+    "name_cn": "安比尔",
+    "name_en": "Ambriel",
+    "rarity": "TIER_4",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_366_acdrop": {
+    "id": "char_366_acdrop",
+    "name_cn": "酸糖",
+    "name_en": "Aciddrop",
+    "rarity": "TIER_4",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_4062_totter": {
+    "id": "char_4062_totter",
+    "name_cn": "铅踝",
+    "name_en": "Totter",
+    "rarity": "TIER_4",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_4100_caper": {
+    "id": "char_4100_caper",
+    "name_cn": "跃跃",
+    "name_en": "Caper",
+    "rarity": "TIER_4",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_198_blackd": {
+    "id": "char_198_blackd",
+    "name_cn": "讯使",
+    "name_en": "Courier",
+    "rarity": "TIER_4",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_149_scave": {
+    "id": "char_149_scave",
+    "name_cn": "清道夫",
+    "name_en": "Scavenger",
+    "rarity": "TIER_4",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_600_cpione": {
+    "id": "char_600_cpione",
+    "name_cn": "预备干员-先锋",
+    "name_en": "Reserve Operator - Vanguard",
+    "rarity": "TIER_4",
+    "profession": "PIONEER",
+    "skins_count": 1
+  },
+  "char_290_vigna": {
+    "id": "char_290_vigna",
+    "name_cn": "红豆",
+    "name_en": "Vigna",
+    "rarity": "TIER_4",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_151_myrtle": {
+    "id": "char_151_myrtle",
+    "name_cn": "桃金娘",
+    "name_en": "Myrtle",
+    "rarity": "TIER_4",
+    "profession": "PIONEER",
+    "skins_count": 5
+  },
+  "char_452_bstalk": {
+    "id": "char_452_bstalk",
+    "name_cn": "豆苗",
+    "name_en": "Beanstalk",
+    "rarity": "TIER_4",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_4208_wintim": {
+    "id": "char_4208_wintim",
+    "name_cn": "冬时",
+    "name_en": "Снегурочка",
+    "rarity": "TIER_4",
+    "profession": "PIONEER",
+    "skins_count": 2
+  },
+  "char_130_doberm": {
+    "id": "char_130_doberm",
+    "name_cn": "杜宾",
+    "name_en": "Dobermann",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_289_gyuki": {
+    "id": "char_289_gyuki",
+    "name_cn": "缠丸",
+    "name_en": "Matoimaru",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_159_peacok": {
+    "id": "char_159_peacok",
+    "name_cn": "断罪者",
+    "name_en": "Conviction",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_601_cguard": {
+    "id": "char_601_cguard",
+    "name_cn": "预备干员-近卫",
+    "name_en": "Reserve Operator - Guard",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 1
+  },
+  "char_193_frostl": {
+    "id": "char_193_frostl",
+    "name_cn": "霜叶",
+    "name_en": "Frostleaf",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_127_estell": {
+    "id": "char_127_estell",
+    "name_cn": "艾丝黛尔",
+    "name_en": "Estelle",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_185_frncat": {
+    "id": "char_185_frncat",
+    "name_cn": "慕斯",
+    "name_en": "Mousse",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_301_cutter": {
+    "id": "char_301_cutter",
+    "name_cn": "刻刀",
+    "name_en": "Cutter",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_337_utage": {
+    "id": "char_337_utage",
+    "name_cn": "宴",
+    "name_en": "Utage",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_271_spikes": {
+    "id": "char_271_spikes",
+    "name_cn": "芳汀",
+    "name_en": "Arene",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_4067_lolxh": {
+    "id": "char_4067_lolxh",
+    "name_cn": "罗小黑",
+    "name_en": "Luo Xiaohei",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_4063_quartz": {
+    "id": "char_4063_quartz",
+    "name_cn": "石英",
+    "name_en": "Quartz",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_491_humus": {
+    "id": "char_491_humus",
+    "name_cn": "休谟斯",
+    "name_en": "Humus",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_445_wscoot": {
+    "id": "char_445_wscoot",
+    "name_cn": "骋风",
+    "name_en": "Windscoot",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_237_gravel": {
+    "id": "char_237_gravel",
+    "name_cn": "砾",
+    "name_en": "Gravel",
+    "rarity": "TIER_4",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_607_cspec": {
+    "id": "char_607_cspec",
+    "name_cn": "预备干员-特种",
+    "name_en": "Reserve Operator - Specialist",
+    "rarity": "TIER_4",
+    "profession": "SPECIAL",
+    "skins_count": 1
+  },
+  "char_272_strong": {
+    "id": "char_272_strong",
+    "name_cn": "孑",
+    "name_en": "Jaye",
+    "rarity": "TIER_4",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_236_rope": {
+    "id": "char_236_rope",
+    "name_cn": "暗索",
+    "name_en": "Rope",
+    "rarity": "TIER_4",
+    "profession": "SPECIAL",
+    "skins_count": 4
+  },
+  "char_117_myrrh": {
+    "id": "char_117_myrrh",
+    "name_cn": "末药",
+    "name_en": "Myrrh",
+    "rarity": "TIER_4",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_187_ccheal": {
+    "id": "char_187_ccheal",
+    "name_cn": "嘉维尔",
+    "name_en": "Gavial",
+    "rarity": "TIER_4",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_298_susuro": {
+    "id": "char_298_susuro",
+    "name_cn": "苏苏洛",
+    "name_en": "Sussurro",
+    "rarity": "TIER_4",
+    "profession": "MEDIC",
+    "skins_count": 4
+  },
+  "char_605_cmedic": {
+    "id": "char_605_cmedic",
+    "name_cn": "预备干员-医疗",
+    "name_en": "Reserve Operator - Medic",
+    "rarity": "TIER_4",
+    "profession": "MEDIC",
+    "skins_count": 1
+  },
+  "char_181_flower": {
+    "id": "char_181_flower",
+    "name_cn": "调香师",
+    "name_en": "Perfumer",
+    "rarity": "TIER_4",
+    "profession": "MEDIC",
+    "skins_count": 4
+  },
+  "char_385_finlpp": {
+    "id": "char_385_finlpp",
+    "name_cn": "清流",
+    "name_en": "Purestream",
+    "rarity": "TIER_4",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_4041_chnut": {
+    "id": "char_4041_chnut",
+    "name_cn": "褐果",
+    "name_en": "Chestnut",
+    "rarity": "TIER_4",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_199_yak": {
+    "id": "char_199_yak",
+    "name_cn": "角峰",
+    "name_en": "Matterhorn",
+    "rarity": "TIER_4",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_150_snakek": {
+    "id": "char_150_snakek",
+    "name_cn": "蛇屠箱",
+    "name_en": "Cuora",
+    "rarity": "TIER_4",
+    "profession": "TANK",
+    "skins_count": 4
+  },
+  "char_381_bubble": {
+    "id": "char_381_bubble",
+    "name_cn": "泡泡",
+    "name_en": "Bubble",
+    "rarity": "TIER_4",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_602_cdfend": {
+    "id": "char_602_cdfend",
+    "name_cn": "预备干员-重装",
+    "name_en": "Reserve Operator - Defender",
+    "rarity": "TIER_4",
+    "profession": "TANK",
+    "skins_count": 1
+  },
+  "char_4130_luton": {
+    "id": "char_4130_luton",
+    "name_cn": "露托",
+    "name_en": "Lutonada",
+    "rarity": "TIER_4",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_196_sunbr": {
+    "id": "char_196_sunbr",
+    "name_cn": "古米",
+    "name_en": "Гум",
+    "rarity": "TIER_4",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_260_durnar": {
+    "id": "char_260_durnar",
+    "name_cn": "坚雷",
+    "name_en": "Dur-nar",
+    "rarity": "TIER_4",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_110_deepcl": {
+    "id": "char_110_deepcl",
+    "name_cn": "深海色",
+    "name_en": "Deepcolor",
+    "rarity": "TIER_4",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_183_skgoat": {
+    "id": "char_183_skgoat",
+    "name_cn": "地灵",
+    "name_en": "Earthspirit",
+    "rarity": "TIER_4",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_258_podego": {
+    "id": "char_258_podego",
+    "name_cn": "波登可",
+    "name_en": "Podenco",
+    "rarity": "TIER_4",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_606_csuppo": {
+    "id": "char_606_csuppo",
+    "name_cn": "预备干员-辅助",
+    "name_en": "Reserve Operator - Supporter",
+    "rarity": "TIER_4",
+    "profession": "SUPPORT",
+    "skins_count": 1
+  },
+  "char_484_robrta": {
+    "id": "char_484_robrta",
+    "name_cn": "罗比菈塔",
+    "name_en": "Roberta",
+    "rarity": "TIER_4",
+    "profession": "SUPPORT",
+    "skins_count": 4
+  },
+  "char_616_pithst": {
+    "id": "char_616_pithst",
+    "name_cn": "盟约·辅助干员",
+    "name_en": "Alliance/Supportive Opertator",
+    "rarity": "TIER_4",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_355_ethan": {
+    "id": "char_355_ethan",
+    "name_cn": "伊桑",
+    "name_en": "Ethan",
+    "rarity": "TIER_4",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_277_sqrrel": {
+    "id": "char_277_sqrrel",
+    "name_cn": "阿消",
+    "name_en": "Shaw",
+    "rarity": "TIER_4",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_4107_vrdant": {
+    "id": "char_4107_vrdant",
+    "name_cn": "维荻",
+    "name_en": "Verdant",
+    "rarity": "TIER_4",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_4165_ctrail": {
+    "id": "char_4165_ctrail",
+    "name_cn": "云迹",
+    "name_en": "Contrail",
+    "rarity": "TIER_4",
+    "profession": "SPECIAL",
+    "skins_count": 2
+  },
+  "char_128_plosis": {
+    "id": "char_128_plosis",
+    "name_cn": "白面鸮",
+    "name_en": "Ptilopsis",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 4
+  },
+  "char_275_breeze": {
+    "id": "char_275_breeze",
+    "name_cn": "微风",
+    "name_en": "Breeze",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_4163_rosesa": {
+    "id": "char_4163_rosesa",
+    "name_cn": "瑰盐",
+    "name_en": "Rose Salt",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_115_headbr": {
+    "id": "char_115_headbr",
+    "name_cn": "凛冬",
+    "name_en": "Зима",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_102_texas": {
+    "id": "char_102_texas",
+    "name_cn": "德克萨斯",
+    "name_en": "Texas",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_349_chiave": {
+    "id": "char_349_chiave",
+    "name_cn": "贾维",
+    "name_en": "Chiave",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_488_buildr": {
+    "id": "char_488_buildr",
+    "name_cn": "青枳",
+    "name_en": "Poncirus",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_513_apionr": {
+    "id": "char_513_apionr",
+    "name_cn": "郁金香",
+    "name_en": "Tulip",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 2
+  },
+  "char_4023_rfalcn": {
+    "id": "char_4023_rfalcn",
+    "name_cn": "红隼",
+    "name_en": "Kestrel",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_4199_makiri": {
+    "id": "char_4199_makiri",
+    "name_cn": "松桐",
+    "name_en": "Matsukiri",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 2
+  },
+  "char_261_sddrag": {
+    "id": "char_261_sddrag",
+    "name_cn": "苇草",
+    "name_en": "Reed",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_496_wildmn": {
+    "id": "char_496_wildmn",
+    "name_cn": "野鬃",
+    "name_en": "Wild Mane",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_1036_fang2": {
+    "id": "char_1036_fang2",
+    "name_cn": "历阵锐枪芬",
+    "name_en": "Fang the Fire-sharpened",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_401_elysm": {
+    "id": "char_401_elysm",
+    "name_cn": "极境",
+    "name_en": "Elysium",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_4119_wanqin": {
+    "id": "char_4119_wanqin",
+    "name_cn": "万顷",
+    "name_en": "Wanqing",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_4237_jcinta": {
+    "id": "char_4237_jcinta",
+    "name_cn": "嘉辛塔",
+    "name_en": "Jacinta",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 2
+  },
+  "char_476_blkngt": {
+    "id": "char_476_blkngt",
+    "name_cn": "夜半",
+    "name_en": "Blacknight",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_4147_mitm": {
+    "id": "char_4147_mitm",
+    "name_cn": "渡桥",
+    "name_en": "Mitm",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_497_ctable": {
+    "id": "char_497_ctable",
+    "name_cn": "晓歌",
+    "name_en": "Cantabile",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_4017_puzzle": {
+    "id": "char_4017_puzzle",
+    "name_cn": "谜图",
+    "name_en": "Puzzle",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_4144_chilc": {
+    "id": "char_4144_chilc",
+    "name_cn": "齐尔查克",
+    "name_en": "Chilchuck",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 2
+  },
+  "char_4052_surfer": {
+    "id": "char_4052_surfer",
+    "name_cn": "寻澜",
+    "name_en": "Surfer",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_308_swire": {
+    "id": "char_308_swire",
+    "name_cn": "诗怀雅",
+    "name_en": "Swire",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_265_sophia": {
+    "id": "char_265_sophia",
+    "name_cn": "鞭刃",
+    "name_en": "Whislash",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_4106_bryota": {
+    "id": "char_4106_bryota",
+    "name_cn": "苍苔",
+    "name_en": "Bryophyta",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_4125_rdoc": {
+    "id": "char_4125_rdoc",
+    "name_cn": "医生",
+    "name_en": "Doc",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_106_franka": {
+    "id": "char_106_franka",
+    "name_cn": "芙兰卡",
+    "name_en": "Franka",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_131_flameb": {
+    "id": "char_131_flameb",
+    "name_cn": "炎客",
+    "name_en": "Flamebringer",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_154_morgan": {
+    "id": "char_154_morgan",
+    "name_cn": "摩根",
+    "name_en": "Morgan",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_508_aguard": {
+    "id": "char_508_aguard",
+    "name_cn": "Sharp",
+    "name_en": "Sharp",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 1
+  },
+  "char_4142_laios": {
+    "id": "char_4142_laios",
+    "name_cn": "莱欧斯",
+    "name_en": "Laios",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_155_tiger": {
+    "id": "char_155_tiger",
+    "name_cn": "因陀罗",
+    "name_en": "Indra",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_415_flint": {
+    "id": "char_415_flint",
+    "name_cn": "燧石",
+    "name_en": "Flint",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_157_dagda": {
+    "id": "char_157_dagda",
+    "name_cn": "达格达",
+    "name_en": "Dagda",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_140_whitew": {
+    "id": "char_140_whitew",
+    "name_cn": "拉普兰德",
+    "name_en": "Lappland",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_294_ayer": {
+    "id": "char_294_ayer",
+    "name_cn": "断崖",
+    "name_en": "Ayerscarpe",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_194_leto": {
+    "id": "char_194_leto",
+    "name_cn": "烈夏",
+    "name_en": "Лето",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_4083_chimes": {
+    "id": "char_4083_chimes",
+    "name_cn": "铎铃",
+    "name_en": "Wind Chimes",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_252_bibeak": {
+    "id": "char_252_bibeak",
+    "name_cn": "柏喙",
+    "name_en": "Bibeak",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_459_tachak": {
+    "id": "char_459_tachak",
+    "name_cn": "战车",
+    "name_en": "Tachanka",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_143_ghost": {
+    "id": "char_143_ghost",
+    "name_cn": "幽灵鲨",
+    "name_en": "Specter",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_356_broca": {
+    "id": "char_356_broca",
+    "name_cn": "布洛卡",
+    "name_en": "Broca",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_4126_fuze": {
+    "id": "char_4126_fuze",
+    "name_cn": "导火索",
+    "name_en": "Fuze",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_4166_varkis": {
+    "id": "char_4166_varkis",
+    "name_cn": "摆渡人",
+    "name_en": "Varkáris",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_274_astesi": {
+    "id": "char_274_astesi",
+    "name_cn": "星极",
+    "name_en": "Astesia",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 5
+  },
+  "char_333_sidero": {
+    "id": "char_333_sidero",
+    "name_cn": "铸铁",
+    "name_en": "Sideroca",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_475_akafyu": {
+    "id": "char_475_akafyu",
+    "name_cn": "赤冬",
+    "name_en": "Akafuyu",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_1030_noirc2": {
+    "id": "char_1030_noirc2",
+    "name_cn": "火龙S黑角",
+    "name_en": "Rathalos S Noir Corne",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_421_crow": {
+    "id": "char_421_crow",
+    "name_cn": "羽毛笔",
+    "name_en": "La Pluma",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_4066_highmo": {
+    "id": "char_4066_highmo",
+    "name_cn": "海沫",
+    "name_en": "Highmore",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_486_takila": {
+    "id": "char_486_takila",
+    "name_cn": "龙舌兰",
+    "name_en": "Tequila",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_4131_odda": {
+    "id": "char_4131_odda",
+    "name_cn": "奥达",
+    "name_en": "Odda",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_4187_graceb": {
+    "id": "char_4187_graceb",
+    "name_cn": "聆音",
+    "name_en": "Gracebearer",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_4185_amoris": {
+    "id": "char_4185_amoris",
+    "name_cn": "祐天寺若麦",
+    "name_en": "Yūtenji Nyamu",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_394_hadiya": {
+    "id": "char_394_hadiya",
+    "name_cn": "哈蒂娅",
+    "name_en": "Hadiya",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_1049_catap2": {
+    "id": "char_1049_catap2",
+    "name_cn": "雷狼龙S空爆",
+    "name_en": "Zinogre S Catapult",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_129_bluep": {
+    "id": "char_129_bluep",
+    "name_cn": "蓝毒",
+    "name_en": "Blue Poison",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_204_platnm": {
+    "id": "char_204_platnm",
+    "name_cn": "白金",
+    "name_en": "Platinum",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_367_swllow": {
+    "id": "char_367_swllow",
+    "name_cn": "灰喉",
+    "name_en": "GreyThroat",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_511_asnipe": {
+    "id": "char_511_asnipe",
+    "name_cn": "Stormeye",
+    "name_en": "Stormeye",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 1
+  },
+  "char_365_aprl": {
+    "id": "char_365_aprl",
+    "name_cn": "四月",
+    "name_en": "April",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_1021_kroos2": {
+    "id": "char_1021_kroos2",
+    "name_cn": "寒芒克洛丝",
+    "name_en": "Kroos the Keen Glint",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_498_inside": {
+    "id": "char_498_inside",
+    "name_cn": "隐现",
+    "name_en": "Insider",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_219_meteo": {
+    "id": "char_219_meteo",
+    "name_cn": "陨星",
+    "name_en": "Meteorite",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_379_sesa": {
+    "id": "char_379_sesa",
+    "name_cn": "慑砂",
+    "name_en": "Sesa",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_4078_bdhkgt": {
+    "id": "char_4078_bdhkgt",
+    "name_cn": "截云",
+    "name_en": "Jieyun",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_279_excu": {
+    "id": "char_279_excu",
+    "name_cn": "送葬人",
+    "name_en": "Executor",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_346_aosta": {
+    "id": "char_346_aosta",
+    "name_cn": "奥斯塔",
+    "name_en": "Aosta",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_4203_kichi": {
+    "id": "char_4203_kichi",
+    "name_cn": "吉星",
+    "name_en": "Kichisei",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 2
+  },
+  "char_4213_skybx": {
+    "id": "char_4213_skybx",
+    "name_cn": "天空盒",
+    "name_en": "Skybox",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 2
+  },
+  "char_002_amiya": {
+    "id": "char_002_amiya",
+    "name_cn": "阿米娅",
+    "name_en": "Amiya",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 11
+  },
+  "char_405_absin": {
+    "id": "char_405_absin",
+    "name_cn": "苦艾",
+    "name_en": "Absinthe",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_411_tomimi": {
+    "id": "char_411_tomimi",
+    "name_cn": "特米米",
+    "name_en": "Tomimi",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_466_qanik": {
+    "id": "char_466_qanik",
+    "name_cn": "雪绒",
+    "name_en": "Qanipalaat",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_166_skfire": {
+    "id": "char_166_skfire",
+    "name_cn": "天火",
+    "name_en": "Skyfire",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_509_acast": {
+    "id": "char_509_acast",
+    "name_cn": "Pith",
+    "name_en": "Pith",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 1
+  },
+  "char_306_leizi": {
+    "id": "char_306_leizi",
+    "name_cn": "惊蛰",
+    "name_en": "Leizi",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_135_halo": {
+    "id": "char_135_halo",
+    "name_cn": "星源",
+    "name_en": "Astgenne",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_344_beewax": {
+    "id": "char_344_beewax",
+    "name_cn": "蜜蜡",
+    "name_en": "Beeswax",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_373_lionhd": {
+    "id": "char_373_lionhd",
+    "name_cn": "莱恩哈特",
+    "name_en": "Leonhardt",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_341_sntlla": {
+    "id": "char_341_sntlla",
+    "name_cn": "寒檀",
+    "name_en": "Santalla",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_4031_liesel": {
+    "id": "char_4031_liesel",
+    "name_cn": "复奏",
+    "name_en": "Ripresa",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 2
+  },
+  "char_388_mint": {
+    "id": "char_388_mint",
+    "name_cn": "薄绿",
+    "name_en": "Mint",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_338_iris": {
+    "id": "char_338_iris",
+    "name_cn": "爱丽丝",
+    "name_en": "Iris",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_297_hamoni": {
+    "id": "char_297_hamoni",
+    "name_cn": "和弦",
+    "name_en": "Harmonie",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_4110_delphn": {
+    "id": "char_4110_delphn",
+    "name_cn": "戴菲恩",
+    "name_en": "Delphine",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 2
+  },
+  "char_1011_lava2": {
+    "id": "char_1011_lava2",
+    "name_cn": "炎狱炎熔",
+    "name_en": "Lava the Purgatory",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_489_serum": {
+    "id": "char_489_serum",
+    "name_cn": "蚀清",
+    "name_en": "Corroserum",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_446_aroma": {
+    "id": "char_446_aroma",
+    "name_cn": "阿罗玛",
+    "name_en": "Aroma",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_4013_kjera": {
+    "id": "char_4013_kjera",
+    "name_cn": "耶拉",
+    "name_en": "Kjera",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_4040_rockr": {
+    "id": "char_4040_rockr",
+    "name_cn": "洛洛",
+    "name_en": "Rockrock",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_4054_malist": {
+    "id": "char_4054_malist",
+    "name_cn": "至简",
+    "name_en": "Minimalist",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_4236_tmslot": {
+    "id": "char_4236_tmslot",
+    "name_cn": "时隙",
+    "name_en": "Timeslot",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 2
+  },
+  "char_499_kaitou": {
+    "id": "char_499_kaitou",
+    "name_cn": "折光",
+    "name_en": "Diamante",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_4081_warmy": {
+    "id": "char_4081_warmy",
+    "name_cn": "温米",
+    "name_en": "Warmy",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_4198_christ": {
+    "id": "char_4198_christ",
+    "name_cn": "Miss.Christine",
+    "name_en": "Miss.Christine",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_4164_tecno": {
+    "id": "char_4164_tecno",
+    "name_cn": "特克诺",
+    "name_en": "Tecno",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 2
+  },
+  "char_242_otter": {
+    "id": "char_242_otter",
+    "name_cn": "梅尔",
+    "name_en": "Mayer",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_336_folivo": {
+    "id": "char_336_folivo",
+    "name_cn": "稀音",
+    "name_en": "Scene",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 4
+  },
+  "char_4140_lasher": {
+    "id": "char_4140_lasher",
+    "name_cn": "衡沙",
+    "name_en": "Sand Reckoner",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_108_silent": {
+    "id": "char_108_silent",
+    "name_cn": "赫默",
+    "name_en": "Silence",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 4
+  },
+  "char_171_bldsk": {
+    "id": "char_171_bldsk",
+    "name_cn": "华法琳",
+    "name_en": "Warfarin",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 4
+  },
+  "char_345_folnic": {
+    "id": "char_345_folnic",
+    "name_cn": "亚叶",
+    "name_en": "Folinic",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_510_amedic": {
+    "id": "char_510_amedic",
+    "name_cn": "Touch",
+    "name_en": "Touch",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 1
+  },
+  "char_4196_reckpr": {
+    "id": "char_4196_reckpr",
+    "name_cn": "录武官",
+    "name_en": "Record Keeper",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 2
+  },
+  "char_348_ceylon": {
+    "id": "char_348_ceylon",
+    "name_cn": "锡兰",
+    "name_en": "Ceylon",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_436_whispr": {
+    "id": "char_436_whispr",
+    "name_cn": "絮雨",
+    "name_en": "Whisperain",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 4
+  },
+  "char_4173_nowell": {
+    "id": "char_4173_nowell",
+    "name_cn": "诺威尔",
+    "name_en": "Nowell",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_402_tuye": {
+    "id": "char_402_tuye",
+    "name_cn": "图耶",
+    "name_en": "Tuye",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_473_mberry": {
+    "id": "char_473_mberry",
+    "name_cn": "桑葚",
+    "name_en": "Mulberry",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 4
+  },
+  "char_449_glider": {
+    "id": "char_449_glider",
+    "name_cn": "蜜莓",
+    "name_en": "Honeyberry",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 4
+  },
+  "char_4114_harold": {
+    "id": "char_4114_harold",
+    "name_cn": "哈洛德",
+    "name_en": "Harold",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_1024_hbisc2": {
+    "id": "char_1024_hbisc2",
+    "name_cn": "濯尘芙蓉",
+    "name_en": "Hibiscus the Purifier",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_494_vendla": {
+    "id": "char_494_vendla",
+    "name_cn": "刺玫",
+    "name_en": "Vendela",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_4071_peper": {
+    "id": "char_4071_peper",
+    "name_cn": "明椒",
+    "name_en": "Paprika",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_4139_papyrs": {
+    "id": "char_4139_papyrs",
+    "name_cn": "莎草",
+    "name_en": "Papyrus",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_4224_turdus": {
+    "id": "char_4224_turdus",
+    "name_cn": "乌啾",
+    "name_en": "Укусик",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 2
+  },
+  "char_4222_taraxa": {
+    "id": "char_4222_taraxa",
+    "name_cn": "风絮",
+    "name_en": "Taraxacum",
+    "rarity": "TIER_5",
+    "profession": "MEDIC",
+    "skins_count": 2
+  },
+  "char_148_nearl": {
+    "id": "char_148_nearl",
+    "name_cn": "临光",
+    "name_en": "Nearl",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_226_hmau": {
+    "id": "char_226_hmau",
+    "name_cn": "吽",
+    "name_en": "Hung",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_4109_baslin": {
+    "id": "char_4109_baslin",
+    "name_cn": "深律",
+    "name_en": "Bassline",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_4143_sensi": {
+    "id": "char_4143_sensi",
+    "name_cn": "森西",
+    "name_en": "Senshi",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 2
+  },
+  "char_144_red": {
+    "id": "char_144_red",
+    "name_cn": "红",
+    "name_en": "Projekt Red",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_243_waaifu": {
+    "id": "char_243_waaifu",
+    "name_cn": "槐琥",
+    "name_en": "Waai Fu",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_214_kafka": {
+    "id": "char_214_kafka",
+    "name_cn": "卡夫卡",
+    "name_en": "Kafka",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_455_nothin": {
+    "id": "char_455_nothin",
+    "name_cn": "乌有",
+    "name_en": "Mr.Nothing",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_4155_talr": {
+    "id": "char_4155_talr",
+    "name_cn": "裁度",
+    "name_en": "Figurino",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_107_liskam": {
+    "id": "char_107_liskam",
+    "name_cn": "雷蛇",
+    "name_en": "Liskarm",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 4
+  },
+  "char_4137_udflow": {
+    "id": "char_4137_udflow",
+    "name_cn": "深巡",
+    "name_en": "Underflow",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_201_moeshd": {
+    "id": "char_201_moeshd",
+    "name_cn": "可颂",
+    "name_en": "Croissant",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 4
+  },
+  "char_325_bison": {
+    "id": "char_325_bison",
+    "name_cn": "拜松",
+    "name_en": "Bison",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_163_hpsts": {
+    "id": "char_163_hpsts",
+    "name_cn": "火神",
+    "name_en": "Vulcan",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_4207_branch": {
+    "id": "char_4207_branch",
+    "name_cn": "折桠",
+    "name_en": "Веточки",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_378_asbest": {
+    "id": "char_378_asbest",
+    "name_cn": "石棉",
+    "name_en": "Asbestos",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_512_aprot": {
+    "id": "char_512_aprot",
+    "name_cn": "暮落",
+    "name_en": "Shalem",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 1
+  },
+  "char_4025_aprot2": {
+    "id": "char_4025_aprot2",
+    "name_cn": "暮落",
+    "name_en": "Shalem",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_4047_pianst": {
+    "id": "char_4047_pianst",
+    "name_cn": "车尔尼",
+    "name_en": "Czerny",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_457_blitz": {
+    "id": "char_457_blitz",
+    "name_cn": "闪击",
+    "name_en": "Blitz",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 2
+  },
+  "char_304_zebra": {
+    "id": "char_304_zebra",
+    "name_cn": "暴雨",
+    "name_en": "Heavyrain",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_431_ashlok": {
+    "id": "char_431_ashlok",
+    "name_cn": "灰毫",
+    "name_en": "Ashlock",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_493_firwhl": {
+    "id": "char_493_firwhl",
+    "name_cn": "火哨",
+    "name_en": "Firewhistle",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 2
+  },
+  "char_422_aurora": {
+    "id": "char_422_aurora",
+    "name_cn": "极光",
+    "name_en": "Aurora",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_464_cement": {
+    "id": "char_464_cement",
+    "name_cn": "洋灰",
+    "name_en": "Cement",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_4148_philae": {
+    "id": "char_4148_philae",
+    "name_cn": "菲莱",
+    "name_en": "Philae",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_4225_tanya": {
+    "id": "char_4225_tanya",
+    "name_cn": "裂响",
+    "name_en": "Crackborne",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 2
+  },
+  "char_145_prove": {
+    "id": "char_145_prove",
+    "name_cn": "普罗旺斯",
+    "name_en": "Provence",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_4006_melnte": {
+    "id": "char_4006_melnte",
+    "name_cn": "玫拉",
+    "name_en": "Melanite",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_158_milu": {
+    "id": "char_158_milu",
+    "name_cn": "守林人",
+    "name_en": "Firewatch",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_218_cuttle": {
+    "id": "char_218_cuttle",
+    "name_cn": "安哲拉",
+    "name_en": "Andreana",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_4014_lunacu": {
+    "id": "char_4014_lunacu",
+    "name_cn": "子月",
+    "name_en": "Lunacub",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_363_toddi": {
+    "id": "char_363_toddi",
+    "name_cn": "熔泉",
+    "name_en": "Toddifons",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 2
+  },
+  "char_4043_erato": {
+    "id": "char_4043_erato",
+    "name_cn": "埃拉托",
+    "name_en": "Erato",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_4221_ju": {
+    "id": "char_4221_ju",
+    "name_cn": "矩",
+    "name_en": "Ju",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 2
+  },
+  "char_1027_greyy2": {
+    "id": "char_1027_greyy2",
+    "name_cn": "承曦格雷伊",
+    "name_en": "Greyy the Lightningbearer",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_4104_coldst": {
+    "id": "char_4104_coldst",
+    "name_cn": "冰酿",
+    "name_en": "Coldshot",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_4211_snhunt": {
+    "id": "char_4211_snhunt",
+    "name_cn": "雪猎",
+    "name_en": "Snow Hunter",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 2
+  },
+  "char_4177_brigid": {
+    "id": "char_4177_brigid",
+    "name_cn": "水灯心",
+    "name_en": "Brigid",
+    "rarity": "TIER_5",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_4015_spuria": {
+    "id": "char_4015_spuria",
+    "name_cn": "空构",
+    "name_en": "Spuria",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 2
+  },
+  "char_173_slchan": {
+    "id": "char_173_slchan",
+    "name_cn": "崖心",
+    "name_en": "Cliffheart",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 4
+  },
+  "char_383_snsant": {
+    "id": "char_383_snsant",
+    "name_cn": "雪雉",
+    "name_en": "Snowsant",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_4105_almond": {
+    "id": "char_4105_almond",
+    "name_cn": "杏仁",
+    "name_en": "Almond",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_174_slbell": {
+    "id": "char_174_slbell",
+    "name_cn": "初雪",
+    "name_en": "Pramanix",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_254_vodfox": {
+    "id": "char_254_vodfox",
+    "name_cn": "巫恋",
+    "name_en": "Shamare",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 4
+  },
+  "char_4079_haini": {
+    "id": "char_4079_haini",
+    "name_cn": "海霓",
+    "name_en": "Lucilla",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_195_glassb": {
+    "id": "char_195_glassb",
+    "name_cn": "真理",
+    "name_en": "Истина",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_326_glacus": {
+    "id": "char_326_glacus",
+    "name_cn": "格劳克斯",
+    "name_en": "Glaucus",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_4032_provs": {
+    "id": "char_4032_provs",
+    "name_cn": "但书",
+    "name_en": "Proviso",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 4
+  },
+  "char_4122_grabds": {
+    "id": "char_4122_grabds",
+    "name_cn": "小满",
+    "name_en": "Grain Buds",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_433_windft": {
+    "id": "char_433_windft",
+    "name_cn": "掠风",
+    "name_en": "Windflit",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_4162_cathy": {
+    "id": "char_4162_cathy",
+    "name_cn": "凯瑟琳",
+    "name_en": "Catherine",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_4178_alanna": {
+    "id": "char_4178_alanna",
+    "name_cn": "阿兰娜",
+    "name_en": "Alanna",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_101_sora": {
+    "id": "char_101_sora",
+    "name_cn": "空",
+    "name_en": "Sora",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 4
+  },
+  "char_4045_heidi": {
+    "id": "char_4045_heidi",
+    "name_cn": "海蒂",
+    "name_en": "Heidi",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_4184_dolris": {
+    "id": "char_4184_dolris",
+    "name_cn": "三角初华",
+    "name_en": "Misumi Uika",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_343_tknogi": {
+    "id": "char_343_tknogi",
+    "name_cn": "月禾",
+    "name_en": "Tsukinogi",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 4
+  },
+  "char_4019_ncdeer": {
+    "id": "char_4019_ncdeer",
+    "name_cn": "九色鹿",
+    "name_en": "Nine-Colored Deer",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_492_quercu": {
+    "id": "char_492_quercu",
+    "name_cn": "夏栎",
+    "name_en": "Quercus",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 4
+  },
+  "char_4172_xingzh": {
+    "id": "char_4172_xingzh",
+    "name_cn": "行箸",
+    "name_en": "Xingzhu",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_1022_flwr2": {
+    "id": "char_1022_flwr2",
+    "name_cn": "撷英调香师",
+    "name_en": "Perfumer the Distilled",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_4102_threye": {
+    "id": "char_4102_threye",
+    "name_cn": "凛视",
+    "name_en": "Valarqvin",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_487_bobb": {
+    "id": "char_487_bobb",
+    "name_cn": "波卜",
+    "name_en": "Bobbing",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_4223_botany": {
+    "id": "char_4223_botany",
+    "name_cn": "伯塔尼",
+    "name_en": "Ботани",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_4234_pedro": {
+    "id": "char_4234_pedro",
+    "name_cn": "佩德洛",
+    "name_en": "Pedro",
+    "rarity": "TIER_5",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_215_mantic": {
+    "id": "char_215_mantic",
+    "name_cn": "狮蝎",
+    "name_en": "Manticore",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 4
+  },
+  "char_478_kirara": {
+    "id": "char_478_kirara",
+    "name_cn": "绮良",
+    "name_en": "Kirara",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 4
+  },
+  "char_4186_tmoris": {
+    "id": "char_4186_tmoris",
+    "name_cn": "八幡海铃",
+    "name_en": "Yahata Umiri",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_241_panda": {
+    "id": "char_241_panda",
+    "name_cn": "食铁兽",
+    "name_en": "FEater",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 4
+  },
+  "char_4036_forcer": {
+    "id": "char_4036_forcer",
+    "name_cn": "见行者",
+    "name_en": "Enforcer",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_451_robin": {
+    "id": "char_451_robin",
+    "name_cn": "罗宾",
+    "name_en": "Robin",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_458_rfrost": {
+    "id": "char_458_rfrost",
+    "name_cn": "霜华",
+    "name_en": "Frost",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 2
+  },
+  "char_4171_wulfen": {
+    "id": "char_4171_wulfen",
+    "name_cn": "钼铅",
+    "name_en": "Wulfenite",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_369_bena": {
+    "id": "char_369_bena",
+    "name_cn": "贝娜",
+    "name_en": "Bena",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_4016_kazema": {
+    "id": "char_4016_kazema",
+    "name_cn": "风丸",
+    "name_en": "Kazemaru",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_4124_iana": {
+    "id": "char_4124_iana",
+    "name_cn": "双月",
+    "name_en": "Iana",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_4183_mortis": {
+    "id": "char_4183_mortis",
+    "name_cn": "若叶睦",
+    "name_en": "Wakaba Mutsumi",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_4151_tinman": {
+    "id": "char_4151_tinman",
+    "name_cn": "锡人",
+    "name_en": "Tin Man",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_4191_tippi": {
+    "id": "char_4191_tippi",
+    "name_cn": "蒂比",
+    "name_en": "Tippi",
+    "rarity": "TIER_5",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_103_angel": {
+    "id": "char_103_angel",
+    "name_cn": "能天使",
+    "name_en": "Exusiai",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 5
+  },
+  "char_332_archet": {
+    "id": "char_332_archet",
+    "name_cn": "空弦",
+    "name_en": "Archetto",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_456_ash": {
+    "id": "char_456_ash",
+    "name_cn": "灰烬",
+    "name_en": "Ash",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_611_acnipe": {
+    "id": "char_611_acnipe",
+    "name_cn": "Stormeye",
+    "name_en": "Stormeye",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 1
+  },
+  "char_340_shwaz": {
+    "id": "char_340_shwaz",
+    "name_cn": "黑",
+    "name_en": "Schwarz",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_4055_bgsnow": {
+    "id": "char_4055_bgsnow",
+    "name_cn": "鸿雪",
+    "name_en": "Позёмка",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_1048_orchd2": {
+    "id": "char_1048_orchd2",
+    "name_cn": "焰狐龙梓兰",
+    "name_en": "Violet Mizutsune Orchid",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 2
+  },
+  "char_430_fartth": {
+    "id": "char_430_fartth",
+    "name_cn": "远牙",
+    "name_en": "Fartooth",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_4193_lemuen": {
+    "id": "char_4193_lemuen",
+    "name_cn": "蕾缪安",
+    "name_en": "Lemuen",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_113_cqbw": {
+    "id": "char_113_cqbw",
+    "name_cn": "W",
+    "name_en": "W",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 3
+  },
+  "char_300_phenxi": {
+    "id": "char_300_phenxi",
+    "name_cn": "菲亚梅塔",
+    "name_en": "Fiammetta",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_197_poca": {
+    "id": "char_197_poca",
+    "name_cn": "早露",
+    "name_en": "Роса",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_2012_typhon": {
+    "id": "char_2012_typhon",
+    "name_cn": "提丰",
+    "name_en": "Typhon",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_391_rosmon": {
+    "id": "char_391_rosmon",
+    "name_cn": "迷迭香",
+    "name_en": "Rosmontis",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_1035_wisdel": {
+    "id": "char_1035_wisdel",
+    "name_cn": "维什戴尔",
+    "name_en": "Wiš'adel",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_1013_chen2": {
+    "id": "char_1013_chen2",
+    "name_cn": "假日威龙陈",
+    "name_en": "Ch'en the Holungday",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_4117_ray": {
+    "id": "char_4117_ray",
+    "name_cn": "莱伊",
+    "name_en": "Ray",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_4138_narant": {
+    "id": "char_4138_narant",
+    "name_cn": "娜仁图亚",
+    "name_en": "Narantuya",
+    "rarity": "TIER_6",
+    "profession": "SNIPER",
+    "skins_count": 4
+  },
+  "char_112_siege": {
+    "id": "char_112_siege",
+    "name_cn": "推进之王",
+    "name_en": "Siege",
+    "rarity": "TIER_6",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_222_bpipe": {
+    "id": "char_222_bpipe",
+    "name_cn": "风笛",
+    "name_en": "Bagpipe",
+    "rarity": "TIER_6",
+    "profession": "PIONEER",
+    "skins_count": 5
+  },
+  "char_362_saga": {
+    "id": "char_362_saga",
+    "name_cn": "嵯峨",
+    "name_en": "Saga",
+    "rarity": "TIER_6",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_4026_vulpis": {
+    "id": "char_4026_vulpis",
+    "name_cn": "忍冬",
+    "name_en": "Vulpisfoglia",
+    "rarity": "TIER_6",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_479_sleach": {
+    "id": "char_479_sleach",
+    "name_cn": "琴柳",
+    "name_en": "Saileach",
+    "rarity": "TIER_6",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_420_flamtl": {
+    "id": "char_420_flamtl",
+    "name_cn": "焰尾",
+    "name_en": "Flametail",
+    "rarity": "TIER_6",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_608_acpion": {
+    "id": "char_608_acpion",
+    "name_cn": "郁金香",
+    "name_en": "Tulip",
+    "rarity": "TIER_6",
+    "profession": "PIONEER",
+    "skins_count": 1
+  },
+  "char_427_vigil": {
+    "id": "char_427_vigil",
+    "name_cn": "伺夜",
+    "name_en": "Vigil",
+    "rarity": "TIER_6",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_249_mlyss": {
+    "id": "char_249_mlyss",
+    "name_cn": "缪尔赛思",
+    "name_en": "Muelsyse",
+    "rarity": "TIER_6",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_4228_closur": {
+    "id": "char_4228_closur",
+    "name_cn": "可露希尔",
+    "name_en": "Closure",
+    "rarity": "TIER_6",
+    "profession": "PIONEER",
+    "skins_count": 2
+  },
+  "char_1045_svash2": {
+    "id": "char_1045_svash2",
+    "name_cn": "凛御银灰",
+    "name_en": "SilverAsh the Reignfrost",
+    "rarity": "TIER_6",
+    "profession": "PIONEER",
+    "skins_count": 2
+  },
+  "char_4087_ines": {
+    "id": "char_4087_ines",
+    "name_cn": "伊内丝",
+    "name_en": "Ines",
+    "rarity": "TIER_6",
+    "profession": "PIONEER",
+    "skins_count": 4
+  },
+  "char_134_ifrit": {
+    "id": "char_134_ifrit",
+    "name_cn": "伊芙利特",
+    "name_en": "Ifrit",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 5
+  },
+  "char_4229_aphris": {
+    "id": "char_4229_aphris",
+    "name_cn": "谬因",
+    "name_en": "Aphrissa",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 2
+  },
+  "char_213_mostma": {
+    "id": "char_213_mostma",
+    "name_cn": "莫斯提马",
+    "name_en": "Mostima",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_180_amgoat": {
+    "id": "char_180_amgoat",
+    "name_cn": "艾雅法拉",
+    "name_en": "Eyjafjalla",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_2013_cerber": {
+    "id": "char_2013_cerber",
+    "name_cn": "刻俄柏",
+    "name_en": "Ceobe",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_4027_heyak": {
+    "id": "char_4027_heyak",
+    "name_cn": "霍尔海雅",
+    "name_en": "Ho'olheyak",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_4133_logos": {
+    "id": "char_4133_logos",
+    "name_cn": "逻各斯",
+    "name_en": "Logos",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_2015_dusk": {
+    "id": "char_2015_dusk",
+    "name_cn": "夕",
+    "name_en": "Dusk",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_4141_marcil": {
+    "id": "char_4141_marcil",
+    "name_cn": "玛露西尔",
+    "name_en": "Marcille",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_612_accast": {
+    "id": "char_612_accast",
+    "name_cn": "Pith",
+    "name_en": "Pith",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 1
+  },
+  "char_472_pasngr": {
+    "id": "char_472_pasngr",
+    "name_cn": "异客",
+    "name_en": "Passenger",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_426_billro": {
+    "id": "char_426_billro",
+    "name_cn": "卡涅利安",
+    "name_en": "Carnelian",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_4080_lin": {
+    "id": "char_4080_lin",
+    "name_cn": "林",
+    "name_en": "Lin",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 5
+  },
+  "char_1046_sbell2": {
+    "id": "char_1046_sbell2",
+    "name_cn": "圣聆初雪",
+    "name_en": "Pramanix the Prerita",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_377_gdglow": {
+    "id": "char_377_gdglow",
+    "name_cn": "澄闪",
+    "name_en": "Goldenglow",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 5
+  },
+  "char_1038_whitw2": {
+    "id": "char_1038_whitw2",
+    "name_cn": "荒芜拉普兰德",
+    "name_en": "Lappland the Decadenza",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_4046_ebnhlz": {
+    "id": "char_4046_ebnhlz",
+    "name_cn": "黑键",
+    "name_en": "Ebenholz",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_4226_veen": {
+    "id": "char_4226_veen",
+    "name_cn": "维伊",
+    "name_en": "Вий",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 2
+  },
+  "char_4146_nymph": {
+    "id": "char_4146_nymph",
+    "name_cn": "妮芙",
+    "name_en": "Nymph",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_1040_blaze2": {
+    "id": "char_1040_blaze2",
+    "name_cn": "烛煌",
+    "name_en": "Blaze the Igniting Spark",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 3
+  },
+  "char_4204_mantra": {
+    "id": "char_4204_mantra",
+    "name_cn": "真言",
+    "name_en": "Mantra",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 2
+  },
+  "char_450_necras": {
+    "id": "char_450_necras",
+    "name_cn": "死芒",
+    "name_en": "Necrass",
+    "rarity": "TIER_6",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_206_gnosis": {
+    "id": "char_206_gnosis",
+    "name_cn": "灵知",
+    "name_en": "Gnosis",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_291_aglina": {
+    "id": "char_291_aglina",
+    "name_cn": "安洁莉娜",
+    "name_en": "Angelina",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 4
+  },
+  "char_358_lisa": {
+    "id": "char_358_lisa",
+    "name_cn": "铃兰",
+    "name_en": "Suzuran",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 5
+  },
+  "char_614_acsupo": {
+    "id": "char_614_acsupo",
+    "name_cn": "Raidian",
+    "name_en": "Raidian",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 1
+  },
+  "char_1047_halo2": {
+    "id": "char_1047_halo2",
+    "name_cn": "溯光星源",
+    "name_en": "Astgenne the Lightchaser",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_248_mgllan": {
+    "id": "char_248_mgllan",
+    "name_cn": "麦哲伦",
+    "name_en": "Magallan",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_4195_radian": {
+    "id": "char_4195_radian",
+    "name_cn": "电弧",
+    "name_en": "Raidian",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_1012_skadi2": {
+    "id": "char_1012_skadi2",
+    "name_cn": "浊心斯卡蒂",
+    "name_en": "Skadi the Corrupting Heart",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 4
+  },
+  "char_4134_cetsyr": {
+    "id": "char_4134_cetsyr",
+    "name_cn": "魔王",
+    "name_en": "Civilight Eterna",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_1031_slent2": {
+    "id": "char_1031_slent2",
+    "name_cn": "淬羽赫默",
+    "name_en": "Silence the Paradigmatic",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_4202_haruka": {
+    "id": "char_4202_haruka",
+    "name_cn": "遥",
+    "name_en": "Haruka",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_2023_ling": {
+    "id": "char_2023_ling",
+    "name_cn": "令",
+    "name_en": "Ling",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 5
+  },
+  "char_4072_ironmn": {
+    "id": "char_4072_ironmn",
+    "name_cn": "白铁",
+    "name_en": "Stainless",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 4
+  },
+  "char_4212_nasti": {
+    "id": "char_4212_nasti",
+    "name_cn": "娜斯提",
+    "name_en": "Nasti",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_245_cello": {
+    "id": "char_245_cello",
+    "name_cn": "塑心",
+    "name_en": "Virtuosa",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 3
+  },
+  "char_1042_phatm2": {
+    "id": "char_1042_phatm2",
+    "name_cn": "酒神",
+    "name_en": "Tragodia",
+    "rarity": "TIER_6",
+    "profession": "SUPPORT",
+    "skins_count": 2
+  },
+  "char_250_phatom": {
+    "id": "char_250_phatom",
+    "name_cn": "傀影",
+    "name_en": "Phantom",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 4
+  },
+  "char_1028_texas2": {
+    "id": "char_1028_texas2",
+    "name_cn": "缄默德克萨斯",
+    "name_en": "Texas the Omertosa",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 4
+  },
+  "char_1029_yato2": {
+    "id": "char_1029_yato2",
+    "name_cn": "麒麟R夜刀",
+    "name_en": "Kirin R Yato",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 2
+  },
+  "char_1502_crosly": {
+    "id": "char_1502_crosly",
+    "name_cn": "弑君者",
+    "name_en": "Crownslayer",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_615_acspec": {
+    "id": "char_615_acspec",
+    "name_cn": "Misery",
+    "name_en": "Misery",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 1
+  },
+  "char_322_lmlee": {
+    "id": "char_322_lmlee",
+    "name_cn": "老鲤",
+    "name_en": "Lee",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 5
+  },
+  "char_1033_swire2": {
+    "id": "char_1033_swire2",
+    "name_cn": "琳琅诗怀雅",
+    "name_en": "Swire the Elegant Wit",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_400_weedy": {
+    "id": "char_400_weedy",
+    "name_cn": "温蒂",
+    "name_en": "Weedy",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 4
+  },
+  "char_225_haak": {
+    "id": "char_225_haak",
+    "name_cn": "阿",
+    "name_en": "Aak",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 4
+  },
+  "char_1041_angel2": {
+    "id": "char_1041_angel2",
+    "name_cn": "新约能天使",
+    "name_en": "Exusiai the New Covenant",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_474_glady": {
+    "id": "char_474_glady",
+    "name_cn": "歌蕾蒂娅",
+    "name_en": "Gladiia",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 4
+  },
+  "char_437_mizuki": {
+    "id": "char_437_mizuki",
+    "name_cn": "水月",
+    "name_en": "Mizuki",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 4
+  },
+  "char_4132_ascln": {
+    "id": "char_4132_ascln",
+    "name_cn": "阿斯卡纶",
+    "name_en": "Ascalon",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_1023_ghost2": {
+    "id": "char_1023_ghost2",
+    "name_cn": "归溟幽灵鲨",
+    "name_en": "Specter the Unchained",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_4048_doroth": {
+    "id": "char_4048_doroth",
+    "name_cn": "多萝西",
+    "name_en": "Dorothy",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_4123_ela": {
+    "id": "char_4123_ela",
+    "name_cn": "艾拉",
+    "name_en": "Ela",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_2027_wang": {
+    "id": "char_2027_wang",
+    "name_cn": "望",
+    "name_en": "Wang",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 2
+  },
+  "char_1039_thorn2": {
+    "id": "char_1039_thorn2",
+    "name_cn": "引星棘刺",
+    "name_en": "Thorns the Lodestar",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 3
+  },
+  "char_1015_aglna2": {
+    "id": "char_1015_aglna2",
+    "name_cn": "予愿安洁莉娜",
+    "name_en": "Angelina the Mellow Wish",
+    "rarity": "TIER_6",
+    "profession": "SPECIAL",
+    "skins_count": 2
+  },
+  "char_147_shining": {
+    "id": "char_147_shining",
+    "name_cn": "闪灵",
+    "name_en": "Shining",
+    "rarity": "TIER_6",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_613_acmedc": {
+    "id": "char_613_acmedc",
+    "name_cn": "Touch",
+    "name_en": "Touch",
+    "rarity": "TIER_6",
+    "profession": "MEDIC",
+    "skins_count": 1
+  },
+  "char_179_cgbird": {
+    "id": "char_179_cgbird",
+    "name_cn": "夜莺",
+    "name_en": "Nightingale",
+    "rarity": "TIER_6",
+    "profession": "MEDIC",
+    "skins_count": 4
+  },
+  "char_003_kalts": {
+    "id": "char_003_kalts",
+    "name_cn": "凯尔希",
+    "name_en": "Kal'tsit",
+    "rarity": "TIER_6",
+    "profession": "MEDIC",
+    "skins_count": 4
+  },
+  "char_4042_lumen": {
+    "id": "char_4042_lumen",
+    "name_cn": "流明",
+    "name_en": "Lumen",
+    "rarity": "TIER_6",
+    "profession": "MEDIC",
+    "skins_count": 4
+  },
+  "char_1016_agoat2": {
+    "id": "char_1016_agoat2",
+    "name_cn": "纯烬艾雅法拉",
+    "name_en": "Eyjafjalla the Hvít Aska",
+    "rarity": "TIER_6",
+    "profession": "MEDIC",
+    "skins_count": 4
+  },
+  "char_1020_reed2": {
+    "id": "char_1020_reed2",
+    "name_cn": "焰影苇草",
+    "name_en": "Reed The Flame Shadow",
+    "rarity": "TIER_6",
+    "profession": "MEDIC",
+    "skins_count": 5
+  },
+  "char_4056_titi": {
+    "id": "char_4056_titi",
+    "name_cn": "缇缇",
+    "name_en": "Titi",
+    "rarity": "TIER_6",
+    "profession": "MEDIC",
+    "skins_count": 2
+  },
+  "char_4179_monstr": {
+    "id": "char_4179_monstr",
+    "name_cn": "Mon3tr",
+    "name_en": "Mon3tr",
+    "rarity": "TIER_6",
+    "profession": "MEDIC",
+    "skins_count": 3
+  },
+  "char_1052_kalts2": {
+    "id": "char_1052_kalts2",
+    "name_cn": "凯尔希·思衡托",
+    "name_en": "Kal'tsit·Esperanta",
+    "rarity": "TIER_6",
+    "profession": "MEDIC",
+    "skins_count": 2
+  },
+  "char_136_hsguma": {
+    "id": "char_136_hsguma",
+    "name_cn": "星熊",
+    "name_en": "Hoshiguma",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 4
+  },
+  "char_610_acfend": {
+    "id": "char_610_acfend",
+    "name_cn": "Mechanist",
+    "name_en": "Mechanist",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 1
+  },
+  "char_202_demkni": {
+    "id": "char_202_demkni",
+    "name_cn": "塞雷娅",
+    "name_en": "Saria",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 5
+  },
+  "char_423_blemsh": {
+    "id": "char_423_blemsh",
+    "name_cn": "瑕光",
+    "name_en": "Blemishine",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 4
+  },
+  "char_2025_shu": {
+    "id": "char_2025_shu",
+    "name_cn": "黍",
+    "name_en": "Shu",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_2014_nian": {
+    "id": "char_2014_nian",
+    "name_cn": "年",
+    "name_en": "Nian",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 4
+  },
+  "char_311_mudrok": {
+    "id": "char_311_mudrok",
+    "name_cn": "泥岩",
+    "name_en": "Mudrock",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 5
+  },
+  "char_4065_judge": {
+    "id": "char_4065_judge",
+    "name_cn": "斥罪",
+    "name_en": "Penance",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 4
+  },
+  "char_416_zumama": {
+    "id": "char_416_zumama",
+    "name_cn": "森蚺",
+    "name_en": "Eunectes",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_4039_horn": {
+    "id": "char_4039_horn",
+    "name_cn": "号角",
+    "name_en": "Horn",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_1034_jesca2": {
+    "id": "char_1034_jesca2",
+    "name_cn": "涤火杰西卡",
+    "name_en": "Jessica the Liberated",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_4194_rmixer": {
+    "id": "char_4194_rmixer",
+    "name_cn": "信仰搅拌机",
+    "name_en": "Sankta Miksaparato",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_4230_mcnist": {
+    "id": "char_4230_mcnist",
+    "name_cn": "机械师",
+    "name_en": "Mechanist",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 2
+  },
+  "char_2026_yu": {
+    "id": "char_2026_yu",
+    "name_cn": "余",
+    "name_en": "Yu",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_4235_thumpy": {
+    "id": "char_4235_thumpy",
+    "name_cn": "珊比",
+    "name_en": "Thumpy",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 2
+  },
+  "char_1044_hsgma2": {
+    "id": "char_1044_hsgma2",
+    "name_cn": "斩业星熊",
+    "name_en": "Hoshiguma the Breacher",
+    "rarity": "TIER_6",
+    "profession": "TANK",
+    "skins_count": 3
+  },
+  "char_264_f12yin": {
+    "id": "char_264_f12yin",
+    "name_cn": "山",
+    "name_en": "Mountain",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 5
+  },
+  "char_2024_chyue": {
+    "id": "char_2024_chyue",
+    "name_cn": "重岳",
+    "name_en": "Chongyue",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_4037_demetr": {
+    "id": "char_4037_demetr",
+    "name_cn": "贝洛内",
+    "name_en": "Bellone",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_172_svrash": {
+    "id": "char_172_svrash",
+    "name_cn": "银灰",
+    "name_en": "SilverAsh",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 5
+  },
+  "char_293_thorns": {
+    "id": "char_293_thorns",
+    "name_cn": "棘刺",
+    "name_en": "Thorns",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_4082_qiubai": {
+    "id": "char_4082_qiubai",
+    "name_cn": "仇白",
+    "name_en": "Qiubai",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_4182_oblvns": {
+    "id": "char_4182_oblvns",
+    "name_cn": "丰川祥子",
+    "name_en": "Togawa Sakiko",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_617_sharp2": {
+    "id": "char_617_sharp2",
+    "name_cn": "领主·Sharp",
+    "name_en": "Lord/Sharp",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_4088_hodrer": {
+    "id": "char_4088_hodrer",
+    "name_cn": "赫德雷",
+    "name_en": "Hoederer",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_4145_ulpia": {
+    "id": "char_4145_ulpia",
+    "name_cn": "乌尔比安",
+    "name_en": "Ulpianus",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_4058_pepe": {
+    "id": "char_4058_pepe",
+    "name_cn": "佩佩",
+    "name_en": "Pepe",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_1051_headb2": {
+    "id": "char_1051_headb2",
+    "name_cn": "怒潮凛冬",
+    "name_en": "Zima the Raging Tide",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_010_chen": {
+    "id": "char_010_chen",
+    "name_cn": "陈",
+    "name_en": "Ch'en",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_4009_irene": {
+    "id": "char_4009_irene",
+    "name_cn": "艾丽妮",
+    "name_en": "Irene",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_4116_blkkgt": {
+    "id": "char_4116_blkkgt",
+    "name_cn": "锏",
+    "name_en": "Degenbrecher",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_017_huang": {
+    "id": "char_017_huang",
+    "name_cn": "煌",
+    "name_en": "Blaze",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_1026_gvial2": {
+    "id": "char_1026_gvial2",
+    "name_cn": "百炼嘉维尔",
+    "name_en": "Gavial the Invincible",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_350_surtr": {
+    "id": "char_350_surtr",
+    "name_cn": "史尔特尔",
+    "name_en": "Surtr",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 5
+  },
+  "char_4098_vvana": {
+    "id": "char_4098_vvana",
+    "name_cn": "薇薇安娜",
+    "name_en": "Viviana",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_1019_siege2": {
+    "id": "char_1019_siege2",
+    "name_cn": "维娜·维多利亚",
+    "name_en": "Vina Victoria",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_1050_chen3": {
+    "id": "char_1050_chen3",
+    "name_cn": "赤刃明霄陈",
+    "name_en": "Ch'en the Dawnstreak",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_188_helage": {
+    "id": "char_188_helage",
+    "name_cn": "赫拉格",
+    "name_en": "Hellagur",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_4121_zuole": {
+    "id": "char_4121_zuole",
+    "name_cn": "左乐",
+    "name_en": "Zuo Le",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_485_pallas": {
+    "id": "char_485_pallas",
+    "name_cn": "帕拉斯",
+    "name_en": "Pallas",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_1014_nearl2": {
+    "id": "char_1014_nearl2",
+    "name_cn": "耀骑士临光",
+    "name_en": "Nearl the Radiant Knight",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_4011_lessng": {
+    "id": "char_4011_lessng",
+    "name_cn": "止颂",
+    "name_en": "Lessing",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_609_acguad": {
+    "id": "char_609_acguad",
+    "name_cn": "Sharp",
+    "name_en": "Sharp",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 1
+  },
+  "char_1032_excu2": {
+    "id": "char_1032_excu2",
+    "name_cn": "圣约送葬人",
+    "name_en": "Executor the Ex Foedere",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_4010_etlchi": {
+    "id": "char_4010_etlchi",
+    "name_cn": "隐德来希",
+    "name_en": "Entelechia",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_4064_mlynar": {
+    "id": "char_4064_mlynar",
+    "name_cn": "玛恩纳",
+    "name_en": "Młynar",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  },
+  "char_1043_leizi2": {
+    "id": "char_1043_leizi2",
+    "name_cn": "司霆惊蛰",
+    "name_en": "Leizi the Thunderbringer",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_4214_cairn": {
+    "id": "char_4214_cairn",
+    "name_cn": "响石",
+    "name_en": "Cairn",
+    "rarity": "TIER_5",
+    "profession": "TANK",
+    "skins_count": 2
+  },
+  "char_230_savage": {
+    "id": "char_230_savage",
+    "name_cn": "暴行",
+    "name_en": "Savage",
+    "rarity": "TIER_5",
+    "profession": "WARRIOR",
+    "skins_count": 5
+  },
+  "char_282_catap": {
+    "id": "char_282_catap",
+    "name_cn": "空爆",
+    "name_en": "Catapult",
+    "rarity": "TIER_3",
+    "profession": "SNIPER",
+    "skins_count": 2
+  },
+  "char_283_midn": {
+    "id": "char_283_midn",
+    "name_cn": "月见夜",
+    "name_en": "Midnight",
+    "rarity": "TIER_3",
+    "profession": "WARRIOR",
+    "skins_count": 2
+  },
+  "char_137_brownb": {
+    "id": "char_137_brownb",
+    "name_cn": "猎蜂",
+    "name_en": "Beehunter",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_347_jaksel": {
+    "id": "char_347_jaksel",
+    "name_cn": "杰克",
+    "name_en": "Jackie",
+    "rarity": "TIER_4",
+    "profession": "WARRIOR",
+    "skins_count": 3
+  },
+  "char_164_nightm": {
+    "id": "char_164_nightm",
+    "name_cn": "夜魔",
+    "name_en": "Nightmare",
+    "rarity": "TIER_5",
+    "profession": "CASTER",
+    "skins_count": 4
+  },
+  "char_220_grani": {
+    "id": "char_220_grani",
+    "name_cn": "格拉尼",
+    "name_en": "Grani",
+    "rarity": "TIER_5",
+    "profession": "PIONEER",
+    "skins_count": 3
+  },
+  "char_263_skadi": {
+    "id": "char_263_skadi",
+    "name_cn": "斯卡蒂",
+    "name_en": "Skadi",
+    "rarity": "TIER_6",
+    "profession": "WARRIOR",
+    "skins_count": 4
+  }
+}
