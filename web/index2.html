@@ -8,11 +8,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
-    <script src="spine-webgl.js"></script>
+    <script src="spine-webgl.js?v=5"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <script src="operators_data.js"></script>
-    <script src="furniture_data.js"></script>
-    <script src="dorm_engine.js"></script>
+    <script src="operators_data.js?v=5"></script>
+    <script src="furniture_data.js?v=5"></script>
+    <script src="dorm_engine.js?v=5"></script>
     <style>
         :root {
             --bg: #0a0d14;
@@ -113,7 +113,7 @@
         .theme-item-name { font-size: 12px; font-weight: 700; color: #fff; }
         .theme-item-sub { font-size: 10px; color: var(--mt); display: flex; justify-content: space-between; }
 
-        /* ── Center Stage: Authentic RIIC Cutaway Room ───── */
+        /* ── Center Stage: Authentic RIIC Frontal Room ───── */
         .stage-wrap {
             position: relative; border-radius: var(--rad); overflow: hidden;
             border: 1px solid var(--border); background: #060910;
@@ -248,7 +248,7 @@
             </select>
         </aside>
 
-        <!-- Center: Room Stage -->
+        <!-- Center: 100% Straight Front Room Stage -->
         <section class="stage-wrap">
             <div class="stage-bar">
                 <div class="comfort-badge">
@@ -335,7 +335,7 @@
         // 3. Load Amiya into Dorm
         await loadDormOperator('char_002_amiya', '阿米娅');
 
-        // 4. Load Columbia Cafe / Warehouse Theme as initial preset
+        // 4. Load initial theme preset
         applyTheme('furni_set_cafe');
 
         // 5. Setup UI Event Listeners
@@ -440,8 +440,6 @@
 
         world.clearFurniture();
 
-        // Floor layout positions from left to right along room width
-        const totalW = world.rightWallX - world.leftWallX;
         const xPositions = [
             world.leftWallX + 110,
             world.leftWallX + 260,
@@ -461,7 +459,7 @@
 
             if (fData.location === 'WALL' || fData.location === 'CEILING') {
                 if (wallIdx < 4) {
-                    const wx = world.leftWallX + 150 + wallIdx * 200;
+                    const wx = world.leftWallX + 140 + wallIdx * 200;
                     const item = new DormEngine.FurnitureItem(fData, wx, -1);
                     world.addFurniture(item);
                     wallIdx++;
@@ -510,7 +508,6 @@
     }
 
     function spawnFurnitureToRoom(fData) {
-        // Place in center or near cursor
         const x = world.leftWallX + 120 + Math.random() * (world.rightWallX - world.leftWallX - 240);
         const depth = Math.random() < 0.5 ? 0 : 1;
         const item = new DormEngine.FurnitureItem(fData, x, depth);
@@ -558,19 +555,21 @@
             // 2. Clicked on Furniture
             for (let i = world.furnitures.length - 1; i >= 0; i--) {
                 const f = world.furnitures[i];
-                const b = f.getBounds(world);
-                if (sx >= b.left && sx <= b.right && sy >= b.top && sy <= b.bottom) {
-                    world.selectedFurniture = f;
-                    updateSelectedFurnitureBox();
-                    if (mainAgent) {
-                        mainAgent.interactWith(f, world);
-                        document.getElementById('agent-status').textContent = `Amiya · Tương tác với ${f.name}`;
+                if (f && typeof f.getBounds === 'function') {
+                    const b = f.getBounds(world);
+                    if (sx >= b.left && sx <= b.right && sy >= b.top && sy <= b.bottom) {
+                        world.selectedFurniture = f;
+                        updateSelectedFurnitureBox();
+                        if (mainAgent) {
+                            mainAgent.interactWith(f, world);
+                            document.getElementById('agent-status').textContent = `Amiya · Tương tác với ${f.name}`;
+                        }
+                        return;
                     }
-                    return;
                 }
             }
 
-            // 3. Clicked on Floor -> Move to X coordinate
+            // 3. Clicked on Floor -> Move horizontally to X coordinate
             if (mainAgent) {
                 world.selectedFurniture = null;
                 updateSelectedFurnitureBox();
@@ -630,7 +629,7 @@
         document.getElementById('btn-random-roam').addEventListener('click', () => {
             if (mainAgent) {
                 mainAgent.targetFurniture = null;
-                const padding = 80;
+                const padding = 70;
                 const rx = world.leftWallX + padding + Math.random() * (world.rightWallX - world.leftWallX - padding * 2);
                 mainAgent.moveTo(rx);
                 mainAgent.showBubble('Đi dạo ngắm phòng nào ~', 2.5);

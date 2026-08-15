@@ -1,11 +1,12 @@
 /**
- * 🎮 Arknights Authentic Base Dormitory Engine (Side-View Cutaway Platform)
+ * 🎮 Arknights Authentic Base Dormitory Engine (100% Flat Orthographic Front View · 罗德岛宿舍直视角)
  * 
- * S: Single Responsibility — Grid/Floor, Agent, Furniture, Rendering decoupled.
- * O: Open/Closed — Extensible interaction strategies.
- * L: Liskov Substitution — Consistent interactable interface.
- * I: Interface Segregation — Clean physics, state, and graphics layer.
- * D: Dependency Inversion — Context & assets injected cleanly.
+ * SOLID Principles:
+ * - Single Responsibility: Clear separation between Furniture, OperatorAgent, Renderer, and World.
+ * - Open/Closed: Extensible interaction behaviors.
+ * - Liskov Substitution: All interactables share unified getInteractionAnchor & draw interface.
+ * - Interface Segregation: Renderer decoupled from AI and state logic.
+ * - Dependency Inversion: Canvas & WebGL contexts injected.
  */
 
 const AgentState = {
@@ -31,38 +32,43 @@ function getCutoutImage(img) {
     const ctx = off.getContext('2d');
     ctx.drawImage(img, 0, 0);
 
-    const idata = ctx.getImageData(0, 0, w, h);
-    const d = idata.data;
+    try {
+        const idata = ctx.getImageData(0, 0, w, h);
+        const d = idata.data;
 
-    // Corner pixel sampling for background tone
-    for (let i = 0; i < d.length; i += 4) {
-        const r = d[i], g = d[i+1], b = d[i+2];
-        const isNeutral = Math.abs(r - g) < 16 && Math.abs(g - b) < 16;
-        const isBgBright = r > 125 && r < 240;
-        if (isNeutral && isBgBright) {
-            d[i+3] = 0; // Make transparent!
+        // Sample background neutral gray tone from corners
+        for (let i = 0; i < d.length; i += 4) {
+            const r = d[i], g = d[i+1], b = d[i+2];
+            const isNeutral = Math.abs(r - g) < 18 && Math.abs(g - b) < 18;
+            const isBgBright = r > 120 && r < 242;
+            if (isNeutral && isBgBright) {
+                d[i+3] = 0; // Cutout to transparent!
+            }
         }
+        ctx.putImageData(idata, 0, 0);
+        _cutoutCache.set(img.src, off);
+        return off;
+    } catch (e) {
+        // Fallback for tainted canvas / cross-origin
+        return img;
     }
-    ctx.putImageData(idata, 0, 0);
-    _cutoutCache.set(img.src, off);
-    return off;
 }
 
 /* ═══════════════════════════════════════════════════════════
-   1. FURNITURE ITEM ENTITY
+   1. FURNITURE ITEM ENTITY (Straight-on 2D Placement)
 ═══════════════════════════════════════════════════════════ */
 class FurnitureItem {
-    constructor(data, x = 200, depthLayer = 0) {
-        this.id = data.id;
-        this.name = data.name;
+    constructor(data, x = 300, depthLayer = 0) {
+        this.id = data.id || 'furn_unknown';
+        this.name = data.name || 'Furniture';
         this.category = data.category || 'DECORATION'; // BED, SEAT, TABLE, INTERACTIVE, DECORATION, WALL_FLOOR
         this.anim = data.anim || 'None';               // Sleep, Sit, Interact, Relax, None
         this.location = data.location || 'FLOOR';       // FLOOR, WALL, CEILING, CARPET
         this.comfort = data.comfort || 10;
         this.icon = data.icon;
         
-        this.x = x;              // Horizontal position along the room (pixels)
-        this.depthLayer = depthLayer; // 0 = Back row, 1 = Front row, -1 = Wall/Ceiling
+        this.x = x;                    // Horizontal X position along the room
+        this.depthLayer = depthLayer;  // 0 = Back row, 1 = Front row, -1 = Wall/Ceiling
         this.flipped = false;
         this.user = null;
 
@@ -76,15 +82,28 @@ class FurnitureItem {
             this.loaded = true;
             this.cutout = getCutoutImage(this.rawImage);
         };
+        this.rawImage.onerror = () => {
+            // Try lowercase fallback if camelCase icon failed
+            const lowerSrc = data.icon.toLowerCase();
+            if (this.rawImage.src !== lowerSrc) {
+                this.rawImage.src = lowerSrc;
+            } else {
+                this.loaded = false;
+            }
+        };
     }
 
     getRenderSize() {
-        // Natural aspect ratio scaling for furniture
         const nw = this.rawImage.naturalWidth || 120;
         const nh = this.rawImage.naturalHeight || 120;
-        const scale = this.category === 'BED' ? 1.05 : 
-                      this.category === 'WALL_FLOOR' ? 0.75 :
-                      this.category === 'SEAT' ? 0.85 : 0.9;
+        let scale = 0.85;
+
+        if (this.category === 'BED') scale = 1.05;
+        else if (this.category === 'SEAT') scale = 0.82;
+        else if (this.category === 'TABLE') scale = 0.9;
+        else if (this.location === 'WALL') scale = 0.78;
+        else if (this.location === 'CEILING') scale = 0.75;
+
         return {
             w: nw * scale,
             h: nh * scale
@@ -98,10 +117,10 @@ class FurnitureItem {
         if (this.location === 'WALL') {
             baseY = room.floorY - 140;
         } else if (this.location === 'CEILING') {
-            baseY = room.wallTopY + 70;
+            baseY = room.wallTopY + 75;
         } else {
-            // Floor placement: depth layer gives subtle Y offset
-            baseY = room.floorY + (this.depthLayer === 1 ? 16 : -8);
+            // Flat floor alignment: items sit directly on the straight horizontal floor line
+            baseY = room.floorY + (this.depthLayer === 1 ? 14 : -4);
         }
 
         return {
@@ -115,17 +134,16 @@ class FurnitureItem {
         };
     }
 
-    /** Interaction anchor point for Operator */
     getInteractionAnchor(room) {
         const bounds = this.getBounds(room);
         let targetX = this.x;
 
         if (this.category === 'BED') {
-            targetX = this.flipped ? bounds.left + 35 : bounds.right - 35;
+            targetX = this.flipped ? bounds.left + 40 : bounds.right - 40;
         } else if (this.category === 'SEAT') {
             targetX = this.x;
         } else if (this.category === 'INTERACTIVE' || this.category === 'TABLE') {
-            targetX = this.flipped ? bounds.left - 20 : bounds.right + 20;
+            targetX = this.flipped ? bounds.left - 25 : bounds.right + 25;
         }
 
         return {
@@ -142,15 +160,15 @@ class FurnitureItem {
 
         ctx.save();
 
-        // Ground shadow (for floor objects)
+        // Realistic Ground Shadow under floor items
         if (this.location === 'FLOOR' || this.location === 'CARPET') {
             ctx.beginPath();
-            ctx.ellipse(this.x, bounds.baseY, bounds.w * 0.42, 10, 0, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+            ctx.ellipse(this.x, bounds.baseY, bounds.w * 0.44, 9, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.42)';
             ctx.fill();
         }
 
-        // Selection highlight
+        // Selection glow box
         if (isSelected) {
             ctx.shadowColor = '#00d2ff';
             ctx.shadowBlur = 18;
@@ -175,12 +193,12 @@ class FurnitureItem {
    2. OPERATOR AGENT CONTROLLER (AI + State Machine)
 ═══════════════════════════════════════════════════════════ */
 class OperatorAgent {
-    constructor(opInfo, spineData, x = 300) {
+    constructor(opInfo, spineData, x = 400) {
         this.opInfo = opInfo;
-        this.spineData = spineData; // { skel, state }
+        this.spineData = spineData;
         this.x = x;
         this.targetX = x;
-        this.speed = 140; // pixels per second
+        this.speed = 150; // pixels per second horizontally
         this.facingRight = true;
         this.state = AgentState.IDLE;
         this.targetFurniture = null;
@@ -188,7 +206,7 @@ class OperatorAgent {
         this.bubbleText = '';
         this.bubbleTimer = 0;
         this.heartParticles = [];
-        this.scale = 0.42; // crisp in-game chibi proportion
+        this.scale = 0.44; // standard Arknights Chibi height
 
         this.setAnimation(AgentState.IDLE, true);
     }
@@ -213,8 +231,8 @@ class OperatorAgent {
     spawnHeart() {
         this.heartParticles.push({
             x: 0,
-            y: -140,
-            vy: -1.4,
+            y: -145,
+            vy: -1.5,
             alpha: 1.0,
             scale: 0.9 + Math.random() * 0.4
         });
@@ -223,7 +241,7 @@ class OperatorAgent {
     moveTo(x, onArrivalCallback = null) {
         this.targetX = x;
         this.onArrival = onArrivalCallback;
-        if (Math.abs(x - this.x) > 5) {
+        if (Math.abs(x - this.x) > 4) {
             this.facingRight = (x >= this.x);
             this.setAnimation(AgentState.WALKING, true);
         }
@@ -244,7 +262,7 @@ class OperatorAgent {
             this.setAnimation(anchor.anim, true);
 
             if (anchor.anim === AgentState.SLEEPING) {
-                this.showBubble('Zzz... Thật êm ái...', 4.5);
+                this.showBubble('Zzz... Ngủ ngon...', 4.5);
             } else if (anchor.anim === AgentState.SITTING) {
                 this.showBubble('Ngồi nghỉ chân một lúc ~', 3.5);
             } else if (anchor.anim === AgentState.INTERACTING) {
@@ -255,7 +273,7 @@ class OperatorAgent {
     }
 
     update(delta, room) {
-        // 1. Spine state update
+        // 1. Advance Spine animation
         if (this.spineData?.state) {
             this.spineData.state.update(delta);
             this.spineData.state.apply(this.spineData.skel);
@@ -275,7 +293,7 @@ class OperatorAgent {
             if (p.alpha <= 0) this.heartParticles.splice(i, 1);
         }
 
-        // 3. Movement along floor line
+        // 3. Flat Horizontal Movement along the floor line
         const dx = this.targetX - this.x;
         const dist = Math.abs(dx);
 
@@ -300,8 +318,7 @@ class OperatorAgent {
             if (this.stateTimer > 7.0 && !this.targetFurniture) {
                 this.stateTimer = 0;
                 if (Math.random() < 0.6) {
-                    // Walk to random spot along the floor
-                    const padding = 80;
+                    const padding = 70;
                     const randomX = room.leftWallX + padding + Math.random() * (room.rightWallX - room.leftWallX - padding * 2);
                     this.moveTo(randomX);
                 } else {
@@ -313,7 +330,7 @@ class OperatorAgent {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   3. DORMITORY ROOM WORLD (Side-View Cutaway Scene)
+   3. DORMITORY ROOM WORLD (100% Straight Front View)
 ═══════════════════════════════════════════════════════════ */
 class DormWorld {
     constructor(canvas, glCanvas) {
@@ -327,11 +344,11 @@ class DormWorld {
         this.agents = [];
         this.selectedFurniture = null;
 
-        this.leftWallX = 50;
-        this.rightWallX = 900;
-        this.wallTopY = 60;
-        this.floorY = 420;
-        this.floorHeight = 110;
+        this.leftWallX = 35;
+        this.rightWallX = 920;
+        this.wallTopY = 45;
+        this.floorY = 430;
+        this.floorHeight = 90;
 
         this.rafId = null;
         this.lastTs = performance.now() / 1000;
@@ -347,11 +364,11 @@ class DormWorld {
             this.glCanvas.height = h;
         }
 
-        this.leftWallX = 40;
-        this.rightWallX = w - 40;
-        this.wallTopY = 50;
-        this.floorY = h - 95;
-        this.floorHeight = 95;
+        this.leftWallX = 35;
+        this.rightWallX = w - 35;
+        this.wallTopY = 45;
+        this.floorY = h - 90;
+        this.floorHeight = 90;
     }
 
     addFurniture(item) {
@@ -410,10 +427,10 @@ class DormWorld {
 
         ctx.clearRect(0, 0, w, h);
 
-        // 1. Draw Arknights Base Dormitory Cutaway Room
-        this.drawBaseDormRoom(ctx, w, h);
+        // 1. Draw 100% Flat Orthographic Front View Room (Khung phòng nhìn thẳng trực diện 2D)
+        this.drawOrthographicRoom(ctx, w, h);
 
-        // 2. Render Wall & Ceiling Furnitures first (Back Layer)
+        // 2. Render Wall / Ceiling furnitures first (Back Layer)
         for (const f of this.furnitures) {
             if (f.location === 'WALL' || f.location === 'CEILING' || f.location === 'CARPET') {
                 f.draw(ctx, this, f === this.selectedFurniture);
@@ -430,84 +447,78 @@ class DormWorld {
         // 4. Render Operator Spine Overlay (Middle Layer)
         this.renderSpineAgents();
 
-        // 5. Render Floor Front Row Furnitures (in front of Operators)
+        // 5. Render Floor Front Row Furnitures (in front of characters)
         for (const f of this.furnitures) {
             if (f.location === 'FLOOR' && f.depthLayer === 1) {
                 f.draw(ctx, this, f === this.selectedFurniture);
             }
         }
 
-        // 6. Draw Operator Bubbles & UI Overlays (Top Layer)
+        // 6. Draw Operator Bubbles & UI (Top Layer)
         for (const a of this.agents) {
             this.drawAgentOverlay(ctx, a);
         }
     }
 
-    drawBaseDormRoom(ctx, w, h) {
+    drawOrthographicRoom(ctx, w, h) {
         const lx = this.leftWallX;
         const rx = this.rightWallX;
         const ty = this.wallTopY;
         const fy = this.floorY;
+        const roomW = rx - lx;
+        const roomH = fy - ty;
 
-        // Room Background Wall (Arknights Industrial Slate Gray)
+        // 1. Back Wall - Flat Solid Rectangle
         const wallGrad = ctx.createLinearGradient(0, ty, 0, fy);
-        wallGrad.addColorStop(0, '#1a2233');
-        wallGrad.addColorStop(1, '#0e1422');
+        wallGrad.addColorStop(0, '#1c2438');
+        wallGrad.addColorStop(1, '#101726');
         ctx.fillStyle = wallGrad;
-        ctx.fillRect(lx, ty, rx - lx, fy - ty);
+        ctx.fillRect(lx, ty, roomW, roomH);
 
-        // Wall Panel Seams (Arknights RIIC Architecture)
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-        ctx.lineWidth = 1;
-        const panelWidth = 140;
-        for (let x = lx + panelWidth; x < rx; x += panelWidth) {
+        // 2. Wall Vertical Seams (Rhodes Island Flat Metal Panels)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        ctx.lineWidth = 1.5;
+        for (let x = lx + 120; x < rx; x += 120) {
             ctx.beginPath();
             ctx.moveTo(x, ty);
             ctx.lineTo(x, fy);
             ctx.stroke();
         }
 
-        // Upper Wall Vent / Rail
-        ctx.fillStyle = '#0b0f1a';
-        ctx.fillRect(lx, ty + 24, rx - lx, 14);
-        ctx.strokeStyle = 'rgba(0, 210, 255, 0.3)';
-        ctx.beginPath();
-        ctx.moveTo(lx, ty + 38);
-        ctx.lineTo(rx, ty + 38);
-        ctx.stroke();
-
-        // Room Floor Surface (Dark Wooden/Composite Tiles)
-        const floorGrad = ctx.createLinearGradient(0, fy, 0, h);
-        floorGrad.addColorStop(0, '#2e3a4e');
-        floorGrad.addColorStop(0.15, '#1e2636');
-        floorGrad.addColorStop(1, '#111622');
-        ctx.fillStyle = floorGrad;
-        ctx.fillRect(lx, fy, rx - lx, this.floorHeight);
-
-        // Floor Baseboard Line
-        ctx.fillStyle = '#475569';
-        ctx.fillRect(lx, fy - 6, rx - lx, 6);
+        // 3. Top Ceiling Rail / Cable Track
+        ctx.fillStyle = '#0b0f19';
+        ctx.fillRect(lx, ty, roomW, 28);
         ctx.fillStyle = '#00d2ff';
-        ctx.fillRect(lx, fy - 2, rx - lx, 2);
+        ctx.fillRect(lx, ty + 26, roomW, 2);
 
-        // Floor Tile Planks
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
-        for (let x = lx + 80; x < rx; x += 80) {
-            ctx.beginPath();
-            ctx.moveTo(x, fy);
-            ctx.lineTo(x - 25, h);
-            ctx.stroke();
-        }
+        // 4. Flat Floor Line (Horizontal straight plank)
+        const floorH = h - fy;
+        const floorGrad = ctx.createLinearGradient(0, fy, 0, h);
+        floorGrad.addColorStop(0, '#2d3748');
+        floorGrad.addColorStop(0.2, '#1a202c');
+        floorGrad.addColorStop(1, '#0d1117');
+        ctx.fillStyle = floorGrad;
+        ctx.fillRect(lx, fy, roomW, floorH);
 
-        // Room Outer Frame / Bevel (Cutaway Room look)
-        ctx.strokeStyle = '#334155';
-        ctx.lineWidth = 4;
-        ctx.strokeRect(lx, ty, rx - lx, h - ty);
+        // Floor Baseboard (Nẹp chân tường thẳng)
+        ctx.fillStyle = '#4a5568';
+        ctx.fillRect(lx, fy - 6, roomW, 6);
+        ctx.fillStyle = '#00d2ff';
+        ctx.fillRect(lx, fy - 2, roomW, 2);
 
-        // RIIC Room Header Label
+        // 5. Left & Right Room Pillars (Khung viền 2 bên thẳng đứng)
+        ctx.fillStyle = '#1a202c';
+        ctx.fillRect(lx - 12, ty, 12, h - ty);
+        ctx.fillRect(rx, ty, 12, h - ty);
+        ctx.strokeStyle = '#4a5568';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(lx - 12, ty, 12, h - ty);
+        ctx.strokeRect(rx, ty, 12, h - ty);
+
+        // 6. RIIC Room Header
         ctx.font = '800 11px "Plus Jakarta Sans", monospace';
         ctx.fillStyle = '#00d2ff';
-        ctx.fillText('RHODES ISLAND INFRASTRUCTURE COMPLEX · DORMITORY-01', lx + 16, ty + 18);
+        ctx.fillText('RHODES ISLAND INFRASTRUCTURE COMPLEX · DORMITORY-01 [罗德岛宿舍]', lx + 16, ty + 18);
     }
 
     drawAgentOverlay(ctx, agent) {
@@ -574,7 +585,7 @@ class DormWorld {
             if (!skel) continue;
 
             skel.x = agent.x;
-            skel.y = vpH - this.floorY; // Correct bottom alignment on floor line
+            skel.y = vpH - this.floorY; // Flat bottom feet alignment on horizontal floor line
             skel.scaleX = (agent.facingRight ? agent.scale : -agent.scale);
             skel.scaleY = agent.scale;
             skel.updateWorldTransform();
