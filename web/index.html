@@ -410,7 +410,47 @@ function findLocalFiles(opNameCn, skinName, modelType) {
 
 function buildLocalUrls(opNameCn, baseName) {
     const enc = encodeURIComponent(opNameCn);
-    const en/* ═══════════════════════════════════════════════════════════
+    const encFile = encodeURIComponent(baseName);
+    const isLocalServer = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (isLocalServer) {
+        return {
+            skelUrl:  `/api/local-file?name=${enc}&file=${encFile}.skel`,
+            atlasUrl: `/api/local-file?name=${enc}&file=${encFile}.atlas`,
+            pngUrl:   `/api/local-file?name=${enc}&file=${encFile}.png`,
+            baseName
+        };
+    } else {
+        return {
+            skelUrl:  `../downloads/${enc}/${encFile}.skel`,
+            atlasUrl: `../downloads/${enc}/${encFile}.atlas`,
+            pngUrl:   `../downloads/${enc}/${encFile}.png`,
+            baseName
+        };
+    }
+}
+
+async function fetchWithFallback(url, directUrl, isArrayBuffer, isBlob) {
+    try {
+        const r = await fetch(url);
+        if (r.ok) {
+            if (isArrayBuffer) return r.arrayBuffer();
+            if (isBlob) return r.blob();
+            return r.text();
+        }
+    } catch(e) {}
+    if (directUrl && directUrl !== url) {
+        const r2 = await fetch(directUrl);
+        if (r2.ok) {
+            if (isArrayBuffer) return r2.arrayBuffer();
+            if (isBlob) return r2.blob();
+            return r2.text();
+        }
+        throw new Error(`HTTP ${r2.status} khi tải ${directUrl}`);
+    }
+    throw new Error(`Không thể tải: ${url}`);
+}
+
+/* ═══════════════════════════════════════════════════════════
    ASSET CACHING SYSTEM (Fast Instant Skin & Animation Switching)
 ═══════════════════════════════════════════════════════════ */
 const _assetCache = {
