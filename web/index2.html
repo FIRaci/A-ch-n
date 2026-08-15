@@ -8,16 +8,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
-    <script src="spine-webgl.js?v=5"></script>
+    <script src="spine-webgl.js?v=6"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <script src="operators_data.js?v=5"></script>
-    <script src="furniture_data.js?v=5"></script>
-    <script src="dorm_engine.js?v=5"></script>
+    <script src="operators_data.js?v=6"></script>
+    <script src="furniture_data.js?v=6"></script>
+    <script src="dorm_engine.js?v=6"></script>
     <style>
         :root {
             --bg: #0a0d14;
             --bg2: #121824;
-            --card: rgba(20, 27, 41, 0.92);
+            --card: rgba(20, 27, 41, 0.94);
             --border: rgba(255, 255, 255, 0.08);
             --bh: rgba(0, 210, 255, 0.45);
             --ac: #00d2ff;
@@ -76,9 +76,9 @@
         /* ── Main Layout ──────────────────────────────────── */
         main {
             flex: 1; display: grid;
-            grid-template-columns: 280px 1fr 340px;
+            grid-template-columns: 290px 1fr 340px;
             gap: 18px; padding: 18px 24px;
-            max-width: 1720px; margin: 0 auto; width: 100%;
+            max-width: 1740px; margin: 0 auto; width: 100%;
         }
 
         .panel {
@@ -106,11 +106,15 @@
         }
         .theme-item {
             background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: var(--rsm);
-            padding: 10px 12px; cursor: pointer; transition: all 0.18s; display: flex; flex-direction: column; gap: 4px;
+            padding: 10px 12px; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; gap: 10px;
         }
         .theme-item:hover, .theme-item.active { background: rgba(0, 210, 255, 0.09); border-color: var(--ac); }
         .theme-item.active { box-shadow: 0 0 12px var(--glow); }
-        .theme-item-name { font-size: 12px; font-weight: 700; color: #fff; }
+        .theme-item-thumb {
+            width: 48px; height: 36px; border-radius: 4px; background: #000; object-fit: cover; border: 1px solid var(--border);
+        }
+        .theme-item-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+        .theme-item-name { font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .theme-item-sub { font-size: 10px; color: var(--mt); display: flex; justify-content: space-between; }
 
         /* ── Center Stage: Authentic RIIC Frontal Room ───── */
@@ -123,8 +127,9 @@
             position: relative; flex: 1; width: 100%; height: 100%; min-height: 520px;
         }
         #dorm-2d-canvas {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; cursor: pointer;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; cursor: grab;
         }
+        #dorm-2d-canvas:active { cursor: grabbing; }
         #dorm-gl-canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;
         }
@@ -186,7 +191,7 @@
             padding: 1px 4px; border-radius: 4px; background: rgba(0, 210, 255, 0.18); color: var(--ac);
         }
 
-        /* ── Selected Furniture Tool ─────────────────────── */
+        /* ── Selected Furniture Floating Tool ─────────────── */
         .furn-ctrl-box {
             background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rsm);
             padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
@@ -248,7 +253,7 @@
             </select>
         </aside>
 
-        <!-- Center: 100% Straight Front Room Stage -->
+        <!-- Center: 100% Flat Front Room Stage -->
         <section class="stage-wrap">
             <div class="stage-bar">
                 <div class="comfort-badge">
@@ -267,7 +272,7 @@
             </div>
 
             <div class="hint-bar">
-                <span>💡 <b>Tương tác Base:</b> Click sàn để chạy · Click Giường (Ngủ) · Ghế (Ngồi) · Click Amiya (Thả tim)</span>
+                <span>💡 <b>Kéo thả đồ:</b> Bấm giữ để kéo đồ · Click Giường (Ngủ) · Click Ghế (Ngồi) · Click Amiya (Thả tim)</span>
                 <span id="agent-status" style="color: var(--ac); font-weight: 700;">Amiya · Đang nghỉ ngơi</span>
             </div>
         </section>
@@ -298,6 +303,7 @@
                 <span id="selected-furn-name" style="font-size: 11px; font-weight: 700; color: #fff;">Chưa chọn</span>
                 <div style="display: flex; gap: 4px;">
                     <button class="btn" id="btn-flip-furn" title="Xoay (Flip)"><i data-lucide="flip-horizontal" size="12"></i> Xoay</button>
+                    <button class="btn" id="btn-layer-furn" title="Đổi lớp"><i data-lucide="layers" size="12"></i> Lớp</button>
                     <button class="btn" id="btn-del-furn" title="Xóa" style="color: var(--r6);"><i data-lucide="x" size="12"></i></button>
                 </div>
             </div>
@@ -317,7 +323,12 @@
     let world = null;
     let mainAgent = null;
     let curCat = 'ALL';
+    let isMouseDown = false;
+    let draggedItem = null;
+    let dragStartX = 0;
+    let didDrag = false;
     const CDN = 'https://torappu.prts.wiki/assets/char_spine/';
+    const THEME_CDN = 'https://torappu.prts.wiki/assets/furniture_theme/';
 
     document.addEventListener('DOMContentLoaded', async () => {
         lucide.createIcons();
@@ -335,7 +346,7 @@
         // 3. Load Amiya into Dorm
         await loadDormOperator('char_002_amiya', '阿米娅');
 
-        // 4. Load initial theme preset
+        // 4. Load Columbia Cafe as initial preset
         applyTheme('furni_set_cafe');
 
         // 5. Setup UI Event Listeners
@@ -405,7 +416,7 @@
         }
     }
 
-    /* ── Render Themes List ──────────────────────────────── */
+    /* ── Render Themes List with Official Preview Thumbs ─── */
     function renderThemes() {
         const list = document.getElementById('theme-list');
         const themes = window.ALL_FURNITURE_DATA?.themes || [];
@@ -416,10 +427,13 @@
             const item = document.createElement('div');
             item.className = 'theme-item';
             item.innerHTML = `
-                <div class="theme-item-name">${t.name}</div>
-                <div class="theme-item-sub">
-                    <span>${t.items_count} món</span>
-                    <span>+${t.comfort} Điểm</span>
+                <img class="theme-item-thumb" src="${THEME_CDN}${t.id}.png" onerror="this.style.display='none'" alt="${t.name}">
+                <div class="theme-item-info">
+                    <div class="theme-item-name">${t.name}</div>
+                    <div class="theme-item-sub">
+                        <span>${t.items_count} món</span>
+                        <span>+${t.comfort} Đ</span>
+                    </div>
                 </div>
             `;
             item.onclick = () => {
@@ -431,7 +445,7 @@
         });
     }
 
-    /* ── Apply Theme Preset into Room ────────────────────── */
+    /* ── Apply Beautifully Arranged Theme Preset ─────────── */
     function applyTheme(themeId) {
         const themes = window.ALL_FURNITURE_DATA?.themes || [];
         const furnitures = window.ALL_FURNITURE_DATA?.furnitures || {};
@@ -440,43 +454,61 @@
 
         world.clearFurniture();
 
-        const xPositions = [
-            world.leftWallX + 110,
-            world.leftWallX + 260,
-            world.leftWallX + 430,
-            world.leftWallX + 600,
-            world.leftWallX + 760,
-            world.leftWallX + 180,
-            world.leftWallX + 510
-        ];
+        // Categorize theme items
+        const themeItems = theme.furniture_ids.map(id => furnitures[id]).filter(Boolean);
+        const beds = themeItems.filter(f => f.category === 'BED');
+        const seats = themeItems.filter(f => f.category === 'SEAT');
+        const tables = themeItems.filter(f => f.category === 'TABLE');
+        const interactives = themeItems.filter(f => f.category === 'INTERACTIVE');
+        const decors = themeItems.filter(f => f.category === 'DECORATION');
+        const walls = themeItems.filter(f => f.location === 'WALL' || f.location === 'CEILING');
 
-        let floorIdx = 0;
-        let wallIdx = 0;
+        const roomW = world.rightWallX - world.leftWallX;
 
-        for (const fid of theme.furniture_ids) {
-            const fData = furnitures[fid];
-            if (!fData) continue;
+        // 1. Place Bed on Left
+        if (beds.length > 0) {
+            const bed = new DormEngine.FurnitureItem(beds[0], world.leftWallX + 130, 0);
+            world.addFurniture(bed);
+        }
 
-            if (fData.location === 'WALL' || fData.location === 'CEILING') {
-                if (wallIdx < 4) {
-                    const wx = world.leftWallX + 140 + wallIdx * 200;
-                    const item = new DormEngine.FurnitureItem(fData, wx, -1);
-                    world.addFurniture(item);
-                    wallIdx++;
-                }
-            } else {
-                if (floorIdx < xPositions.length) {
-                    const fx = xPositions[floorIdx];
-                    const depth = (floorIdx % 2 === 0 ? 0 : 1);
-                    const item = new DormEngine.FurnitureItem(fData, fx, depth);
-                    world.addFurniture(item);
-                    floorIdx++;
+        // 2. Place Table in Center
+        if (tables.length > 0) {
+            const table = new DormEngine.FurnitureItem(tables[0], world.leftWallX + roomW * 0.48, 0);
+            world.addFurniture(table);
+
+            // Place Chair next to Table
+            if (seats.length > 0) {
+                const chair1 = new DormEngine.FurnitureItem(seats[0], world.leftWallX + roomW * 0.48 - 70, 1);
+                world.addFurniture(chair1);
+                if (seats.length > 1) {
+                    const chair2 = new DormEngine.FurnitureItem(seats[1], world.leftWallX + roomW * 0.48 + 70, 1);
+                    chair2.flipped = true;
+                    world.addFurniture(chair2);
                 }
             }
+        } else if (seats.length > 0) {
+            // Sofa/Seat in center
+            const sofa = new DormEngine.FurnitureItem(seats[0], world.leftWallX + roomW * 0.5, 0);
+            world.addFurniture(sofa);
+        }
+
+        // 3. Place Cabinet / Interactive Device on Right
+        if (interactives.length > 0) {
+            const dev = new DormEngine.FurnitureItem(interactives[0], world.rightWallX - 120, 0);
+            world.addFurniture(dev);
+        } else if (decors.length > 0) {
+            const shelf = new DormEngine.FurnitureItem(decors[0], world.rightWallX - 120, 0);
+            world.addFurniture(shelf);
+        }
+
+        // 4. Place Wall Decoration
+        if (walls.length > 0) {
+            const wallItem = new DormEngine.FurnitureItem(walls[0], world.leftWallX + roomW * 0.3, -1);
+            world.addFurniture(wallItem);
         }
 
         updateComfort();
-        showToast(`✓ Đã áp dụng chủ đề: ${theme.name}`);
+        showToast(`✓ Đã sắp xếp phòng: ${theme.name}`);
     }
 
     /* ── Render Furniture Palette (Right Panel) ──────────── */
@@ -532,15 +564,59 @@
         }
     }
 
-    /* ── Event Listeners (Canvas Click & Controls) ────────── */
+    /* ── Event Listeners: Click & Drag & Drop Controls ───── */
     function setupEventListeners() {
         const canvas = document.getElementById('dorm-2d-canvas');
 
-        canvas.addEventListener('click', (e) => {
+        canvas.addEventListener('mousedown', (e) => {
             const rect = canvas.getBoundingClientRect();
             const sx = e.clientX - rect.left;
             const sy = e.clientY - rect.top;
 
+            isMouseDown = true;
+            didDrag = false;
+            dragStartX = sx;
+
+            // Check if clicked on furniture for dragging
+            for (let i = world.furnitures.length - 1; i >= 0; i--) {
+                const f = world.furnitures[i];
+                if (f && typeof f.getBounds === 'function') {
+                    const b = f.getBounds(world);
+                    if (sx >= b.left && sx <= b.right && sy >= b.top && sy <= b.bottom) {
+                        draggedItem = f;
+                        world.selectedFurniture = f;
+                        updateSelectedFurnitureBox();
+                        return;
+                    }
+                }
+            }
+            draggedItem = null;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isMouseDown || !draggedItem) return;
+            const rect = canvas.getBoundingClientRect();
+            const sx = e.clientX - rect.left;
+
+            if (Math.abs(sx - dragStartX) > 4) {
+                didDrag = true;
+                draggedItem.x = Math.max(world.leftWallX + 40, Math.min(world.rightWallX - 40, sx));
+            }
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if (!isMouseDown) return;
+            const rect = canvas.getBoundingClientRect();
+            const sx = e.clientX - rect.left;
+            const sy = e.clientY - rect.top;
+            isMouseDown = false;
+
+            if (didDrag) {
+                draggedItem = null;
+                return;
+            }
+
+            // Click handling (when not dragging)
             // 1. Clicked on Amiya directly
             if (mainAgent) {
                 if (Math.abs(sx - mainAgent.x) < 40 && sy > world.floorY - 140 && sy < world.floorY + 20) {
@@ -552,24 +628,15 @@
                 }
             }
 
-            // 2. Clicked on Furniture
-            for (let i = world.furnitures.length - 1; i >= 0; i--) {
-                const f = world.furnitures[i];
-                if (f && typeof f.getBounds === 'function') {
-                    const b = f.getBounds(world);
-                    if (sx >= b.left && sx <= b.right && sy >= b.top && sy <= b.bottom) {
-                        world.selectedFurniture = f;
-                        updateSelectedFurnitureBox();
-                        if (mainAgent) {
-                            mainAgent.interactWith(f, world);
-                            document.getElementById('agent-status').textContent = `Amiya · Tương tác với ${f.name}`;
-                        }
-                        return;
-                    }
-                }
+            // 2. Clicked on furniture -> trigger interaction
+            if (draggedItem && mainAgent) {
+                mainAgent.interactWith(draggedItem, world);
+                document.getElementById('agent-status').textContent = `Amiya · Tương tác với ${draggedItem.name}`;
+                draggedItem = null;
+                return;
             }
 
-            // 3. Clicked on Floor -> Move horizontally to X coordinate
+            // 3. Clicked on empty floor -> Move operator
             if (mainAgent) {
                 world.selectedFurniture = null;
                 updateSelectedFurnitureBox();
@@ -600,11 +667,18 @@
             loadDormOperator(e.target.value, opt.text.split(' ')[0]);
         });
 
-        // Selected Furniture Controls: Flip & Delete
+        // Selected Furniture Controls: Flip, Layer & Delete
         document.getElementById('btn-flip-furn').addEventListener('click', () => {
             if (world.selectedFurniture) {
                 world.selectedFurniture.flipped = !world.selectedFurniture.flipped;
                 showToast(`✓ Đã xoay: ${world.selectedFurniture.name}`);
+            }
+        });
+
+        document.getElementById('btn-layer-furn').addEventListener('click', () => {
+            if (world.selectedFurniture) {
+                world.selectedFurniture.depthLayer = (world.selectedFurniture.depthLayer === 0 ? 1 : 0);
+                showToast(`✓ Đã đổi tầng: ${world.selectedFurniture.depthLayer === 1 ? 'Lớp trước' : 'Lớp sau'}`);
             }
         });
 
@@ -629,7 +703,7 @@
         document.getElementById('btn-random-roam').addEventListener('click', () => {
             if (mainAgent) {
                 mainAgent.targetFurniture = null;
-                const padding = 70;
+                const padding = 80;
                 const rx = world.leftWallX + padding + Math.random() * (world.rightWallX - world.leftWallX - padding * 2);
                 mainAgent.moveTo(rx);
                 mainAgent.showBubble('Đi dạo ngắm phòng nào ~', 2.5);
