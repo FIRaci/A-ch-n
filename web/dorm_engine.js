@@ -1,16 +1,13 @@
 /**
- * 🎮 Arknights 2.5D Dormitory Game Engine (SOLID Modular Architecture)
+ * 🎮 Arknights Authentic Base Dormitory Engine (Side-View Cutaway Platform)
  * 
- * S: Single Responsibility — Grid, Agent, Furniture, Rendering are decoupled classes.
- * O: Open/Closed — Extend new interactions / states via Strategy pattern without editing core loop.
- * L: Liskov Substitution — All Interactables implement the same interaction contract.
- * I: Interface Segregation — Clean separation between physics, AI, and graphics.
- * D: Dependency Inversion — World coordinates and rendering contexts are injected.
+ * S: Single Responsibility — Grid/Floor, Agent, Furniture, Rendering decoupled.
+ * O: Open/Closed — Extensible interaction strategies.
+ * L: Liskov Substitution — Consistent interactable interface.
+ * I: Interface Segregation — Clean physics, state, and graphics layer.
+ * D: Dependency Inversion — Context & assets injected cleanly.
  */
 
-/* ═══════════════════════════════════════════════════════════
-   1. CONSTANTS & ENUMS
-═══════════════════════════════════════════════════════════ */
 const AgentState = {
     IDLE:        'Default',
     WALKING:     'Move',
@@ -20,179 +17,154 @@ const AgentState = {
     RELAXING:    'Relax'
 };
 
-/* ═══════════════════════════════════════════════════════════
-   2. DORM GRID & 2.5D COORDINATE SYSTEM (SRP)
-═══════════════════════════════════════════════════════════ */
-class DormGrid {
-    constructor(cols = 16, rows = 10, cellWidth = 54, cellHeight = 30) {
-        this.cols = cols;
-        this.rows = rows;
-        this.cellWidth = cellWidth;
-        this.cellHeight = cellHeight;
-        this.originX = 0;
-        this.originY = 0;
-        this.occupancy = Array.from({ length: cols }, () => Array(rows).fill(null));
-    }
+/* ── Helper: Remove gray background from Arknights Store preview icons ── */
+const _cutoutCache = new Map();
+function getCutoutImage(img) {
+    if (!img.complete || img.naturalWidth === 0) return img;
+    if (_cutoutCache.has(img.src)) return _cutoutCache.get(img.src);
 
-    setOrigin(ox, oy) {
-        this.originX = ox;
-        this.originY = oy;
-    }
+    const off = document.createElement('canvas');
+    const w = img.naturalWidth;
+    const h = img.naturalHeight;
+    off.width = w;
+    off.height = h;
+    const ctx = off.getContext('2d');
+    ctx.drawImage(img, 0, 0);
 
-    /** Convert grid cell (gx, gy) to 2.5D screen coordinates (sx, sy) */
-    gridToScreen(gx, gy) {
-        // Isometric-style 2.5D projection
-        const sx = this.originX + (gx - gy) * (this.cellWidth / 2);
-        const sy = this.originY + (gx + gy) * (this.cellHeight / 2);
-        return { x: sx, y: sy };
-    }
+    const idata = ctx.getImageData(0, 0, w, h);
+    const d = idata.data;
 
-    /** Convert screen coordinates to closest grid cell */
-    screenToGrid(sx, sy) {
-        const dx = sx - this.originX;
-        const dy = sy - this.originY;
-        const gx = Math.floor((dy / (this.cellHeight / 2) + dx / (this.cellWidth / 2)) / 2);
-        const gy = Math.floor((dy / (this.cellHeight / 2) - dx / (this.cellWidth / 2)) / 2);
-        return { gx: Math.max(0, Math.min(this.cols - 1, gx)), gy: Math.max(0, Math.min(this.rows - 1, gy)) };
-    }
-
-    isWithinBounds(gx, gy) {
-        return gx >= 0 && gx < this.cols && gy >= 0 && gy < this.rows;
-    }
-
-    isCellWalkable(gx, gy) {
-        if (!this.isWithinBounds(gx, gy)) return false;
-        return this.occupancy[gx][gy] === null;
-    }
-
-    occupy(gx, gy, w, d, item) {
-        for (let x = gx; x < gx + w; x++) {
-            for (let y = gy; y < gy + d; y++) {
-                if (this.isWithinBounds(x, y)) {
-                    this.occupancy[x][y] = item;
-                }
-            }
+    // Corner pixel sampling for background tone
+    for (let i = 0; i < d.length; i += 4) {
+        const r = d[i], g = d[i+1], b = d[i+2];
+        const isNeutral = Math.abs(r - g) < 16 && Math.abs(g - b) < 16;
+        const isBgBright = r > 125 && r < 240;
+        if (isNeutral && isBgBright) {
+            d[i+3] = 0; // Make transparent!
         }
     }
-
-    release(gx, gy, w, d) {
-        for (let x = gx; x < gx + w; x++) {
-            for (let y = gy; y < gy + d; y++) {
-                if (this.isWithinBounds(x, y)) {
-                    this.occupancy[x][y] = null;
-                }
-            }
-        }
-    }
-
-    getRandomWalkableCell() {
-        const walkable = [];
-        for (let x = 0; x < this.cols; x++) {
-            for (let y = 0; y < this.rows; y++) {
-                if (this.occupancy[x][y] === null) walkable.push({ gx: x, gy: y });
-            }
-        }
-        return walkable.length > 0 ? walkable[Math.floor(Math.random() * walkable.length)] : { gx: 2, gy: 2 };
-    }
+    ctx.putImageData(idata, 0, 0);
+    _cutoutCache.set(img.src, off);
+    return off;
 }
 
 /* ═══════════════════════════════════════════════════════════
-   3. FURNITURE ITEM ENTITY (SRP + OCP)
+   1. FURNITURE ITEM ENTITY
 ═══════════════════════════════════════════════════════════ */
 class FurnitureItem {
-    constructor(data, gx = 0, gy = 0) {
+    constructor(data, x = 200, depthLayer = 0) {
         this.id = data.id;
         this.name = data.name;
         this.category = data.category || 'DECORATION'; // BED, SEAT, TABLE, INTERACTIVE, DECORATION, WALL_FLOOR
         this.anim = data.anim || 'None';               // Sleep, Sit, Interact, Relax, None
-        this.subType = data.subType || 'NONE';
-        this.location = data.location || 'FLOOR';
-        this.width = Math.max(1, Math.min(6, data.width || 2));
-        this.depth = Math.max(1, Math.min(6, data.depth || 2));
+        this.location = data.location || 'FLOOR';       // FLOOR, WALL, CEILING, CARPET
         this.comfort = data.comfort || 10;
         this.icon = data.icon;
-        this.gx = gx;
-        this.gy = gy;
+        
+        this.x = x;              // Horizontal position along the room (pixels)
+        this.depthLayer = depthLayer; // 0 = Back row, 1 = Front row, -1 = Wall/Ceiling
         this.flipped = false;
-        this.user = null; // Operator currently using this furniture
+        this.user = null;
 
-        this.image = new Image();
-        this.image.crossOrigin = 'anonymous';
-        this.image.src = data.icon;
+        this.rawImage = new Image();
+        this.rawImage.crossOrigin = 'anonymous';
+        this.rawImage.src = data.icon;
         this.loaded = false;
-        this.image.onload = () => { this.loaded = true; };
+        this.cutout = null;
+
+        this.rawImage.onload = () => {
+            this.loaded = true;
+            this.cutout = getCutoutImage(this.rawImage);
+        };
     }
 
-    /** Returns the world interaction spot for characters */
-    getInteractionAnchor(grid) {
-        let ax = this.gx + this.width / 2;
-        let ay = this.gy + this.depth / 2;
+    getRenderSize() {
+        // Natural aspect ratio scaling for furniture
+        const nw = this.rawImage.naturalWidth || 120;
+        const nh = this.rawImage.naturalHeight || 120;
+        const scale = this.category === 'BED' ? 1.05 : 
+                      this.category === 'WALL_FLOOR' ? 0.75 :
+                      this.category === 'SEAT' ? 0.85 : 0.9;
+        return {
+            w: nw * scale,
+            h: nh * scale
+        };
+    }
 
-        if (this.category === 'BED') {
-            // Sleep on pillow position
-            ax = this.gx + (this.flipped ? 0.3 : this.width - 0.5);
-            ay = this.gy + this.depth / 2;
-        } else if (this.category === 'SEAT') {
-            // Sit center
-            ax = this.gx + this.width / 2;
-            ay = this.gy + this.depth / 2;
-        } else if (this.category === 'INTERACTIVE' || this.category === 'TABLE') {
-            // In front of item
-            ax = this.gx + this.width / 2;
-            ay = Math.min(grid.rows - 1, this.gy + this.depth + 0.2);
+    getBounds(room) {
+        const size = this.getRenderSize();
+        let baseY = room.floorY;
+
+        if (this.location === 'WALL') {
+            baseY = room.floorY - 140;
+        } else if (this.location === 'CEILING') {
+            baseY = room.wallTopY + 70;
+        } else {
+            // Floor placement: depth layer gives subtle Y offset
+            baseY = room.floorY + (this.depthLayer === 1 ? 16 : -8);
         }
 
-        const screenPos = grid.gridToScreen(ax, ay);
         return {
-            gx: ax,
-            gy: ay,
-            screenX: screenPos.x,
-            screenY: screenPos.y,
+            left: this.x - size.w / 2,
+            right: this.x + size.w / 2,
+            top: baseY - size.h,
+            bottom: baseY,
+            w: size.w,
+            h: size.h,
+            baseY
+        };
+    }
+
+    /** Interaction anchor point for Operator */
+    getInteractionAnchor(room) {
+        const bounds = this.getBounds(room);
+        let targetX = this.x;
+
+        if (this.category === 'BED') {
+            targetX = this.flipped ? bounds.left + 35 : bounds.right - 35;
+        } else if (this.category === 'SEAT') {
+            targetX = this.x;
+        } else if (this.category === 'INTERACTIVE' || this.category === 'TABLE') {
+            targetX = this.flipped ? bounds.left - 20 : bounds.right + 20;
+        }
+
+        return {
+            x: Math.max(room.leftWallX + 30, Math.min(room.rightWallX - 30, targetX)),
+            y: room.floorY,
             anim: this.anim !== 'None' ? this.anim : AgentState.RELAXING
         };
     }
 
-    draw(ctx, grid, isSelected = false) {
-        const base = grid.gridToScreen(this.gx, this.gy);
-        const cellW = grid.cellWidth;
-        const cellH = grid.cellHeight;
-
-        // Bounding dimensions on 2.5D plane
-        const renderW = Math.max(48, this.width * cellW * 0.7);
-        const renderH = Math.max(48, (this.depth * cellH + 35) * 1.1);
-
-        const drawX = base.x - renderW / 2;
-        const drawY = base.y - renderH + (this.depth * cellH / 2);
+    draw(ctx, room, isSelected = false) {
+        if (!this.loaded) return;
+        const bounds = this.getBounds(room);
+        const source = this.cutout || getCutoutImage(this.rawImage);
 
         ctx.save();
 
-        // Shadow under furniture
-        ctx.beginPath();
-        ctx.ellipse(base.x, base.y + 4, renderW * 0.45, (this.depth * cellH) * 0.45, 0, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
-        ctx.fill();
-
-        // Selection highlight glow
-        if (isSelected) {
-            ctx.shadowColor = '#00d2ff';
-            ctx.shadowBlur = 16;
-            ctx.strokeStyle = '#00d2ff';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(drawX - 4, drawY - 4, renderW + 8, renderH + 8);
+        // Ground shadow (for floor objects)
+        if (this.location === 'FLOOR' || this.location === 'CARPET') {
+            ctx.beginPath();
+            ctx.ellipse(this.x, bounds.baseY, bounds.w * 0.42, 10, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+            ctx.fill();
         }
 
-        if (this.loaded) {
-            if (this.flipped) {
-                ctx.translate(base.x, 0);
-                ctx.scale(-1, 1);
-                ctx.drawImage(this.image, -renderW / 2, drawY, renderW, renderH);
-            } else {
-                ctx.drawImage(this.image, drawX, drawY, renderW, renderH);
-            }
+        // Selection highlight
+        if (isSelected) {
+            ctx.shadowColor = '#00d2ff';
+            ctx.shadowBlur = 18;
+            ctx.strokeStyle = '#00d2ff';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(bounds.left - 4, bounds.top - 4, bounds.w + 8, bounds.h + 8);
+        }
+
+        if (this.flipped) {
+            ctx.translate(this.x, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(source, -bounds.w / 2, bounds.top, bounds.w, bounds.h);
         } else {
-            // Placeholder box while image loads
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-            ctx.fillRect(drawX, drawY, renderW, renderH);
+            ctx.drawImage(source, bounds.left, bounds.top, bounds.w, bounds.h);
         }
 
         ctx.restore();
@@ -200,24 +172,23 @@ class FurnitureItem {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   4. OPERATOR AGENT CONTROLLER (State Machine + Spine AI)
+   2. OPERATOR AGENT CONTROLLER (AI + State Machine)
 ═══════════════════════════════════════════════════════════ */
 class OperatorAgent {
-    constructor(opInfo, spineData, gx = 4, gy = 4) {
-        this.opInfo = opInfo; // { id, name_cn, name_en }
-        this.spineData = spineData; // { skel, state, bounds }
-        this.gx = gx;
-        this.gy = gy;
-        this.targetGx = gx;
-        this.targetGy = gy;
-        this.state = AgentState.IDLE;
-        this.speed = 1.4; // grid units per second
+    constructor(opInfo, spineData, x = 300) {
+        this.opInfo = opInfo;
+        this.spineData = spineData; // { skel, state }
+        this.x = x;
+        this.targetX = x;
+        this.speed = 140; // pixels per second
         this.facingRight = true;
+        this.state = AgentState.IDLE;
         this.targetFurniture = null;
         this.stateTimer = 0;
         this.bubbleText = '';
         this.bubbleTimer = 0;
         this.heartParticles = [];
+        this.scale = 0.42; // crisp in-game chibi proportion
 
         this.setAnimation(AgentState.IDLE, true);
     }
@@ -242,57 +213,56 @@ class OperatorAgent {
     spawnHeart() {
         this.heartParticles.push({
             x: 0,
-            y: -120,
-            vy: -1.2,
+            y: -140,
+            vy: -1.4,
             alpha: 1.0,
-            scale: 0.8 + Math.random() * 0.4
+            scale: 0.9 + Math.random() * 0.4
         });
     }
 
-    moveTo(gx, gy, onArrivalCallback = null) {
-        this.targetGx = gx;
-        this.targetGy = gy;
+    moveTo(x, onArrivalCallback = null) {
+        this.targetX = x;
         this.onArrival = onArrivalCallback;
-        if (Math.abs(gx - this.gx) > 0.05 || Math.abs(gy - this.gy) > 0.05) {
-            this.facingRight = (gx >= this.gx);
+        if (Math.abs(x - this.x) > 5) {
+            this.facingRight = (x >= this.x);
             this.setAnimation(AgentState.WALKING, true);
         }
     }
 
-    interactWith(furniture, grid) {
+    interactWith(furniture, room) {
         if (this.targetFurniture && this.targetFurniture !== furniture) {
             this.targetFurniture.user = null;
         }
         this.targetFurniture = furniture;
         furniture.user = this;
 
-        const anchor = furniture.getInteractionAnchor(grid);
-        this.showBubble(`Đi tới ${furniture.name} ♡`, 2.0);
+        const anchor = furniture.getInteractionAnchor(room);
+        this.showBubble(`Tới ${furniture.name} ♡`, 2.0);
 
-        this.moveTo(anchor.gx, anchor.gy, () => {
-            // Arrived at furniture
-            this.facingRight = (furniture.flipped ? false : true);
+        this.moveTo(anchor.x, () => {
+            this.facingRight = !furniture.flipped;
             this.setAnimation(anchor.anim, true);
+
             if (anchor.anim === AgentState.SLEEPING) {
-                this.showBubble('Zzz... Ngủ ngon...', 4.0);
+                this.showBubble('Zzz... Thật êm ái...', 4.5);
             } else if (anchor.anim === AgentState.SITTING) {
-                this.showBubble('Ngồi nghỉ một chút ~', 3.0);
+                this.showBubble('Ngồi nghỉ chân một lúc ~', 3.5);
             } else if (anchor.anim === AgentState.INTERACTING) {
-                this.showBubble('Thú vị thật đấy!', 3.0);
+                this.showBubble('Thích món này quá! ♡', 3.5);
                 this.spawnHeart();
             }
         });
     }
 
-    update(delta, grid) {
-        // 1. Advance Spine animation
+    update(delta, room) {
+        // 1. Spine state update
         if (this.spineData?.state) {
             this.spineData.state.update(delta);
             this.spineData.state.apply(this.spineData.skel);
             this.spineData.skel.updateWorldTransform();
         }
 
-        // 2. Bubble & Particle updates
+        // 2. Bubble & Particles
         if (this.bubbleTimer > 0) {
             this.bubbleTimer -= delta;
             if (this.bubbleTimer <= 0) this.bubbleText = '';
@@ -300,21 +270,19 @@ class OperatorAgent {
 
         for (let i = this.heartParticles.length - 1; i >= 0; i--) {
             const p = this.heartParticles[i];
-            p.y += p.vy * 40 * delta;
+            p.y += p.vy * 45 * delta;
             p.alpha -= delta * 0.6;
             if (p.alpha <= 0) this.heartParticles.splice(i, 1);
         }
 
-        // 3. Movement logic
-        const dx = this.targetGx - this.gx;
-        const dy = this.targetGy - this.gy;
-        const dist = Math.hypot(dx, dy);
+        // 3. Movement along floor line
+        const dx = this.targetX - this.x;
+        const dist = Math.abs(dx);
 
-        if (dist > 0.05) {
+        if (dist > 3) {
             const step = this.speed * delta;
             if (step >= dist) {
-                this.gx = this.targetGx;
-                this.gy = this.targetGy;
+                this.x = this.targetX;
                 if (this.onArrival) {
                     const cb = this.onArrival;
                     this.onArrival = null;
@@ -323,19 +291,19 @@ class OperatorAgent {
                     this.setAnimation(AgentState.IDLE, true);
                 }
             } else {
-                this.gx += (dx / dist) * step;
-                this.gy += (dy / dist) * step;
-                this.facingRight = (dx >= 0);
+                this.x += Math.sign(dx) * step;
+                this.facingRight = (dx > 0);
             }
         } else {
-            // Autonomous AI / Roaming behavior
+            // Autonomous AI wandering
             this.stateTimer += delta;
-            if (this.stateTimer > 8.0 && !this.targetFurniture) {
+            if (this.stateTimer > 7.0 && !this.targetFurniture) {
                 this.stateTimer = 0;
-                // 50% chance to roam, 50% chance to relax
                 if (Math.random() < 0.6) {
-                    const nextCell = grid.getRandomWalkableCell();
-                    this.moveTo(nextCell.gx, nextCell.gy);
+                    // Walk to random spot along the floor
+                    const padding = 80;
+                    const randomX = room.leftWallX + padding + Math.random() * (room.rightWallX - room.leftWallX - padding * 2);
+                    this.moveTo(randomX);
                 } else {
                     this.setAnimation(Math.random() < 0.5 ? AgentState.IDLE : AgentState.RELAXING, true);
                 }
@@ -345,7 +313,7 @@ class OperatorAgent {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   5. DORMITORY WORLD & RENDERER ENGINE (DIP + Composite)
+   3. DORMITORY ROOM WORLD (Side-View Cutaway Scene)
 ═══════════════════════════════════════════════════════════ */
 class DormWorld {
     constructor(canvas, glCanvas) {
@@ -355,16 +323,18 @@ class DormWorld {
         this.gl = glCanvas.getContext('webgl', { alpha: true, premultipliedAlpha: false });
         this.sceneRenderer = new spine.webgl.SceneRenderer(glCanvas, this.gl);
 
-        this.grid = new DormGrid(12, 8, 72, 38);
         this.furnitures = [];
         this.agents = [];
         this.selectedFurniture = null;
-        this.selectedAgent = null;
+
+        this.leftWallX = 50;
+        this.rightWallX = 900;
+        this.wallTopY = 60;
+        this.floorY = 420;
+        this.floorHeight = 110;
 
         this.rafId = null;
         this.lastTs = performance.now() / 1000;
-        this.wallTheme = 'default';
-        this.floorTheme = 'default';
     }
 
     resize() {
@@ -376,25 +346,24 @@ class DormWorld {
             this.glCanvas.width = w;
             this.glCanvas.height = h;
         }
-        // Center grid in the lower half of screen
-        this.grid.setOrigin(w / 2, h * 0.42);
+
+        this.leftWallX = 40;
+        this.rightWallX = w - 40;
+        this.wallTopY = 50;
+        this.floorY = h - 95;
+        this.floorHeight = 95;
     }
 
-    addFurniture(furnitureItem) {
-        this.furnitures.push(furnitureItem);
-        this.grid.occupy(furnitureItem.gx, furnitureItem.gy, furnitureItem.width, furnitureItem.depth, furnitureItem);
+    addFurniture(item) {
+        this.furnitures.push(item);
     }
 
-    removeFurniture(furnitureItem) {
-        this.grid.release(furnitureItem.gx, furnitureItem.gy, furnitureItem.width, furnitureItem.depth);
-        this.furnitures = this.furnitures.filter(f => f !== furnitureItem);
-        if (this.selectedFurniture === furnitureItem) this.selectedFurniture = null;
+    removeFurniture(item) {
+        this.furnitures = this.furnitures.filter(f => f !== item);
+        if (this.selectedFurniture === item) this.selectedFurniture = null;
     }
 
     clearFurniture() {
-        for (const f of this.furnitures) {
-            this.grid.release(f.gx, f.gy, f.width, f.depth);
-        }
         this.furnitures = [];
         this.selectedFurniture = null;
     }
@@ -429,8 +398,8 @@ class DormWorld {
     }
 
     update(delta) {
-        for (const agent of this.agents) {
-            agent.update(delta, this.grid);
+        for (const a of this.agents) {
+            a.update(delta, this);
         }
     }
 
@@ -441,164 +410,143 @@ class DormWorld {
 
         ctx.clearRect(0, 0, w, h);
 
-        // 1. Draw 2.5D Room Walls & Floor
-        this.drawRoomBackground(ctx, w, h);
+        // 1. Draw Arknights Base Dormitory Cutaway Room
+        this.drawBaseDormRoom(ctx, w, h);
 
-        // 2. Draw Floor Isometric Grid
-        this.drawGrid(ctx);
-
-        // 3. Combined Depth-Sorted Render List (Furnitures + Operators)
-        const renderList = [];
-
+        // 2. Render Wall & Ceiling Furnitures first (Back Layer)
         for (const f of this.furnitures) {
-            const center = this.grid.gridToScreen(f.gx + f.width / 2, f.gy + f.depth / 2);
-            renderList.push({
-                type: 'FURNITURE',
-                depth: f.gx + f.gy + (f.width + f.depth) / 2,
-                screenY: center.y,
-                item: f
-            });
-        }
-
-        for (const a of this.agents) {
-            const pos = this.grid.gridToScreen(a.gx, a.gy);
-            renderList.push({
-                type: 'AGENT',
-                depth: a.gx + a.gy,
-                screenY: pos.y,
-                item: a
-            });
-        }
-
-        // Sort back-to-front
-        renderList.sort((a, b) => a.depth - b.depth);
-
-        // 4. Render 2D Layer Objects
-        for (const r of renderList) {
-            if (r.type === 'FURNITURE') {
-                r.item.draw(ctx, this.grid, r.item === this.selectedFurniture);
-            } else if (r.type === 'AGENT') {
-                this.drawAgentOverlay(ctx, r.item);
+            if (f.location === 'WALL' || f.location === 'CEILING' || f.location === 'CARPET') {
+                f.draw(ctx, this, f === this.selectedFurniture);
             }
         }
 
-        // 5. Render Spine WebGL Overlay
+        // 3. Render Floor Back Row Furnitures
+        for (const f of this.furnitures) {
+            if (f.location === 'FLOOR' && f.depthLayer === 0) {
+                f.draw(ctx, this, f === this.selectedFurniture);
+            }
+        }
+
+        // 4. Render Operator Spine Overlay (Middle Layer)
         this.renderSpineAgents();
+
+        // 5. Render Floor Front Row Furnitures (in front of Operators)
+        for (const f of this.furnitures) {
+            if (f.location === 'FLOOR' && f.depthLayer === 1) {
+                f.draw(ctx, this, f === this.selectedFurniture);
+            }
+        }
+
+        // 6. Draw Operator Bubbles & UI Overlays (Top Layer)
+        for (const a of this.agents) {
+            this.drawAgentOverlay(ctx, a);
+        }
     }
 
-    drawRoomBackground(ctx, w, h) {
-        const ox = this.grid.originX;
-        const oy = this.grid.originY;
-        const cols = this.grid.cols;
-        const rows = this.grid.rows;
+    drawBaseDormRoom(ctx, w, h) {
+        const lx = this.leftWallX;
+        const rx = this.rightWallX;
+        const ty = this.wallTopY;
+        const fy = this.floorY;
 
-        const topCorner = { x: ox, y: oy };
-        const leftCorner = this.grid.gridToScreen(0, rows);
-        const rightCorner = this.grid.gridToScreen(cols, 0);
-        const bottomCorner = this.grid.gridToScreen(cols, rows);
+        // Room Background Wall (Arknights Industrial Slate Gray)
+        const wallGrad = ctx.createLinearGradient(0, ty, 0, fy);
+        wallGrad.addColorStop(0, '#1a2233');
+        wallGrad.addColorStop(1, '#0e1422');
+        ctx.fillStyle = wallGrad;
+        ctx.fillRect(lx, ty, rx - lx, fy - ty);
 
-        // Ceiling/Wall top height
-        const wallHeight = 220;
-
-        // Left Wall
-        ctx.fillStyle = '#1e293b';
-        ctx.beginPath();
-        ctx.moveTo(topCorner.x, topCorner.y - wallHeight);
-        ctx.lineTo(leftCorner.x, leftCorner.y - wallHeight);
-        ctx.lineTo(leftCorner.x, leftCorner.y);
-        ctx.lineTo(topCorner.x, topCorner.y);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-        ctx.stroke();
-
-        // Right Wall
-        ctx.fillStyle = '#0f172a';
-        ctx.beginPath();
-        ctx.moveTo(topCorner.x, topCorner.y - wallHeight);
-        ctx.lineTo(rightCorner.x, rightCorner.y - wallHeight);
-        ctx.lineTo(rightCorner.x, rightCorner.y);
-        ctx.lineTo(topCorner.x, topCorner.y);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-
-        // Room Floor Surface
-        const floorGrad = ctx.createLinearGradient(ox, oy, bottomCorner.x, bottomCorner.y);
-        floorGrad.addColorStop(0, '#334155');
-        floorGrad.addColorStop(1, '#1e293b');
-        ctx.fillStyle = floorGrad;
-        ctx.beginPath();
-        ctx.moveTo(topCorner.x, topCorner.y);
-        ctx.lineTo(rightCorner.x, rightCorner.y);
-        ctx.lineTo(bottomCorner.x, bottomCorner.y);
-        ctx.lineTo(leftCorner.x, leftCorner.y);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle = '#475569';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-    }
-
-    drawGrid(ctx) {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        // Wall Panel Seams (Arknights RIIC Architecture)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
         ctx.lineWidth = 1;
-
-        for (let x = 0; x <= this.grid.cols; x++) {
-            const start = this.grid.gridToScreen(x, 0);
-            const end = this.grid.gridToScreen(x, this.grid.rows);
+        const panelWidth = 140;
+        for (let x = lx + panelWidth; x < rx; x += panelWidth) {
             ctx.beginPath();
-            ctx.moveTo(start.x, start.y);
-            ctx.lineTo(end.x, end.y);
+            ctx.moveTo(x, ty);
+            ctx.lineTo(x, fy);
             ctx.stroke();
         }
 
-        for (let y = 0; y <= this.grid.rows; y++) {
-            const start = this.grid.gridToScreen(0, y);
-            const end = this.grid.gridToScreen(this.grid.cols, y);
+        // Upper Wall Vent / Rail
+        ctx.fillStyle = '#0b0f1a';
+        ctx.fillRect(lx, ty + 24, rx - lx, 14);
+        ctx.strokeStyle = 'rgba(0, 210, 255, 0.3)';
+        ctx.beginPath();
+        ctx.moveTo(lx, ty + 38);
+        ctx.lineTo(rx, ty + 38);
+        ctx.stroke();
+
+        // Room Floor Surface (Dark Wooden/Composite Tiles)
+        const floorGrad = ctx.createLinearGradient(0, fy, 0, h);
+        floorGrad.addColorStop(0, '#2e3a4e');
+        floorGrad.addColorStop(0.15, '#1e2636');
+        floorGrad.addColorStop(1, '#111622');
+        ctx.fillStyle = floorGrad;
+        ctx.fillRect(lx, fy, rx - lx, this.floorHeight);
+
+        // Floor Baseboard Line
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(lx, fy - 6, rx - lx, 6);
+        ctx.fillStyle = '#00d2ff';
+        ctx.fillRect(lx, fy - 2, rx - lx, 2);
+
+        // Floor Tile Planks
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        for (let x = lx + 80; x < rx; x += 80) {
             ctx.beginPath();
-            ctx.moveTo(start.x, start.y);
-            ctx.lineTo(end.x, end.y);
+            ctx.moveTo(x, fy);
+            ctx.lineTo(x - 25, h);
             ctx.stroke();
         }
+
+        // Room Outer Frame / Bevel (Cutaway Room look)
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(lx, ty, rx - lx, h - ty);
+
+        // RIIC Room Header Label
+        ctx.font = '800 11px "Plus Jakarta Sans", monospace';
+        ctx.fillStyle = '#00d2ff';
+        ctx.fillText('RHODES ISLAND INFRASTRUCTURE COMPLEX · DORMITORY-01', lx + 16, ty + 18);
     }
 
     drawAgentOverlay(ctx, agent) {
-        const pos = this.grid.gridToScreen(agent.gx, agent.gy);
+        const x = agent.x;
+        const y = this.floorY;
 
-        // Shadow under character
+        // Ground shadow
         ctx.save();
         ctx.beginPath();
-        ctx.ellipse(pos.x, pos.y, 22, 9, 0, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        ctx.ellipse(x, y, 26, 8, 0, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
         ctx.fill();
 
-        // Emote Bubble
+        // Dialogue Bubble
         if (agent.bubbleText) {
-            ctx.font = '600 11px "Plus Jakarta Sans", sans-serif';
+            ctx.font = '700 11px "Plus Jakarta Sans", sans-serif';
             const textW = ctx.measureText(agent.bubbleText).width;
-            const bx = pos.x - (textW + 16) / 2;
-            const by = pos.y - 145;
+            const bx = x - (textW + 18) / 2;
+            const by = y - 165;
 
-            // Bubble background
-            ctx.fillStyle = 'rgba(10, 14, 23, 0.9)';
+            // Bubble pill
+            ctx.fillStyle = 'rgba(10, 14, 23, 0.94)';
             ctx.strokeStyle = '#00d2ff';
             ctx.lineWidth = 1.5;
             ctx.beginPath();
-            ctx.roundRect(bx, by, textW + 16, 24, 8);
+            ctx.roundRect(bx, by, textW + 18, 26, 8);
             ctx.fill();
             ctx.stroke();
 
             // Text
             ctx.fillStyle = '#ffffff';
-            ctx.fillText(agent.bubbleText, bx + 8, by + 16);
+            ctx.fillText(agent.bubbleText, bx + 9, by + 17);
         }
 
-        // Heart particles
+        // Heart Particles
         for (const p of agent.heartParticles) {
-            ctx.font = `${Math.floor(16 * p.scale)}px sans-serif`;
+            ctx.font = `${Math.floor(18 * p.scale)}px sans-serif`;
             ctx.fillStyle = `rgba(255, 118, 117, ${p.alpha})`;
-            ctx.fillText('❤', pos.x + p.x - 6, pos.y + p.y);
+            ctx.fillText('❤', x + p.x - 8, y + p.y);
         }
 
         ctx.restore();
@@ -625,13 +573,10 @@ class DormWorld {
             const skel = agent.spineData?.skel;
             if (!skel) continue;
 
-            const pos = this.grid.gridToScreen(agent.gx, agent.gy);
-
-            // Set skeleton position on WebGL canvas
-            skel.x = pos.x;
-            skel.y = vpH - pos.y; // WebGL Y is inverted
-            skel.scaleX = (agent.facingRight ? 0.35 : -0.35);
-            skel.scaleY = 0.35;
+            skel.x = agent.x;
+            skel.y = vpH - this.floorY; // Correct bottom alignment on floor line
+            skel.scaleX = (agent.facingRight ? agent.scale : -agent.scale);
+            skel.scaleY = agent.scale;
             skel.updateWorldTransform();
 
             this.sceneRenderer.begin();
@@ -642,7 +587,6 @@ class DormWorld {
 }
 
 window.DormEngine = {
-    DormGrid,
     FurnitureItem,
     OperatorAgent,
     DormWorld,

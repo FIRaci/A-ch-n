@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arknights Chibi Dormitory 2.5D · Phòng Ký Túc Xá & Furniture</title>
+    <title>Arknights Chibi Dormitory · Phòng Ký Túc Xá & Furniture</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -102,7 +102,7 @@
             background: transparent; border: none; color: #fff; font-size: 12px; outline: none; width: 100%;
         }
         .theme-list {
-            display: flex; flex-direction: column; gap: 6px; max-height: 480px; overflow-y: auto; padding-right: 4px;
+            display: flex; flex-direction: column; gap: 6px; max-height: 460px; overflow-y: auto; padding-right: 4px;
         }
         .theme-item {
             background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: var(--rsm);
@@ -113,7 +113,7 @@
         .theme-item-name { font-size: 12px; font-weight: 700; color: #fff; }
         .theme-item-sub { font-size: 10px; color: var(--mt); display: flex; justify-content: space-between; }
 
-        /* ── Center Stage: 2.5D Dorm Room ────────────────── */
+        /* ── Center Stage: Authentic RIIC Cutaway Room ───── */
         .stage-wrap {
             position: relative; border-radius: var(--rad); overflow: hidden;
             border: 1px solid var(--border); background: #060910;
@@ -160,7 +160,7 @@
             display: flex; align-items: center; justify-content: space-between; z-index: 10;
         }
 
-        /* ── Right Panel: Furniture Inventory & Sandbox ──── */
+        /* ── Right Panel: Furniture Palette ──────────────── */
         .cat-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
         .cat-btn {
             background: var(--bg2); border: 1px solid var(--border); color: var(--mt);
@@ -171,7 +171,7 @@
 
         .furn-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-            max-height: 480px; overflow-y: auto; padding-right: 4px;
+            max-height: 460px; overflow-y: auto; padding-right: 4px;
         }
         .furn-card {
             background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: var(--rsm);
@@ -186,7 +186,7 @@
             padding: 1px 4px; border-radius: 4px; background: rgba(0, 210, 255, 0.18); color: var(--ac);
         }
 
-        /* ── Selected Furniture Control Overlay ─────────── */
+        /* ── Selected Furniture Tool ─────────────────────── */
         .furn-ctrl-box {
             background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rsm);
             padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
@@ -209,20 +209,20 @@
         <div class="brand">
             <div class="brand-logo"><i data-lucide="home" color="#fff" size="22"></i></div>
             <div>
-                <h1>ARKNIGHTS DORMITORY 2.5D</h1>
-                <div class="brand-sub">KÝ TÚC XÁ & FURNITURE SANDBOX</div>
+                <h1>ARKNIGHTS DORMITORY</h1>
+                <div class="brand-sub">RHODES ISLAND BASE DORMITORY · 罗德岛宿舍</div>
             </div>
         </div>
 
         <nav class="nav">
             <a href="index.html" class="tab-btn"><i data-lucide="sparkles" size="14"></i> Spine Hub</a>
-            <a href="index2.html" class="tab-btn active"><i data-lucide="layout-grid" size="14"></i> Dormitory 2.5D</a>
+            <a href="index2.html" class="tab-btn active"><i data-lucide="layout-grid" size="14"></i> Dormitory (Base)</a>
         </nav>
     </header>
 
-    <!-- Main Body -->
+    <!-- Main Content -->
     <main>
-        <!-- Left: Themes & Operator Selector -->
+        <!-- Left: Themes & Operators -->
         <aside class="panel">
             <div class="panel-title">
                 <span><i data-lucide="palette" size="14" color="var(--ac)"></i> Chủ Đề Furniture (135+)</span>
@@ -244,11 +244,11 @@
                 <option value="char_002_amiya">阿米娅 (Amiya)</option>
                 <option value="char_102_texas">德克萨斯 (Texas)</option>
                 <option value="char_350_surtr">史尔特尔 (Surtr)</option>
-                <option value="char_222_bpipe">风笛 (Bagpipe)</option>
+                <option value="char_4229_aphris">玛恩纳 (Młynar)</option>
             </select>
         </aside>
 
-        <!-- Center: 2.5D Room Stage -->
+        <!-- Center: Room Stage -->
         <section class="stage-wrap">
             <div class="stage-bar">
                 <div class="comfort-badge">
@@ -256,7 +256,7 @@
                     <span>Điểm Không Khí: <b id="comfort-val">0</b></span>
                 </div>
                 <div class="stage-actions">
-                    <button class="btn" id="btn-clear-room"><i data-lucide="trash-2" size="12"></i> Xóa Hết</button>
+                    <button class="btn" id="btn-clear-room"><i data-lucide="trash-2" size="12"></i> Xóa Đồ</button>
                     <button class="btn btn-ac" id="btn-random-roam"><i data-lucide="play" size="12"></i> Cho Đi Dạo</button>
                 </div>
             </div>
@@ -267,12 +267,12 @@
             </div>
 
             <div class="hint-bar">
-                <span>💡 <b>Mẹo tương tác:</b> Bấm lên sàn để di chuyển · Bấm vào Giường (Ngủ) · Ghế (Ngồi) · Bấm vào Amiya (Thả tim)</span>
+                <span>💡 <b>Tương tác Base:</b> Click sàn để chạy · Click Giường (Ngủ) · Ghế (Ngồi) · Click Amiya (Thả tim)</span>
                 <span id="agent-status" style="color: var(--ac); font-weight: 700;">Amiya · Đang nghỉ ngơi</span>
             </div>
         </section>
 
-        <!-- Right: Furniture Inventory Palette & Controls -->
+        <!-- Right: Furniture Inventory Palette -->
         <aside class="panel">
             <div class="panel-title">
                 <span><i data-lucide="package" size="14" color="var(--ac)"></i> Kho Đồ (2,780+ Món)</span>
@@ -314,9 +314,6 @@
     </div>
 
     <script>
-    /* ═══════════════════════════════════════════════════════════
-       DORMITORY APP LOGIC (Integrates SOLID DormEngine)
-    ═══════════════════════════════════════════════════════════ */
     let world = null;
     let mainAgent = null;
     let curCat = 'ALL';
@@ -335,11 +332,11 @@
         renderThemes();
         renderFurniturePalette();
 
-        // 3. Load Amiya Spine Model & Spawn into Dorm
+        // 3. Load Amiya into Dorm
         await loadDormOperator('char_002_amiya', '阿米娅');
 
-        // 4. Setup Theme 1 as Default Preset
-        applyTheme('furni_set_warehouse');
+        // 4. Load Columbia Cafe / Warehouse Theme as initial preset
+        applyTheme('furni_set_cafe');
 
         // 5. Setup UI Event Listeners
         setupEventListeners();
@@ -352,11 +349,10 @@
         setTimeout(() => t.classList.remove('show'), 2800);
     }
 
-    /* ── Operator Spine Loading ──────────────────────────── */
+    /* ── Load Operator Spine ─────────────────────────────── */
     async function loadDormOperator(opId, opNameCn) {
         document.getElementById('agent-status').textContent = `${opNameCn} · Đang tải Spine...`;
         try {
-            // Fetch meta.json
             const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
             let metaUrl = isLocal ? `/api/local-meta?name=${encodeURIComponent(opNameCn)}` : `${CDN}${opId}/meta.json`;
             let metaRes = await fetch(metaUrl).catch(() => null);
@@ -365,13 +361,11 @@
             }
             const meta = await metaRes.json();
 
-            // Resolve base Dorm Chibi model
             const skinData = meta?.skin?.['默认'] || Object.values(meta?.skin || {})[0] || {};
             const modelDat = skinData['基建'] || Object.values(skinData)[0];
             const prefix = meta?.prefix || `${CDN}${opId}/`;
             const fileRel = modelDat?.file;
 
-            // Load .skel + .atlas + .png
             const directPrefix = `${prefix}${fileRel}`;
             const [skelBuf, atlasText, pngBlob] = await Promise.all([
                 fetch(`${directPrefix}.skel`).then(r => r.arrayBuffer()),
@@ -386,7 +380,6 @@
                 i.src = url;
             });
 
-            // Parse atlas & skeleton with our bugfixed Spine runtime
             const atlas = new spine.TextureAtlas(atlasText, () => new spine.webgl.GLTexture(world.gl, img));
             const loader = new spine.AtlasAttachmentLoader(atlas);
             const reader = new spine.SkeletonBinary(loader);
@@ -400,15 +393,14 @@
             const stateData = new spine.AnimationStateData(skelData);
             const state = new spine.AnimationState(stateData);
 
-            // Create OperatorAgent
             world.agents = [];
-            mainAgent = new DormEngine.OperatorAgent({ id: opId, name_cn: opNameCn }, { skel, state }, 5, 4);
+            mainAgent = new DormEngine.OperatorAgent({ id: opId, name_cn: opNameCn }, { skel, state }, 420);
             world.agents.push(mainAgent);
 
             document.getElementById('agent-status').textContent = `${opNameCn} · Sẵn sàng tương tác ♡`;
             showToast(`✓ Đã đưa ${opNameCn} vào Ký Túc Xá!`);
         } catch (e) {
-            console.error('Failed to load operator into dorm:', e);
+            console.error('Failed to load operator:', e);
             document.getElementById('agent-status').textContent = `Lỗi tải ${opNameCn}: ${e.message}`;
         }
     }
@@ -448,22 +440,41 @@
 
         world.clearFurniture();
 
-        // Preset placement coordinates across room grid
-        const slots = [
-            { gx: 1, gy: 1 }, { gx: 5, gy: 1 }, { gx: 8, gy: 1 },
-            { gx: 1, gy: 4 }, { gx: 5, gy: 4 }, { gx: 9, gy: 4 },
-            { gx: 2, gy: 6 }, { gx: 6, gy: 6 }
+        // Floor layout positions from left to right along room width
+        const totalW = world.rightWallX - world.leftWallX;
+        const xPositions = [
+            world.leftWallX + 110,
+            world.leftWallX + 260,
+            world.leftWallX + 430,
+            world.leftWallX + 600,
+            world.leftWallX + 760,
+            world.leftWallX + 180,
+            world.leftWallX + 510
         ];
 
-        let idx = 0;
+        let floorIdx = 0;
+        let wallIdx = 0;
+
         for (const fid of theme.furniture_ids) {
             const fData = furnitures[fid];
-            if (!fData || fData.location === 'WALL' || fData.location === 'CEILING') continue;
-            if (idx >= slots.length) break;
+            if (!fData) continue;
 
-            const slot = slots[idx++];
-            const item = new DormEngine.FurnitureItem(fData, slot.gx, slot.gy);
-            world.addFurniture(item);
+            if (fData.location === 'WALL' || fData.location === 'CEILING') {
+                if (wallIdx < 4) {
+                    const wx = world.leftWallX + 150 + wallIdx * 200;
+                    const item = new DormEngine.FurnitureItem(fData, wx, -1);
+                    world.addFurniture(item);
+                    wallIdx++;
+                }
+            } else {
+                if (floorIdx < xPositions.length) {
+                    const fx = xPositions[floorIdx];
+                    const depth = (floorIdx % 2 === 0 ? 0 : 1);
+                    const item = new DormEngine.FurnitureItem(fData, fx, depth);
+                    world.addFurniture(item);
+                    floorIdx++;
+                }
+            }
         }
 
         updateComfort();
@@ -481,7 +492,7 @@
             const matchCat = (curCat === 'ALL' || f.category === curCat);
             const matchQuery = (!q || f.name.toLowerCase().includes(q));
             return matchCat && matchQuery;
-        }).slice(0, 72); // Pagination limit for super fast DOM rendering
+        }).slice(0, 72);
 
         document.getElementById('furn-count').textContent = `${filtered.length} Món`;
 
@@ -499,9 +510,10 @@
     }
 
     function spawnFurnitureToRoom(fData) {
-        // Find empty grid cell
-        const cell = world.grid.getRandomWalkableCell();
-        const item = new DormEngine.FurnitureItem(fData, cell.gx, cell.gy);
+        // Place in center or near cursor
+        const x = world.leftWallX + 120 + Math.random() * (world.rightWallX - world.leftWallX - 240);
+        const depth = Math.random() < 0.5 ? 0 : 1;
+        const item = new DormEngine.FurnitureItem(fData, x, depth);
         world.addFurniture(item);
         world.selectedFurniture = item;
         updateSelectedFurnitureBox();
@@ -527,16 +539,14 @@
     function setupEventListeners() {
         const canvas = document.getElementById('dorm-2d-canvas');
 
-        // Click on 2.5D Room Floor
         canvas.addEventListener('click', (e) => {
             const rect = canvas.getBoundingClientRect();
             const sx = e.clientX - rect.left;
             const sy = e.clientY - rect.top;
 
-            // 1. Check if clicked on Amiya / Operator directly
+            // 1. Clicked on Amiya directly
             if (mainAgent) {
-                const aPos = world.grid.gridToScreen(mainAgent.gx, mainAgent.gy);
-                if (Math.hypot(sx - aPos.x, sy - aPos.y) < 45) {
+                if (Math.abs(sx - mainAgent.x) < 40 && sy > world.floorY - 140 && sy < world.floorY + 20) {
                     mainAgent.setAnimation(DormEngine.AgentState.INTERACTING, false);
                     mainAgent.showBubble('Doktah! Amiya ở đây ♡', 3.0);
                     mainAgent.spawnHeart();
@@ -545,29 +555,29 @@
                 }
             }
 
-            // 2. Check if clicked on any Furniture in room
+            // 2. Clicked on Furniture
             for (let i = world.furnitures.length - 1; i >= 0; i--) {
                 const f = world.furnitures[i];
-                const fPos = world.grid.gridToScreen(f.gx + f.width / 2, f.gy + f.depth / 2);
-                if (Math.hypot(sx - fPos.x, sy - fPos.y) < 42) {
+                const b = f.getBounds(world);
+                if (sx >= b.left && sx <= b.right && sy >= b.top && sy <= b.bottom) {
                     world.selectedFurniture = f;
                     updateSelectedFurnitureBox();
                     if (mainAgent) {
-                        mainAgent.interactWith(f, world.grid);
+                        mainAgent.interactWith(f, world);
                         document.getElementById('agent-status').textContent = `Amiya · Tương tác với ${f.name}`;
                     }
                     return;
                 }
             }
 
-            // 3. Clicked on empty Floor tile -> Command move
-            const gridCell = world.grid.screenToGrid(sx, sy);
+            // 3. Clicked on Floor -> Move to X coordinate
             if (mainAgent) {
                 world.selectedFurniture = null;
                 updateSelectedFurnitureBox();
                 mainAgent.targetFurniture = null;
-                mainAgent.moveTo(gridCell.gx, gridCell.gy);
-                document.getElementById('agent-status').textContent = `Amiya · Di chuyển tới (${gridCell.gx}, ${gridCell.gy})`;
+                const clampedX = Math.max(world.leftWallX + 40, Math.min(world.rightWallX - 40, sx));
+                mainAgent.moveTo(clampedX);
+                document.getElementById('agent-status').textContent = `Amiya · Di chuyển tới vị trí`;
             }
         });
 
@@ -620,8 +630,9 @@
         document.getElementById('btn-random-roam').addEventListener('click', () => {
             if (mainAgent) {
                 mainAgent.targetFurniture = null;
-                const cell = world.grid.getRandomWalkableCell();
-                mainAgent.moveTo(cell.gx, cell.gy);
+                const padding = 80;
+                const rx = world.leftWallX + padding + Math.random() * (world.rightWallX - world.leftWallX - padding * 2);
+                mainAgent.moveTo(rx);
                 mainAgent.showBubble('Đi dạo ngắm phòng nào ~', 2.5);
             }
         });
