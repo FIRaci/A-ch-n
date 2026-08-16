@@ -18,34 +18,50 @@
     <script src="operators_data.js"></script>
     <style>
         :root{
-
-            --bg:#0a0d14; --bg2:#121824; --card:rgba(20,27,41,.9);
-            --border:rgba(255,255,255,.08); --bh:rgba(0,210,255,.45);
-            --ac:#00d2ff; --ag:linear-gradient(135deg,#00d2ff,#3a7bd5);
-            --glow:rgba(0,210,255,.28); --text:#f0f4fc; --mt:#8b9bb4;
-            --r6:#ff7675;--r5:#fdcb6e;--r4:#a29bfe;--r3:#74b9ff;
-            --rad:14px; --rsm:8px;
+            /* ── Arknights Monochrome Theme ───────────────────── */
+            --bg:#0e0e0e;       /* near-black background */
+            --bg2:#1a1a1a;      /* slightly lighter surface */
+            --card:rgba(22,22,22,0.96);
+            --border:rgba(255,255,255,.10);
+            --bh:rgba(255,255,255,.35);
+            --ac:#ffffff;       /* pure white primary accent */
+            --ag:linear-gradient(135deg,#ffffff,#b0b0b0);
+            --glow:rgba(255,255,255,.18);
+            --text:#f5f5f5;
+            --mt:#888888;
+            --r6:#e8c96e;       /* 6★ amber */
+            --r5:#d4af8c;       /* 5★ gold-tan */
+            --r4:#9999cc;       /* 4★ muted purple */
+            --r3:#7799bb;       /* 3★ steel blue */
+            --rad:4px;          /* AK uses sharp corners */
+            --rsm:2px;
+            /* AK red accent for secondary actions */
+            --ak-red:#e02020;
+            --ak-red-dim:rgba(224,32,32,0.18);
         }
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
             display:flex;flex-direction:column;overflow-x:hidden;
-            background-image:radial-gradient(circle at 15% 20%,rgba(0,210,255,.07) 0,transparent 40%),
-                             radial-gradient(circle at 85% 80%,rgba(58,123,213,.07) 0,transparent 40%)}
+            /* Subtle diagonal grain texture, AK style */
+            background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.012) 0,rgba(255,255,255,.012) 1px,transparent 1px,transparent 8px)}
 
         /* ── Header ──────────────────────────────────────── */
-        header{padding:14px 26px;display:flex;align-items:center;justify-content:space-between;
-            border-bottom:1px solid var(--border);background:rgba(10,13,20,.92);backdrop-filter:blur(16px);
+        header{padding:12px 26px;display:flex;align-items:center;justify-content:space-between;
+            border-bottom:1px solid var(--border);background:rgba(14,14,14,.96);backdrop-filter:blur(16px);
             position:sticky;top:0;z-index:100}
+        /* AK diagonal accent stripe on header left edge */
+        header::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+            background:var(--ak-red)}
         .brand{display:flex;align-items:center;gap:12px}
-        .brand-logo{width:40px;height:40px;border-radius:10px;background:var(--ag);
-            display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px var(--glow)}
-        .brand h1{font-size:18px;font-weight:800;letter-spacing:-.4px;
-            background:linear-gradient(90deg,#fff,#8ec5fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-        .brand-sub{font-size:10px;color:var(--ac);text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
-        .nav{display:flex;gap:6px;background:var(--bg2);padding:4px;border-radius:var(--rsm);border:1px solid var(--border)}
-        .tab-btn{background:transparent;border:none;color:var(--mt);padding:7px 14px;font-size:12px;font-weight:600;
-            border-radius:6px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
-        .tab-btn:hover{color:var(--text)} .tab-btn.active{background:var(--ag);color:#fff;box-shadow:0 2px 12px var(--glow)}
+        .brand-logo{width:38px;height:38px;border-radius:0;background:#e02020;
+            display:flex;align-items:center;justify-content:center;clip-path:polygon(0 0,100% 0,85% 100%,0 100%)}
+        .brand h1{font-size:17px;font-weight:800;letter-spacing:.5px;color:#ffffff;text-transform:uppercase}
+        .brand-sub{font-size:9px;color:var(--mt);text-transform:uppercase;letter-spacing:2px;font-weight:700}
+        .nav{display:flex;gap:2px;background:var(--bg2);padding:3px;border-radius:0;border:1px solid var(--border)}
+        .tab-btn{background:transparent;border:none;color:var(--mt);padding:7px 16px;font-size:11px;font-weight:700;
+            border-radius:0;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.8px}
+        .tab-btn:hover{color:var(--text);background:rgba(255,255,255,.06)}
+        .tab-btn.active{background:var(--ak-red);color:#fff;box-shadow:none}
 
         /* ── Main layout ─────────────────────────────────── */
         main{flex:1;padding:18px 26px;max-width:1700px;margin:0 auto;width:100%;
@@ -60,36 +76,40 @@
             main{grid-template-columns:1fr;padding:10px}
             .op-list{max-height:240px}
         }
-        .card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad);
-            padding:16px;backdrop-filter:blur(16px);display:flex;flex-direction:column;gap:12px}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:0;
+            padding:16px;backdrop-filter:blur(16px);display:flex;flex-direction:column;gap:12px;
+            border-left:2px solid rgba(255,255,255,.12)}
         .card-header{display:flex;align-items:center;justify-content:space-between;
             border-bottom:1px solid var(--border);padding-bottom:10px}
-        .card-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+        .card-title{font-size:11px;font-weight:800;display:flex;align-items:center;gap:8px;
+            text-transform:uppercase;letter-spacing:1.2px;color:var(--text)}
 
         /* ── Op list ─────────────────────────────────────── */
         .search-box{position:relative}
-        .search-box input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rsm);
+        .search-box input{width:100%;background:#111;border:1px solid var(--border);border-radius:0;
             padding:9px 12px 9px 36px;color:#fff;font-size:13px;outline:none;transition:all .2s}
-        .search-box input:focus{border-color:var(--ac);box-shadow:0 0 10px var(--glow)}
+        .search-box input:focus{border-color:#fff;box-shadow:none}
         .search-box i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--mt);pointer-events:none}
-        .filter-tags{display:flex;gap:5px;flex-wrap:wrap}
-        .tag-btn{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--mt);
-            padding:3px 9px;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s}
-        .tag-btn:hover{background:rgba(255,255,255,.1);color:#fff} .tag-btn.active{background:var(--ac);color:#0a0d14;border-color:var(--ac)}
-        .op-list{overflow-y:auto;max-height:calc(100vh - 290px);display:flex;flex-direction:column;gap:5px}
-        .op-list::-webkit-scrollbar{width:4px} .op-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:4px}
-        .op-item{display:flex;align-items:center;gap:10px;padding:7px 11px;background:rgba(255,255,255,.02);
-            border:1px solid transparent;border-radius:var(--rsm);cursor:pointer;transition:all .18s}
-        .op-item:hover{background:rgba(255,255,255,.06);border-color:var(--bh);transform:translateX(2px)}
-        .op-item.active{background:rgba(0,210,255,.13);border-color:var(--ac);box-shadow:0 0 14px var(--glow)}
-        .op-av{width:38px;height:38px;border-radius:7px;background:#182030;display:flex;align-items:center;
+        .filter-tags{display:flex;gap:4px;flex-wrap:wrap}
+        .tag-btn{background:transparent;border:1px solid var(--border);color:var(--mt);
+            padding:4px 10px;border-radius:0;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.5px}
+        .tag-btn:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.3)}
+        .tag-btn.active{background:#fff;color:#0e0e0e;border-color:#fff}
+        .op-list{overflow-y:auto;max-height:calc(100vh - 290px);display:flex;flex-direction:column;gap:3px}
+        .op-list::-webkit-scrollbar{width:3px} .op-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:0}
+        .op-item{display:flex;align-items:center;gap:10px;padding:7px 11px;background:transparent;
+            border:1px solid transparent;border-radius:0;cursor:pointer;transition:all .15s;
+            border-bottom:1px solid rgba(255,255,255,.04)}
+        .op-item:hover{background:rgba(255,255,255,.05);border-bottom-color:rgba(255,255,255,.2)}
+        .op-item.active{background:rgba(255,255,255,.08);border-left:2px solid #fff;padding-left:9px}
+        .op-av{width:38px;height:38px;border-radius:0;background:#1a1a1a;display:flex;align-items:center;
             justify-content:center;font-weight:800;font-size:13px;border:1px solid var(--border);flex-shrink:0}
         .op-av.s6{border-color:var(--r6);color:var(--r6)} .op-av.s5{border-color:var(--r5);color:var(--r5)}
         .op-av.s4{border-color:var(--r4);color:var(--r4)} .op-av.s3{border-color:var(--r3);color:var(--r3)}
         .op-info{flex:1;overflow:hidden}
         .op-cn{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
         .op-en{font-size:10px;color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .dl-badge{font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(46,213,115,.18);color:#2ed573;border:1px solid rgba(46,213,115,.35);font-weight:700;flex-shrink:0}
+        .dl-badge{font-size:9px;padding:1px 5px;border-radius:0;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);font-weight:700;flex-shrink:0}
 
         /* ── Viewport ────────────────────────────────────── */
         .viewport{position:relative;border-radius:var(--rad);border:1px solid var(--border);
@@ -102,16 +122,16 @@
         #spine-canvas{
             flex:1;display:block;width:100%;min-height:480px;
             background:
-                linear-gradient(45deg,#1a1f2e 25%,transparent 25%) -10px 0/20px 20px,
-                linear-gradient(-45deg,#1a1f2e 25%,transparent 25%) -10px 0/20px 20px,
-                linear-gradient(45deg,transparent 75%,#1a1f2e 75%) 0 0/20px 20px,
-                linear-gradient(-45deg,transparent 75%,#1a1f2e 75%) 0 0/20px 20px;
-            background-color:#141928;
+                linear-gradient(45deg,#181818 25%,transparent 25%) -10px 0/20px 20px,
+                linear-gradient(-45deg,#181818 25%,transparent 25%) -10px 0/20px 20px,
+                linear-gradient(45deg,transparent 75%,#181818 75%) 0 0/20px 20px,
+                linear-gradient(-45deg,transparent 75%,#181818 75%) 0 0/20px 20px;
+            background-color:#101010;
         }
         .vp-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
             text-align:center;color:var(--mt);z-index:15;pointer-events:none}
         .vp-overlay.hidden{display:none}
-        .spinner{width:36px;height:36px;border:3px solid rgba(0,210,255,.2);border-top-color:var(--ac);
+        .spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.12);border-top-color:#fff;
             border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
         @keyframes spin{to{transform:rotate(360deg)}}
         /* ── Initial loading cover (while Spine WebGL loads) ── */
@@ -119,47 +139,49 @@
             display:flex;flex-direction:column;align-items:center;justify-content:center;
             z-index:9999;gap:16px;transition:opacity .4s}
         #spine-loading-cover.hidden{opacity:0;pointer-events:none}
-        #spine-loading-cover .big-spinner{width:52px;height:52px;border:4px solid rgba(0,210,255,.2);
-            border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
+        #spine-loading-cover .big-spinner{width:52px;height:52px;border:4px solid rgba(255,255,255,.12);
+            border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
         #spine-loading-cover p{font-size:14px;color:var(--mt);font-weight:600}
-        .vp-controls{position:absolute;bottom:12px;left:12px;right:12px;background:rgba(10,14,23,.88);
-            backdrop-filter:blur(14px);padding:11px 15px;border-radius:var(--rsm);border:1px solid var(--border);
+        .vp-controls{position:absolute;bottom:12px;left:12px;right:12px;background:rgba(14,14,14,.92);
+            backdrop-filter:blur(14px);padding:11px 15px;border-radius:0;border:1px solid var(--border);
+            border-top:2px solid rgba(255,255,255,.12);
             display:flex;align-items:center;justify-content:space-between;gap:14px;z-index:20}
         .ctrl-row{display:flex;align-items:center;gap:8px}
-        .btn{background:rgba(255,255,255,.07);border:1px solid var(--border);color:#fff;padding:7px 13px;
-            border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;
-            display:inline-flex;align-items:center;gap:6px;transition:all .2s}
-        .btn:hover{background:rgba(255,255,255,.14);border-color:var(--ac)}
-        .btn-ac{background:var(--ag);border-color:transparent;box-shadow:0 0 12px var(--glow)}
-        .btn-ac:hover{opacity:.9;transform:translateY(-1px)}
+        .btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#fff;padding:7px 14px;
+            border-radius:0;font-size:11px;font-weight:700;cursor:pointer;
+            display:inline-flex;align-items:center;gap:6px;transition:all .15s;text-transform:uppercase;letter-spacing:.5px}
+        .btn:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35)}
+        .btn-ac{background:var(--ak-red);border-color:var(--ak-red);color:#fff}
+        .btn-ac:hover{background:#c01818;border-color:#c01818;transform:none;opacity:1}
         .slider-wrap{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mt)}
-        .slider-wrap input[type=range]{accent-color:var(--ac);cursor:pointer;width:100px}
+        .slider-wrap input[type=range]{accent-color:#fff;cursor:pointer;width:100px}
 
         /* ── Right panel ─────────────────────────────────── */
-        .sel{width:100%;background:var(--bg2);border:1px solid var(--border);color:#fff;
-            padding:8px 11px;border-radius:6px;font-size:12px;outline:none;cursor:pointer}
-        .sel:focus{border-color:var(--ac)}
-        .lbl{font-size:10px;color:var(--mt);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;display:block}
-        .anim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
-        .anim-btn{background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);
-            padding:9px 11px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;
-            display:flex;align-items:center;justify-content:space-between;transition:all .18s}
-        .anim-btn:hover{background:rgba(255,255,255,.08);border-color:var(--bh)}
-        .anim-btn.active{background:rgba(0,210,255,.16);border-color:var(--ac);color:var(--ac);box-shadow:0 0 10px var(--glow)}
-        .anim-btn:disabled{opacity:.3;cursor:not-allowed}
-        .code-box{background:#060910;border:1px solid var(--border);border-radius:6px;padding:11px;
-            font-family:'JetBrains Mono',monospace;font-size:11px;color:#a5b4fc;overflow-x:auto;line-height:1.55;user-select:all;cursor:copy}
+        .sel{width:100%;background:#111;border:1px solid var(--border);color:#fff;
+            padding:8px 11px;border-radius:0;font-size:12px;outline:none;cursor:pointer}
+        .sel:focus{border-color:#fff}
+        .lbl{font-size:9px;color:var(--mt);font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px;display:block}
+        .anim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
+        .anim-btn{background:#111;border:1px solid var(--border);color:var(--text);
+            padding:9px 11px;border-radius:0;font-size:11px;font-weight:700;cursor:pointer;
+            display:flex;align-items:center;justify-content:space-between;transition:all .15s;text-transform:uppercase;letter-spacing:.3px}
+        .anim-btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.35)}
+        .anim-btn.active{background:#fff;border-color:#fff;color:#0e0e0e}
+        .anim-btn:disabled{opacity:.25;cursor:not-allowed}
+        .code-box{background:#080808;border:1px solid var(--border);border-radius:0;padding:11px;
+            font-family:'JetBrains Mono',monospace;font-size:11px;color:#cccccc;overflow-x:auto;line-height:1.55;user-select:all;cursor:copy}
 
-        /* ── 2.5D Sci-Fi White Room Playground ───────────────── */
+        /* ── 2.5D Arknights Playground ───────────────── */
         .playground-panel {
             grid-column: 1 / -1;
             display: none;
-            background: #0b0f19;
-            border-radius: var(--rad);
+            background: #0e0e0e;
+            border-radius: 0;
             border: 1px solid var(--border);
-            padding: 16px;
+            border-left: 2px solid var(--ak-red);
+            padding: 14px;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
         .playground-panel.vis { display: flex; }
 
@@ -168,32 +190,31 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
-            background: rgba(20, 27, 41, 0.85);
-            backdrop-filter: blur(12px);
+            gap: 10px;
+            background: #141414;
             border: 1px solid var(--border);
-            border-radius: var(--rsm);
+            border-radius: 0;
+            border-left: 2px solid var(--ak-red);
             padding: 10px 14px;
         }
         .pg-search-wrap {
             position: relative;
-            width: 320px;
+            width: 300px;
             max-width: 100%;
         }
         .pg-search-wrap input {
             width: 100%;
-            background: var(--bg2);
+            background: #0e0e0e;
             border: 1px solid var(--border);
-            border-radius: var(--rsm);
+            border-radius: 0;
             padding: 8px 12px 8px 34px;
             color: #fff;
             font-size: 12px;
             outline: none;
-            transition: all .2s;
+            transition: all .15s;
         }
         .pg-search-wrap input:focus {
-            border-color: var(--ac);
-            box-shadow: 0 0 10px var(--glow);
+            border-color: #fff;
         }
         .pg-search-wrap i {
             position: absolute;
@@ -208,14 +229,14 @@
             top: 100%;
             left: 0;
             right: 0;
-            background: #141b29;
-            border: 1px solid var(--border);
-            border-radius: var(--rsm);
-            margin-top: 4px;
+            background: #1a1a1a;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 0;
+            margin-top: 2px;
             max-height: 220px;
             overflow-y: auto;
             z-index: 100;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.8);
             display: none;
         }
         .pg-search-results.show { display: block; }
@@ -226,21 +247,21 @@
             gap: 8px;
             cursor: pointer;
             font-size: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            transition: background .15s;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+            transition: background .1s;
         }
-        .pg-res-item:hover { background: rgba(0, 210, 255, 0.15); color: #fff; }
+        .pg-res-item:hover { background: rgba(255,255,255,.1); color: #fff; }
 
         .pg-status-badge {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
         .pg-action-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
@@ -248,12 +269,11 @@
         .pg-viewport-container {
             position: relative;
             width: 100%;
-            height: 620px;
-            border-radius: var(--rsm);
+            height: 720px;
+            border-radius: 0;
             overflow: hidden;
             border: 1px solid var(--border);
-            background: #e2e8f0;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.1);
+            background: #d4c9b0;
             cursor: crosshair;
             user-select: none;
         }
@@ -280,16 +300,19 @@
 
         .pg-hint {
             position: absolute;
-            bottom: 12px;
+            bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.82);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--border);
-            color: #e2e8f0;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 11px;
+            background: rgba(14, 14, 14, 0.88);
+            border: 1px solid rgba(255,255,255,.12);
+            border-left: 2px solid var(--ak-red);
+            color: #aaaaaa;
+            padding: 5px 16px;
+            border-radius: 0;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .6px;
             pointer-events: none;
             z-index: 20;
             white-space: nowrap;
@@ -301,12 +324,12 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 16px;
-            background: rgba(20, 27, 41, 0.85);
-            backdrop-filter: blur(12px);
+            gap: 12px;
+            background: #141414;
             border: 1px solid var(--border);
-            border-radius: var(--rsm);
-            padding: 12px 16px;
+            border-radius: 0;
+            border-left: 2px solid rgba(255,255,255,.12);
+            padding: 10px 14px;
         }
         .pg-bottom-section {
             display: flex;
@@ -316,124 +339,137 @@
         }
         .pg-anim-buttons {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             flex-wrap: wrap;
         }
         .pg-anim-btn {
-            background: rgba(255, 255, 255, 0.05);
+            background: transparent;
             border: 1px solid var(--border);
-            color: var(--text);
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
+            color: var(--mt);
+            padding: 4px 12px;
+            border-radius: 0;
+            font-size: 10px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all .2s;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            transition: all .15s;
+            text-transform: uppercase;
+            letter-spacing: .5px;
         }
-        .pg-anim-btn:hover { background: rgba(0, 210, 255, 0.15); border-color: var(--ac); }
-        .pg-anim-btn.active { background: var(--ac); color: #0a0d14; border-color: var(--ac); }
+        .pg-anim-btn:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.3); color: #fff; }
+        .pg-anim-btn.active { background: #fff; color: #0e0e0e; border-color: #fff; }
 
         /* Modal Backdrop & Container */
         .pg-modal-backdrop {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(10, 15, 26, 0.8);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
             z-index: 1000;
             display: none;
             align-items: center;
             justify-content: center;
             opacity: 0;
-            transition: opacity .25s ease;
+            transition: opacity .2s ease;
         }
         .pg-modal-backdrop.show {
             display: flex;
             opacity: 1;
         }
         .pg-modal-card {
-            background: #111622;
-            border: 1px solid var(--border);
-            border-radius: var(--rad);
-            width: 720px;
-            max-width: 95vw;
-            max-height: 85vh;
+            background: #141414;
+            border: 1px solid rgba(255,255,255,.14);
+            border-top: 2px solid var(--ak-red);
+            border-radius: 0;
+            width: 860px;
+            max-width: 96vw;
+            max-height: 90vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-            transform: scale(0.95);
-            transition: transform .25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+            transform: translateY(-12px);
+            transition: transform .2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         .pg-modal-backdrop.show .pg-modal-card {
-            transform: scale(1);
+            transform: translateY(0);
         }
         .pg-modal-header {
-            padding: 16px 20px;
+            padding: 14px 18px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
         .pg-modal-title {
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 12px;
+            font-weight: 800;
             color: #fff;
             display: flex;
             align-items: center;
             gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
         }
         .pg-modal-body {
-            padding: 16px 20px;
+            padding: 14px 18px;
             overflow-y: auto;
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
+        /* Companion grid: no height cap — the modal body scrolls */
         .pg-comp-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 10px;
-            max-height: 380px;
-            overflow-y: auto;
-            padding-right: 4px;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 6px;
         }
         .pg-comp-card {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: var(--rsm);
-            padding: 10px;
+            background: #1a1a1a;
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: 0;
+            padding: 10px 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            gap: 6px;
+            gap: 5px;
             cursor: pointer;
-            transition: all .2s;
+            transition: all .15s;
+            position: relative;
         }
+        /* AK-style left accent on hover */
         .pg-comp-card:hover {
-            border-color: var(--ac);
-            background: rgba(0, 210, 255, 0.12);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 210, 255, 0.15);
+            border-color: rgba(255,255,255,.4);
+            background: rgba(255,255,255,.06);
+            border-left: 2px solid #fff;
+        }
+        .pg-comp-card.in-room {
+            border-color: var(--ak-red);
+            background: var(--ak-red-dim);
+        }
+        .pg-comp-card.in-room::after {
+            content: '✓';
+            position: absolute;
+            top: 4px; right: 6px;
+            font-size: 10px;
+            color: var(--ak-red);
+            font-weight: 800;
         }
         .pg-comp-card .op-av {
-            width: 44px;
-            height: 44px;
-            font-size: 18px;
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
         }
         .pg-modal-footer {
-            padding: 14px 20px;
+            padding: 12px 18px;
             border-top: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(0, 0, 0, 0.2);
+            background: #0e0e0e;
         }
 
-        .toast{position:fixed;bottom:22px;right:22px;background:#1a2236;color:#fff;padding:11px 18px;border-radius:8px;border-left:4px solid var(--ac);box-shadow:0 10px 30px rgba(0,0,0,.5);display:flex;align-items:center;gap:9px;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1)}
+        .toast{position:fixed;bottom:22px;right:22px;background:#1a1a1a;color:#fff;padding:11px 18px;border-radius:0;border-left:3px solid #fff;box-shadow:0 10px 40px rgba(0,0,0,.8);display:flex;align-items:center;gap:9px;z-index:10000;transform:translateY(100px);opacity:0;transition:all .25s cubic-bezier(.4,0,.2,1)}
         .toast.show{transform:translateY(0);opacity:1}
     </style>
 </head>
@@ -459,7 +495,7 @@
     <!-- Left: Op list -->
     <div class="card">
         <div class="card-header">
-            <span class="card-title"><i data-lucide="users" size="17" color="#00d2ff"></i> Danh Sách 干员 (<span id="op-count">454</span>)</span>
+            <span class="card-title"><i data-lucide="users" size="17" color="#ffffff"></i> Danh Sách 干员 (<span id="op-count">454</span>)</span>
             <span style="font-size:11px;color:var(--mt)" id="dl-txt">0 Đã Tải</span>
         </div>
         <div class="search-box">
@@ -482,8 +518,8 @@
         <div class="vp-toolbar">
             <div class="badge-row">
                 <span class="badge" id="badge-name">Đang nạp...</span>
-                <span class="badge" id="badge-rarity" style="color:#fdcb6e">-- ★</span>
-                <span class="badge" id="badge-model" style="color:#00d2ff">基建</span>
+                <span class="badge" id="badge-rarity" style="color:#e8c96e">-- ★</span>
+                <span class="badge" id="badge-model" style="color:#ffffff">基建</span>
             </div>
             <div class="badge-row">
                 <div style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:6px;padding:2px 6px;gap:4px;">
@@ -529,7 +565,7 @@
     <!-- Right: Controls -->
     <div class="card">
         <div class="card-header">
-            <span class="card-title"><i data-lucide="play-square" size="17" color="#00d2ff"></i> Chuỗi Động Tác</span>
+            <span class="card-title"><i data-lucide="play-square" size="17" color="#ffffff"></i> Chuỗi Động Tác</span>
         </div>
         <div>
             <label class="lbl">TRANG PHỤC (时装):</label>
@@ -566,9 +602,9 @@
         </div>
         <div class="pg-status-badge">
             <span class="badge" id="pg-badge-name">阿米娅 (Amiya)</span>
-            <span class="badge" id="pg-badge-skin" style="color:#00d2ff">默认</span>
+            <span class="badge" id="pg-badge-skin" style="color:#e8c96e">默认</span>
             <span class="badge" id="pg-badge-state" style="color:#2ed573">Relax (Đứng yên)</span>
-            <span class="badge" id="pg-badge-comp-count" style="color:#a5b4fc">Đồng đội: 0/16</span>
+            <span class="badge" id="pg-badge-comp-count" style="color:#e8c96e">Đồng đội: 0/32</span>
         </div>
         <div class="pg-action-group">
             <button class="btn btn-ac" onclick="pgOpenCompanionModal()"><i data-lucide="user-plus" size="13"></i> Chọn Đồng Đội (+)</button>
@@ -615,7 +651,7 @@
     <div class="pg-modal-card">
         <div class="pg-modal-header">
             <div class="pg-modal-title">
-                <i data-lucide="users" size="18" color="#00d2ff"></i> Chọn Đồng Đội Vào Phòng Sân Chơi
+                <i data-lucide="users" size="18" color="#ffffff"></i> Chọn Đồng Đội Vào Phòng Sân Chơi
             </div>
             <button class="btn" onclick="pgCloseCompanionModal()" style="padding:4px 8px"><i data-lucide="x" size="16"></i></button>
         </div>
@@ -639,7 +675,7 @@
         </div>
         <div class="pg-modal-footer">
             <div style="font-size:12px;color:var(--mt)">
-                Đang có: <b id="pg-modal-comp-count" style="color:var(--ac)">0 / 16</b> đồng đội trong phòng
+                Đang có: <b id="pg-modal-comp-count" style="color:var(--r6)">0 / 32</b> đồng đội trong phòng
             </div>
             <div style="display:flex;gap:8px">
                 <button class="btn" onclick="pgDismissAllCompanions()" style="color:#ff7675"><i data-lucide="user-x" size="13"></i> Thu hồi tất cả</button>
@@ -1335,12 +1371,12 @@ const PG = {
     rafId: null,
     lastTs: null,
 
-    // World & Room Dimensions (Massive 6,400px Room)
-    ROOM_W: 6400,
-    ROOM_H: 620,
-    HORIZON_Y: 230,      // Horizon line separating back wall and floor
-    FLOOR_MIN_Y: 250,    // Top walkable bound (far depth in room)
-    FLOOR_MAX_Y: 580,    // Bottom walkable bound (foreground)
+    // World & Room Dimensions (Massive 8,000px Room)
+    ROOM_W: 8000,
+    ROOM_H: 720,
+    HORIZON_Y: 260,      // Horizon line separating back wall and floor
+    FLOOR_MIN_Y: 285,    // Top walkable bound (far depth in room)
+    FLOOR_MAX_Y: 680,    // Bottom walkable bound (foreground) — extended for bigger floor
 
     // Camera
     cameraX: 0,
@@ -1374,8 +1410,8 @@ const PG = {
         availableAnims: []
     },
 
-    // Companion Chibis wandering in the room (Max 16)
-    MAX_COMPANIONS: 16,
+    // Companion Chibis wandering in the room (Max 32)
+    MAX_COMPANIONS: 32,
     companions: [],
 
     // Key inputs
@@ -1395,7 +1431,7 @@ async function initPlayground() {
 
     // Set high-DPI canvas dimensions
     const cw = container.clientWidth || 900;
-    const ch = container.clientHeight || 620;
+    const ch = container.clientHeight || 720;
     PG.canvas.width   = cw;
     PG.canvas.height  = ch;
     PG.bgCanvas.width = cw;
@@ -1487,7 +1523,7 @@ async function initPlayground() {
         window.addEventListener('resize', () => {
             if (PG.canvas && document.getElementById('tab-game').classList.contains('vis')) {
                 const ncw = container.clientWidth || 900;
-                const nch = container.clientHeight || 620;
+                const nch = container.clientHeight || 720;
                 PG.canvas.width = ncw;
                 PG.canvas.height = nch;
                 if (PG.bgCanvas) {
@@ -1992,7 +2028,7 @@ function pgUpdateCompanions(delta) {
 }
 
 /**
- * Draw the Minimalist Sci-Fi Rhodes Island White Room Background (Expanded 6,400px Multi-Sector).
+ * Draw the Arknights Rhodes Island Tactical Command Deck Background (8,000px Multi-Sector).
  */
 function pgDrawSciFiRoomBackground(ctx, cw, ch) {
     ctx.clearRect(0, 0, cw, ch);
@@ -2000,98 +2036,123 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
     const camX = PG.cameraX;
     const horizon = PG.HORIZON_Y;
 
-    // ── 1. Back Wall (High-Tech Rhodes Island White Wall Panels) ──
+    // ── 1. Back Wall (Dark Titanium Armor Plates & PRTS Structural Panels) ──
     const wallGrad = ctx.createLinearGradient(0, 0, 0, horizon);
-    wallGrad.addColorStop(0, '#f8fafc');
-    wallGrad.addColorStop(0.6, '#f1f5f9');
-    wallGrad.addColorStop(1, '#e2e8f0');
+    wallGrad.addColorStop(0, '#111317');
+    wallGrad.addColorStop(0.5, '#181b22');
+    wallGrad.addColorStop(1, '#1e222a');
     ctx.fillStyle = wallGrad;
     ctx.fillRect(0, 0, cw, horizon);
 
-    // Architectural Vertical Seams every 360px across the entire 6,400px world
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.5)';
-    ctx.lineWidth = 1.5;
-    const startSeam = Math.floor(camX / 360) * 360;
-    for (let wx = startSeam; wx <= camX + cw + 400; wx += 360) {
+    // Diagonal hazard warning stripes along top ceiling rim
+    ctx.save();
+    ctx.fillStyle = 'rgba(232, 201, 110, 0.15)';
+    const stripeOffset = Math.floor(camX % 30);
+    for (let x = -30; x < cw + 60; x += 30) {
+        ctx.beginPath();
+        ctx.moveTo(x - stripeOffset, 0);
+        ctx.lineTo(x + 15 - stripeOffset, 0);
+        ctx.lineTo(x + 5 - stripeOffset, 8);
+        ctx.lineTo(x - 10 - stripeOffset, 8);
+        ctx.closePath();
+        ctx.fill();
+    }
+    ctx.restore();
+
+    // Architectural Vertical Columns every 400px across the entire 8,000px world
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.lineWidth = 2;
+    const startSeam = Math.floor(camX / 400) * 400;
+    for (let wx = startSeam; wx <= camX + cw + 500; wx += 400) {
         const sx = wx - camX;
         ctx.beginPath();
         ctx.moveTo(sx, 0);
         ctx.lineTo(sx, horizon);
         ctx.stroke();
 
-        // High-tech wall panel joint nodes
-        ctx.fillStyle = 'rgba(100, 116, 139, 0.4)';
-        ctx.fillRect(sx - 3, 60, 6, 14);
-        ctx.fillRect(sx - 3, 150, 6, 14);
+        // Structural joint brackets
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.fillRect(sx - 4, 70, 8, 16);
+        ctx.fillRect(sx - 4, 170, 8, 16);
+
+        // Small red/amber LED status indicator
+        ctx.fillStyle = (wx % 800 === 0) ? '#e02020' : '#e8c96e';
+        ctx.fillRect(sx - 2, 74, 4, 4);
     }
 
-    // Horizontal Wall Dividers
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
-    ctx.lineWidth = 1;
+    // Horizontal Steel Conduits & Panel Dividers
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(0, 67); ctx.lineTo(cw, 67);
-    ctx.moveTo(0, 157); ctx.lineTo(cw, 157);
+    ctx.moveTo(0, 78); ctx.lineTo(cw, 78);
+    ctx.moveTo(0, 178); ctx.lineTo(cw, 178);
     ctx.stroke();
 
-    // Overhead Sci-Fi Light Bar
-    const lightGrad = ctx.createLinearGradient(0, 0, cw, 0);
-    lightGrad.addColorStop(0, 'rgba(0, 210, 255, 0.4)');
-    lightGrad.addColorStop(0.5, 'rgba(0, 210, 255, 0.9)');
-    lightGrad.addColorStop(1, 'rgba(0, 210, 255, 0.4)');
-    ctx.fillStyle = lightGrad;
-    ctx.fillRect(0, 6, cw, 6);
+    // Overhead Pure White LED Strip
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 8, cw, 2);
 
-    // Ambient soft downward glow below overhead light
-    const glowGrad = ctx.createLinearGradient(0, 12, 0, 100);
-    glowGrad.addColorStop(0, 'rgba(0, 210, 255, 0.12)');
-    glowGrad.addColorStop(1, 'rgba(0, 210, 255, 0)');
+    // Ambient soft downward illumination
+    const glowGrad = ctx.createLinearGradient(0, 10, 0, 120);
+    glowGrad.addColorStop(0, 'rgba(255, 255, 255, 0.06)');
+    glowGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
     ctx.fillStyle = glowGrad;
-    ctx.fillRect(0, 12, cw, 88);
+    ctx.fillRect(0, 10, cw, 110);
 
-    // ── Multi-Sector Architectural Emblems across 6,400px ──
+    // ── Multi-Sector Rhodes Island Emblems across 8,000px ──
     const sectors = [
-        { x: 1600, title: 'SEC-02 // R&D DIVISION', code: 'BIOMEDICAL LAB 04' },
-        { x: 3200, title: 'RHODES ISLAND', code: 'SEC-01 // COMMAND CENTER' },
-        { x: 4800, title: 'SEC-03 // ENGINEERING', code: 'WORKSHOP & FABRICATION' }
+        { x: 1600, title: 'SEC-01 // TACTICAL BRIDGE', code: 'PRTS NEURAL LINK ONLINE' },
+        { x: 3200, title: 'RHODES ISLAND', code: 'MAIN LANDSHIP HANGAR // DECK 04' },
+        { x: 4800, title: 'SEC-02 // BIOMEDICAL', code: 'ORIGINIUM RESEARCH & CONTAINMENT' },
+        { x: 6400, title: 'SEC-03 // ENGINEERING', code: 'REACTOR CORE WING // SECTOR 08' }
     ];
 
     sectors.forEach(sec => {
         const secSx = sec.x - camX;
-        if (secSx > -300 && secSx < cw + 300) {
+        if (secSx > -350 && secSx < cw + 350) {
             ctx.save();
-            ctx.strokeStyle = 'rgba(100, 116, 139, 0.35)';
-            ctx.lineWidth = 4;
+
+            // Rhodes Island Triangle Outline (Clean White/Red Accent)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.moveTo(secSx, 38);
-            ctx.lineTo(secSx - 65, 165);
-            ctx.lineTo(secSx + 65, 165);
+            ctx.moveTo(secSx, 45);
+            ctx.lineTo(secSx - 70, 185);
+            ctx.lineTo(secSx + 70, 185);
             ctx.closePath();
             ctx.stroke();
-            ctx.fillStyle = 'rgba(100, 116, 139, 0.08)';
+
+            // Inner Rook/Tower Silhouette
+            ctx.fillStyle = 'rgba(224, 32, 32, 0.12)';
             ctx.fill();
 
-            ctx.fillStyle = 'rgba(100, 116, 139, 0.55)';
-            ctx.font = 'bold 13px system-ui, sans-serif';
+            // Tactical Decal Text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 12px "Plus Jakarta Sans", system-ui, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(sec.title, secSx, 125);
-            ctx.font = '10px monospace';
-            ctx.fillText(sec.code, secSx, 142);
+            ctx.letterSpacing = '1.5px';
+            ctx.fillText(sec.title, secSx, 142);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.letterSpacing = '0.5px';
+            ctx.fillText(sec.code, secSx, 160);
             ctx.restore();
         }
     });
 
-    // ── 2. Perspective Floor (Clean White Sci-Fi Tiles with Depth) ──
+    // ── 2. Perspective Tactical Deck Floor (Deep Dark Matte Carbon) ──
     const floorGrad = ctx.createLinearGradient(0, horizon, 0, ch);
-    floorGrad.addColorStop(0, '#f1f5f9');
-    floorGrad.addColorStop(0.4, '#e2e8f0');
-    floorGrad.addColorStop(1, '#cbd5e1');
+    floorGrad.addColorStop(0, '#15171c');
+    floorGrad.addColorStop(0.4, '#101216');
+    floorGrad.addColorStop(1, '#0a0b0d');
     ctx.fillStyle = floorGrad;
     ctx.fillRect(0, horizon, cw, ch - horizon);
 
     // Perspective Horizontal Depth Lines (Grid)
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
     ctx.lineWidth = 1;
-    const depthYLines = [245, 268, 298, 338, 388, 448, 520, 605];
+    const depthYLines = [285, 315, 355, 405, 465, 535, 615, 700];
     for (const dy of depthYLines) {
         if (dy > horizon && dy < ch) {
             ctx.beginPath();
@@ -2102,10 +2163,10 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
     }
 
     // Perspective Converging Longitudinal Lines
-    const startGrid = Math.floor(camX / 140) * 140;
-    for (let wx = startGrid; wx <= camX + cw + 400; wx += 140) {
+    const startGrid = Math.floor(camX / 160) * 160;
+    for (let wx = startGrid; wx <= camX + cw + 500; wx += 160) {
         const topSx = wx - camX;
-        const bottomOffset = (wx - (camX + cw / 2)) * 0.55;
+        const bottomOffset = (wx - (camX + cw / 2)) * 0.65;
         const bottomSx = topSx + bottomOffset;
 
         ctx.beginPath();
@@ -2114,60 +2175,101 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
         ctx.stroke();
     }
 
-    // Luminous Baseboard LED Strip & Dark Metallic Joint
-    ctx.fillStyle = '#334155';
-    ctx.fillRect(0, horizon - 2, cw, 3);
-
+    // Runway Stencil Zone Numbers & Guidance Chevrons
     ctx.save();
-    ctx.shadowColor = '#00d2ff';
-    ctx.shadowBlur = 12;
-    ctx.strokeStyle = '#00d2ff';
-    ctx.lineWidth = 3;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+    ctx.font = '900 48px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    for (let i = 1; i <= 5; i++) {
+        const zx = (i * 1500) - camX;
+        if (zx > -200 && zx < cw + 200) {
+            ctx.fillText(`ZONE 0${i}`, zx, horizon + 140);
+        }
+    }
+    ctx.restore();
+
+    // Structural Baseboard with Warning Stripe & Crisp White LED Line
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fillRect(0, horizon - 2, cw, 4);
+
+    // White/Red Horizon Light Line
+    ctx.save();
+    ctx.shadowColor = '#ffffff';
+    ctx.shadowBlur = 8;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(0, horizon + 1);
     ctx.lineTo(cw, horizon + 1);
     ctx.stroke();
     ctx.restore();
 
-    // ── 3. Draw Soft Realistic Drop Shadows under Chibi Feet ──
+    // ── 3. Draw Soft Drop Shadows under Chibi Feet ──
     const allChars = [PG.player, ...PG.companions].filter(c => c && c.skel);
     for (const c of allChars) {
         const sx = c.x - camX;
         const sy = c.y;
         if (sx > -100 && sx < cw + 100) {
-            // Soft outer shadow
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.28)';
+            // Soft outer occlusion shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
             ctx.beginPath();
-            ctx.ellipse(sx, sy, 38 * c.depthScale, 12 * c.depthScale, 0, 0, Math.PI * 2);
+            ctx.ellipse(sx, sy, 40 * c.depthScale, 13 * c.depthScale, 0, 0, Math.PI * 2);
             ctx.fill();
 
             // Dark inner core shadow
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
             ctx.beginPath();
-            ctx.ellipse(sx, sy, 22 * c.depthScale, 6.5 * c.depthScale, 0, 0, Math.PI * 2);
+            ctx.ellipse(sx, sy, 24 * c.depthScale, 7.5 * c.depthScale, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Active Controlled Character High-Tech Glowing Indicator Ring
+            // Active Controlled Character: Arknights Tactical Target Ring
             if (c === PG.player) {
                 ctx.save();
-                const pulse = 1.0 + Math.sin(performance.now() * 0.006) * 0.08;
-                ctx.shadowColor = '#00d2ff';
-                ctx.shadowBlur = 10;
-                ctx.strokeStyle = '#00d2ff';
-                ctx.lineWidth = 2.2;
+                const time = performance.now() * 0.003;
+                const pulse = 1.0 + Math.sin(time * 2) * 0.05;
+                const rx = 44 * c.depthScale * pulse;
+                const ry = 15 * c.depthScale * pulse;
+
+                // Glowing outer tactical ellipse
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 8;
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.ellipse(sx, sy, 42 * c.depthScale * pulse, 14 * c.depthScale * pulse, 0, 0, Math.PI * 2);
+                ctx.ellipse(sx, sy, rx, ry, 0, 0, Math.PI * 2);
                 ctx.stroke();
 
-                // Small tactical top chevron pointing down above head
-                ctx.fillStyle = '#00d2ff';
-                const headY = sy - (120 * c.depthScale);
+                // 4 Corner Brackets (Tactical Reticle Style)
+                ctx.strokeStyle = '#e02020';
+                ctx.lineWidth = 2.5;
+                const bracketLen = 8 * c.depthScale;
+
+                // Left bracket
                 ctx.beginPath();
-                ctx.moveTo(sx, headY - 10);
-                ctx.lineTo(sx - 5, headY - 18);
-                ctx.lineTo(sx + 5, headY - 18);
+                ctx.moveTo(sx - rx - 4, sy - bracketLen);
+                ctx.lineTo(sx - rx - 4, sy);
+                ctx.lineTo(sx - rx - 4 + bracketLen, sy);
+                ctx.stroke();
+
+                // Right bracket
+                ctx.beginPath();
+                ctx.moveTo(sx + rx + 4, sy - bracketLen);
+                ctx.lineTo(sx + rx + 4, sy);
+                ctx.lineTo(sx + rx + 4 - bracketLen, sy);
+                ctx.stroke();
+
+                // Tactical Top Beacon Pointer (Arknights Red/White)
+                const headY = sy - (125 * c.depthScale);
+                ctx.fillStyle = '#e02020';
+                ctx.shadowColor = '#e02020';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.moveTo(sx, headY - 8);
+                ctx.lineTo(sx - 6, headY - 20);
+                ctx.lineTo(sx + 6, headY - 20);
                 ctx.closePath();
                 ctx.fill();
+
                 ctx.restore();
             }
         }
@@ -2214,19 +2316,18 @@ function pgDrawDestPin(ctx, camX) {
     }
 
     const bounce = Math.sin(performance.now() * 0.007) * 6;
-    const arrowY = screenY - 32 + bounce;
+    const arrowY = screenY - 34 + bounce;
     const size = 14;
 
     ctx.save();
     ctx.globalAlpha = alpha;
 
-    // Glow shadow
-    ctx.shadowColor = '#00d2ff';
-    ctx.shadowBlur = 14;
+    // Glowing White & Red Tactical Chevron
+    ctx.shadowColor = '#ffffff';
+    ctx.shadowBlur = 12;
 
-    // Downward-pointing chevron arrow (↓)
-    ctx.strokeStyle = '#00d2ff';
-    ctx.lineWidth = 2.8;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 3;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
 
@@ -2237,21 +2338,23 @@ function pgDrawDestPin(ctx, camX) {
     ctx.lineTo(screenX + size, arrowY - size * 0.6);
     ctx.stroke();
 
-    // Bottom chevron (stacked for a double-chevron look)
+    // Bottom red chevron (stacked)
+    ctx.strokeStyle = '#e02020';
+    ctx.shadowColor = '#e02020';
     ctx.beginPath();
     ctx.moveTo(screenX - size, arrowY - size * 0.6 - size);
     ctx.lineTo(screenX, arrowY - size);
     ctx.lineTo(screenX + size, arrowY - size * 0.6 - size);
     ctx.stroke();
 
-    // Small circle at landing point
-    ctx.fillStyle = 'rgba(0, 210, 255, 0.30)';
+    // Landing Beacon Target Ring
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
     ctx.shadowBlur = 8;
     ctx.beginPath();
-    ctx.ellipse(screenX, screenY, 18, 7, 0, 0, Math.PI * 2);
+    ctx.ellipse(screenX, screenY, 20, 8, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#00d2ff';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.8;
     ctx.stroke();
 
     ctx.restore();
@@ -2409,14 +2512,18 @@ function pgRenderCompanionModalGrid() {
         return;
     }
 
-    filtered.slice(0, 60).forEach(op => {
+    // Show ALL filtered results — no arbitrary slice cap
+    // The modal body scrolls, so no max-height clamp on .pg-comp-grid needed
+    const currentInRoom = new Set(PG.companions.map(c => c.op?.id));
+    filtered.forEach(op => {
+        const isInRoom = currentInRoom.has(op.id);
         const card = document.createElement('div');
-        card.className = 'pg-comp-card';
+        card.className = 'pg-comp-card' + (isInRoom ? ' in-room' : '');
         card.innerHTML = `
             <div class="op-av s${Math.min(op.rarity, 6)}">${op.name_cn.charAt(0)}</div>
-            <div style="font-weight:700;font-size:12px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%">${op.name_cn}</div>
-            <div style="font-size:10px;color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%">${op.name_en}</div>
-            <span style="font-size:10px;color:#fdcb6e">${op.rarity} ★</span>
+            <div style="font-weight:700;font-size:11px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%">${op.name_cn}</div>
+            <div style="font-size:9px;color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%">${op.name_en}</div>
+            <span style="font-size:10px;color:var(--r${Math.min(op.rarity,6)})">${op.rarity} ★</span>
         `;
         card.onclick = () => {
             pgSelectAndSpawnCompanion(op);
