@@ -317,46 +317,6 @@
             pointer-events: none;
             z-index: 20;
             white-space: nowrap;
-        }
-
-        /* Floating Interactive Furniture Action Prompt */
-        .pg-furniture-prompt {
-            position: absolute;
-            display: none;
-            align-items: center;
-            gap: 8px;
-            background: rgba(14, 14, 14, 0.94);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-left: 3px solid #00d2ff;
-            padding: 7px 14px;
-            border-radius: 4px;
-            color: #ffffff;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            z-index: 50;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            transform: translate(-50%, -100%);
-            pointer-events: auto;
-            transition: transform 0.15s ease, background 0.15s, border-color 0.15s;
-            white-space: nowrap;
-            user-select: none;
-        }
-        .pg-furniture-prompt:hover {
-            background: rgba(0, 210, 255, 0.18);
-            border-color: #00d2ff;
-            transform: translate(-50%, -108%);
-        }
-        .pg-furniture-prompt .key-badge {
-            background: #00d2ff;
-            color: #0a0d14;
-            padding: 2px 7px;
-            border-radius: 3px;
-            font-weight: 800;
-            font-size: 10px;
-            letter-spacing: 0.5px;
-        }
-
         /* Bottom HUD Bar */
         .pg-bottom-bar {
             display: flex;
@@ -646,12 +606,6 @@
             <span class="badge" id="pg-badge-comp-count" style="color:#e8c96e">Đồng đội: 0/32</span>
         </div>
         <div class="pg-action-group">
-            <select class="sel" id="pg-theme-sel" onchange="pgChangeThemePreset(this.value)" style="width:195px;margin:0;padding:6px 10px;font-size:11px">
-                <option value="default">Phòng Mặc Định (White Room)</option>
-                <option value="furni_set_BSsafehouse" selected>黑钢国际安全屋 (Blacksteel)</option>
-                <option value="furni_set_penguin">企鹅物流安全屋 (Penguin)</option>
-                <option value="furni_set_warehouse">货运仓库 (Warehouse)</option>
-            </select>
             <button class="btn btn-ac" onclick="pgOpenCompanionModal()"><i data-lucide="user-plus" size="13"></i> Chọn Đồng Đội (+)</button>
             <button class="btn" id="pg-cam-btn" onclick="pgToggleCameraFollow()"><i data-lucide="video" size="13"></i> Camera: Bám theo</button>
             <button class="btn" onclick="pgResetRoom()"><i data-lucide="rotate-ccw" size="13"></i> Căn giữa</button>
@@ -665,13 +619,8 @@
         <!-- Primary WebGL Canvas for Spine Characters -->
         <canvas id="pg-canvas"></canvas>
         <!-- Dest-pin is drawn directly on pg-bg-canvas in world coordinates (no DOM element) -->
-        <!-- Floating Interactive Furniture Action Prompt -->
-        <div class="pg-furniture-prompt" id="pg-furniture-prompt" onclick="pgInteractNearestFurniture()">
-            <span class="key-badge">E</span>
-            <span id="pg-furniture-prompt-text">Ngồi ghế (Sit)</span>
-        </div>
         <!-- Instructions hint -->
-        <div class="pg-hint">💡 <b>[E] Tương tác</b> với Ghế / Giường khi đến gần · <b>Click nhân vật</b> đổi điều khiển · <b>W A S D</b> di chuyển · <b>Phím Space</b> dừng</div>
+        <div class="pg-hint">💡 <b>Click sàn</b> để di chuyển · <b>W A S D</b> điều khiển · <b>Phím Space</b> dừng · <b>Click nhân vật</b> để đổi điều khiển</div>
     </div>
 
     <!-- Bottom HUD Bar -->
@@ -1457,39 +1406,8 @@ const PG = {
         bounds: null,
         skelData: null,
         depthScale: 1.0,
-        availableAnims: [],
-        currentFurniture: null,
-        pendingFurniture: null
+        availableAnims: []
     },
-
-    // Interactive Furniture in the White Room (Chair & Bed)
-    furniture: [
-        {
-            id: 'chair_01',
-            type: 'chair',
-            name: 'Ghế Chỉ Huy Rhodes Island',
-            anim: 'Sit',
-            statusText: 'Đang ngồi ghế',
-            actionText: 'Đã ngồi xuống ghế chỉ huy',
-            promptText: 'Ngồi ghế (Sit)',
-            x: 2950,
-            y: 430,
-            hitRadius: 55
-        },
-        {
-            id: 'bed_01',
-            type: 'bed',
-            name: 'Giường Điều Trị Stasis Pod',
-            anim: 'Sleep',
-            statusText: 'Đang nằm ngủ',
-            actionText: 'Đã nằm lên giường điều trị',
-            promptText: 'Nằm ngủ (Sleep)',
-            x: 3520,
-            y: 430,
-            hitRadius: 80
-        }
-    ],
-    nearestFurniture: null,
 
     // Companion Chibis wandering in the room (Max 32)
     MAX_COMPANIONS: 32,
@@ -1532,50 +1450,20 @@ async function initPlayground() {
     if (!PG.canvas._hasPgListeners) {
         PG.canvas._hasPgListeners = true;
 
-        // Click & Drag on Canvas (Furniture Dragging, Pan, Click to Move)
+        // Click on canvas (Click to Move or Click on Character)
         PG.canvas.addEventListener('mousedown', (e) => {
             if (e.button !== 0) return;
             const rect = PG.canvas.getBoundingClientRect();
             const clickX = e.clientX - rect.left;
             const clickY = e.clientY - rect.top;
-            const worldX = clickX + PG.cameraX;
-            const worldY = clickY;
-
-            // Check if mouse down on a piece of furniture (to start potential drag)
-            let clickedItem = null;
-            if (PG.furniture) {
-                for (let i = PG.furniture.length - 1; i >= 0; i--) {
-                    const item = PG.furniture[i];
-                    const fScreenX = item.x - PG.cameraX;
-                    const fScreenY = item.y;
-                    const scale = 0.82 + ((Math.max(PG.FLOOR_MIN_Y, fScreenY) - PG.FLOOR_MIN_Y) / (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y)) * 0.28;
-                    const hitW = (item.hitRadius || 50) * scale;
-                    const hitH = (item.location === 'WALL' || item.location === 'CEILING') ? 60 * scale : 90 * scale;
-
-                    if (Math.abs(clickX - fScreenX) < hitW && clickY <= fScreenY + 25 && clickY >= fScreenY - hitH) {
-                        clickedItem = item;
-                        break;
-                    }
-                }
-            }
-
-            if (clickedItem) {
-                PG.dragCandidate = {
-                    item: clickedItem,
-                    startX: e.clientX,
-                    startY: e.clientY,
-                    itemOrigX: clickedItem.x,
-                    itemOrigY: clickedItem.y,
-                    moved: false
-                };
-            } else {
-                PG.dragCandidate = null;
+            if (clickX >= 0 && clickX <= PG.canvas.width && clickY >= 0 && clickY <= PG.canvas.height) {
+                pgHandleCanvasClick(clickX, clickY);
             }
         });
 
-        // Mouse drag for Free Pan or Furniture Dragging
+        // Mouse drag for Free Pan
         PG.canvas.addEventListener('mousedown', (e) => {
-            if (e.button === 1 || (e.button === 0 && !PG.cameraFollow && !PG.dragCandidate)) {
+            if (e.button === 1 || (e.button === 0 && !PG.cameraFollow)) {
                 PG.isPanning = true;
                 PG.panStartX = e.clientX;
                 PG.panStartCamX = PG.cameraX;
@@ -1584,60 +1472,13 @@ async function initPlayground() {
         });
 
         window.addEventListener('mousemove', (e) => {
-            if (PG.dragCandidate) {
-                const dx = e.clientX - PG.dragCandidate.startX;
-                const dy = e.clientY - PG.dragCandidate.startY;
-                if (Math.hypot(dx, dy) > 5) {
-                    PG.dragCandidate.moved = true;
-                    PG.isDraggingFurniture = true;
-                    PG.canvas.style.cursor = 'move';
-                    PG.dragCandidate.item.x = Math.max(80, Math.min(PG.ROOM_W - 80, PG.dragCandidate.itemOrigX + dx));
-                    PG.dragCandidate.item.y = Math.max(50, Math.min(PG.FLOOR_MAX_Y, PG.dragCandidate.itemOrigY + dy));
-                }
-            } else if (PG.isPanning) {
+            if (PG.isPanning) {
                 const dx = e.clientX - PG.panStartX;
                 PG.cameraX = Math.max(0, Math.min(PG.ROOM_W - PG.canvas.width, PG.panStartCamX - dx));
             }
         });
 
-        window.addEventListener('mouseup', (e) => {
-            if (PG.isDraggingFurniture && PG.dragCandidate) {
-                PG.isDraggingFurniture = false;
-                PG.canvas.style.cursor = 'crosshair';
-                const item = PG.dragCandidate.item;
-                // Snap to 36x8 tile grid
-                item.x = Math.round(item.x / 22) * 22;
-                item.y = Math.round(item.y / 17) * 17;
-                // Re-sort depth
-                PG.furniture.sort((a, b) => {
-                    const za = (a.location === 'CEILING' ? -100 : (a.location === 'WALL' ? -50 : (a.location === 'CARPET' ? -10 : a.y)));
-                    const zb = (b.location === 'CEILING' ? -100 : (b.location === 'WALL' ? -50 : (b.location === 'CARPET' ? -10 : b.y)));
-                    return za - zb;
-                });
-                showToast(`✓ Đã di chuyển: ${item.name}`);
-                PG.dragCandidate = null;
-                return;
-            }
-
-            if (PG.dragCandidate && !PG.dragCandidate.moved) {
-                const rect = PG.canvas.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const clickY = e.clientY - rect.top;
-                PG.dragCandidate = null;
-                pgHandleCanvasClick(clickX, clickY);
-                return;
-            }
-
-            if (!PG.dragCandidate && e.button === 0 && !PG.isPanning) {
-                const rect = PG.canvas.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const clickY = e.clientY - rect.top;
-                if (clickX >= 0 && clickX <= PG.canvas.width && clickY >= 0 && clickY <= PG.canvas.height) {
-                    pgHandleCanvasClick(clickX, clickY);
-                }
-            }
-
-            PG.dragCandidate = null;
+        window.addEventListener('mouseup', () => {
             if (PG.isPanning) {
                 PG.isPanning = false;
                 PG.canvas.style.cursor = 'crosshair';
@@ -1648,26 +1489,6 @@ async function initPlayground() {
         window.addEventListener('keydown', (e) => {
             const k = e.key;
 
-            // R key: Rotate / Flip hovered or nearest furniture
-            if (e.code === 'KeyR' || k === 'r' || k === 'R') {
-                const target = PG.nearestFurniture || (PG.dragCandidate && PG.dragCandidate.item);
-                if (target) {
-                    e.preventDefault();
-                    target.dir = (target.dir === 1 ? 0 : 1);
-                    showToast(`↻ Đã xoay: ${target.name}`);
-                    return;
-                }
-            }
-
-            // E key: Interact with nearest furniture (Sit / Sleep)
-            if (e.code === 'KeyE' || k === 'e' || k === 'E') {
-                if (PG.nearestFurniture) {
-                    e.preventDefault();
-                    pgInteractWithFurniture(PG.nearestFurniture);
-                    return;
-                }
-            }
-
             // Spacebar: Stop moving immediately
             if (e.code === 'Space' || k === ' ') {
                 e.preventDefault();
@@ -1676,8 +1497,6 @@ async function initPlayground() {
                 p.isMoving = false;
                 p.isInteracting = false;
                 p.interactLockUntil = 0;
-                p.currentFurniture = null;
-                p.pendingFurniture = null;
                 p.targetX = p.x;
                 p.targetY = p.y;
                 pgHideDestPin();
@@ -1692,8 +1511,6 @@ async function initPlayground() {
                 // If pressing movement key, cancel manual click target and move directly
                 if (['w','a','s','d','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(k)) {
                     pgHideDestPin();
-                    PG.player.currentFurniture = null;
-                    PG.player.pendingFurniture = null;
                 }
             }
         });
@@ -1832,30 +1649,7 @@ function pgHandleCanvasClick(clickX, clickY) {
         }
     }
 
-    // 3. Check if clicked on interactive furniture (Chair or Bed) -> Walk to it & Interact!
-    for (let i = 0; i < PG.furniture.length; i++) {
-        const item = PG.furniture[i];
-        const fScreenX = item.x - PG.cameraX;
-        const fScreenY = item.y;
-        const scale = 0.82 + ((fScreenY - PG.FLOOR_MIN_Y) / (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y)) * 0.28;
-        const hitRadiusX = item.hitRadius * scale;
-        const hitHeight = 90 * scale;
-
-        if (Math.abs(clickX - fScreenX) < hitRadiusX && clickY <= fScreenY + 20 && clickY >= fScreenY - hitHeight) {
-            p.interactToken = (p.interactToken || 0) + 1;
-            p.isInteracting = false;
-            p.interactLockUntil = 0;
-            p.currentFurniture = null;
-            p.pendingFurniture = item;
-            p.targetX = item.x;
-            p.targetY = item.y;
-            p.isMoving = true;
-            pgShowDestPin(item.x, item.y);
-            return;
-        }
-    }
-
-    // 4. Otherwise: Click to Move on the Walkable Floor
+    // 3. Otherwise: Click to Move on the Walkable Floor
     const clampedTargetY = Math.max(PG.FLOOR_MIN_Y, Math.min(PG.FLOOR_MAX_Y, worldY));
     const clampedTargetX = Math.max(80, Math.min(PG.ROOM_W - 80, worldX));
 
@@ -1863,8 +1657,6 @@ function pgHandleCanvasClick(clickX, clickY) {
     p.interactToken = (p.interactToken || 0) + 1;
     p.isInteracting = false;
     p.interactLockUntil = 0;
-    p.currentFurniture = null;
-    p.pendingFurniture = null;
     p.targetX = clampedTargetX;
     p.targetY = clampedTargetY;
     p.isMoving = true;
@@ -2087,8 +1879,6 @@ function startPlaygroundLoop() {
             PG.bgCtx.save();
             PG.bgCtx.scale(dpr, dpr);
             pgDrawSciFiRoomBackground(PG.bgCtx, cw, ch);
-            // Draw interactive furniture (Chair & Bed)
-            pgDrawFurniture(PG.bgCtx, PG.cameraX);
             // Draw world-anchored destination arrow (stays in world space, not screen)
             pgDrawDestPin(PG.bgCtx, PG.cameraX);
             PG.bgCtx.restore();
@@ -2148,12 +1938,10 @@ function pgUpdatePlayerPhysics(delta) {
     if (PG.keys.w || PG.keys.ArrowUp)    ky -= 1; // Up into room (further)
     if (PG.keys.s || PG.keys.ArrowDown)  ky += 1; // Down closer to screen
 
-        if (kx !== 0 || ky !== 0) {
+    if (kx !== 0 || ky !== 0) {
         p.interactToken = (p.interactToken || 0) + 1;
         p.isInteracting = false;
         p.interactLockUntil = 0;
-        p.currentFurniture = null;
-        p.pendingFurniture = null;
         p.isMoving = true;
         p.targetX = p.x + kx * 400;
         p.targetY = p.y + ky * 400;
@@ -2191,20 +1979,11 @@ function pgUpdatePlayerPhysics(delta) {
             p.isMoving = false;
             pgHideDestPin();
 
-            if (p.pendingFurniture) {
-                const f = p.pendingFurniture;
-                p.pendingFurniture = null;
-                pgInteractWithFurniture(f);
-            } else {
-                const idleAnim = p.availableAnims.includes('Relax') ? 'Relax' : 'Default';
-                pgPlayPlayerAnim(idleAnim, true);
-                pgUpdateStatusBadge(`${idleAnim} (Đứng yên)`, '#2ed573');
-            }
+            const idleAnim = p.availableAnims.includes('Relax') ? 'Relax' : 'Default';
+            pgPlayPlayerAnim(idleAnim, true);
+            pgUpdateStatusBadge(`${idleAnim} (Đứng yên)`, '#2ed573');
         }
     }
-
-    // Check proximity to furniture for interactive prompt
-    pgUpdateFurnitureInteractions();
 }
 
 /**
@@ -2532,664 +2311,6 @@ function pgDrawDestPin(ctx, camX) {
     ctx.stroke();
 
     ctx.restore();
-}
-
-const _furnitureImgCache = new Map();
-
-/**
- * Remove the gradient grey/white background card from Arknights furniture thumbnails,
- * producing a 100% transparent PNG sprite cutout.
- */
-function makeTransparentFurnitureCanvas(img) {
-    const w = img.naturalWidth || img.width;
-    const h = img.naturalHeight || img.height;
-    if (!w || !h) return null;
-
-    const offCanvas = document.createElement('canvas');
-    offCanvas.width = w;
-    offCanvas.height = h;
-    const offCtx = offCanvas.getContext('2d');
-    offCtx.drawImage(img, 0, 0);
-
-    let imgData;
-    try {
-        imgData = offCtx.getImageData(0, 0, w, h);
-    } catch(e) {
-        // Cross-origin restriction fallback
-        return img;
-    }
-    const data = imgData.data;
-
-    // Arknights furniture cards have a vertical background gradient from ~160 (top) to ~255 (bottom).
-    // Flood-fill BFS starting from all 4 borders to remove background while preserving internal textures.
-    const visited = new Uint8Array(w * h);
-    const queue = [];
-
-    function isBgCandidate(x, y) {
-        const idx = (y * w + x) * 4;
-        const r = data[idx], g = data[idx + 1], b = data[idx + 2];
-        const bgVal = 160 + (255 - 160) * (y / (h - 1 || 1));
-        const diffR = Math.abs(r - bgVal);
-        const diffG = Math.abs(g - bgVal);
-        const diffB = Math.abs(b - bgVal);
-        const maxC = Math.max(r, g, b);
-        const minC = Math.min(r, g, b);
-        const satDiff = maxC - minC;
-
-        return ((diffR < 32 && diffG < 32 && diffB < 32 && satDiff < 22) || (r > 246 && g > 246 && b > 246) || (y < 4 && diffR < 42 && satDiff < 22));
-    }
-
-    for (let x = 0; x < w; x++) {
-        if (isBgCandidate(x, 0)) { queue.push(x); visited[x] = 1; }
-        if (isBgCandidate(x, h - 1)) { queue.push((h - 1) * w + x); visited[(h - 1) * w + x] = 1; }
-    }
-    for (let y = 0; y < h; y++) {
-        if (isBgCandidate(0, y) && !visited[y * w]) { queue.push(y * w); visited[y * w] = 1; }
-        if (isBgCandidate(w - 1, y) && !visited[y * w + (w - 1)]) { queue.push(y * w + (w - 1)); visited[y * w + (w - 1)] = 1; }
-    }
-
-    let head = 0;
-    while (head < queue.length) {
-        const p = queue[head++];
-        const px = p % w;
-        const py = Math.floor(p / w);
-
-        data[p * 4 + 3] = 0; // Transparent
-
-        const neighbors = [
-            px > 0 ? p - 1 : -1,
-            px < w - 1 ? p + 1 : -1,
-            py > 0 ? p - w : -1,
-            py < h - 1 ? p + w : -1
-        ];
-
-        for (const np of neighbors) {
-            if (np !== -1 && !visited[np]) {
-                const nx = np % w;
-                const ny = Math.floor(np / w);
-                if (isBgCandidate(nx, ny)) {
-                    visited[np] = 1;
-                    queue.push(np);
-                }
-            }
-        }
-    }
-
-    // Crop to tight bounding box
-    let minX = w, minY = h, maxX = 0, maxY = 0;
-    for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-            if (data[(y * w + x) * 4 + 3] > 0) {
-                if (x < minX) minX = x;
-                if (x > maxX) maxX = x;
-                if (y < minY) minY = y;
-                if (y > maxY) maxY = y;
-            }
-        }
-    }
-
-    offCtx.putImageData(imgData, 0, 0);
-
-    if (maxX > minX && maxY > minY) {
-        const cropW = maxX - minX + 1;
-        const cropH = maxY - minY + 1;
-        const cropCanvas = document.createElement('canvas');
-        cropCanvas.width = cropW;
-        cropCanvas.height = cropH;
-        const cropCtx = cropCanvas.getContext('2d');
-        cropCtx.drawImage(offCanvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
-        return cropCanvas;
-    }
-
-    return offCanvas;
-}
-
-/**
- * Draw all interactive furniture items (Chair, Bed, Sprites) in the 2.5D Room.
- */
-function pgDrawFurniture(ctx, camX) {
-    if (!PG.furniture) return;
-
-    for (const item of PG.furniture) {
-        const sx = item.x - camX;
-        const sy = item.y;
-        const scale = 0.82 + ((Math.max(PG.FLOOR_MIN_Y, sy) - PG.FLOOR_MIN_Y) / (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y)) * 0.28;
-        const isNear = (PG.nearestFurniture === item);
-        const isDragged = (PG.dragCandidate && PG.dragCandidate.item === item && PG.isDraggingFurniture);
-
-        if (item.imageUrl) {
-            pgDrawSpriteFurniture(ctx, item, sx, sy, scale, isNear, isDragged);
-        } else if (item.type === 'chair') {
-            pgDrawChair(ctx, sx, sy, scale, isNear);
-        } else if (item.type === 'bed') {
-            pgDrawBed(ctx, sx, sy, scale, isNear);
-        }
-    }
-}
-
-/**
- * Draw image sprite based furniture with transparent cutout and dynamic floor shadows.
- */
-function pgDrawSpriteFurniture(ctx, item, sx, sy, scale, isNear, isDragged) {
-    if (!_furnitureImgCache.has(item.imageUrl)) {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.src = item.imageUrl;
-        _furnitureImgCache.set(item.imageUrl, img);
-    }
-    const img = _furnitureImgCache.get(item.imageUrl);
-
-    ctx.save();
-    const isWall = (item.location === 'WALL' || item.location === 'WALLPAPER');
-    const isCeiling = (item.location === 'CEILING');
-    const isCarpet = (item.location === 'CARPET' || item.location === 'FLOOR_MAT');
-
-    const footW = (item.width || 2) * 44 * scale;
-    const footH = (item.height || 2) * 40 * scale;
-
-    // Drop shadow (only for floor and carpet furniture)
-    if (!isWall && !isCeiling) {
-        ctx.fillStyle = isCarpet ? 'rgba(15, 23, 42, 0.15)' : 'rgba(15, 23, 42, 0.32)';
-        ctx.beginPath();
-        ctx.ellipse(sx, sy + 3 * scale, (footW * 0.44), (isCarpet ? 16 * scale : 10 * scale), 0, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    // Proximity or Dragging glowing aura
-    if (isNear || isDragged) {
-        ctx.save();
-        const pulse = 1.0 + Math.sin(performance.now() * 0.008) * 0.08;
-        ctx.shadowColor = isDragged ? '#ffaa00' : '#00d2ff';
-        ctx.shadowBlur = isDragged ? 18 : 14;
-        ctx.strokeStyle = isDragged ? '#ffaa00' : '#00d2ff';
-        ctx.lineWidth = 2.2 * scale;
-        ctx.beginPath();
-        ctx.ellipse(sx, sy + 3 * scale, (footW * 0.50) * pulse, (14 * scale) * pulse, 0, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-    }
-
-    if (img && img.complete && img.naturalWidth > 0) {
-        // Convert to clean transparent cutout once
-        if (!img._cleanCanvas) {
-            img._cleanCanvas = makeTransparentFurnitureCanvas(img);
-        }
-        const clean = img._cleanCanvas || img;
-        const cW = clean.width || img.naturalWidth;
-        const cH = clean.height || img.naturalHeight;
-        const drawH = (cH / (cW || 1)) * footW;
-
-        if (item.dir === 1) {
-            // Rotated / Flipped
-            ctx.save();
-            ctx.translate(sx, sy);
-            ctx.scale(-1, 1);
-            if (isWall || isCeiling) {
-                ctx.drawImage(clean, -footW / 2, -drawH / 2, footW, drawH);
-            } else {
-                ctx.drawImage(clean, -footW / 2, -drawH + (4 * scale), footW, drawH);
-            }
-            ctx.restore();
-        } else {
-            if (isWall || isCeiling) {
-                ctx.drawImage(clean, sx - footW / 2, sy - drawH / 2, footW, drawH);
-            } else {
-                ctx.drawImage(clean, sx - footW / 2, sy - drawH + (4 * scale), footW, drawH);
-            }
-        }
-    } else {
-        // High-tech placeholder card while asset loads
-        ctx.fillStyle = '#1e293b';
-        ctx.strokeStyle = '#00d2ff';
-        ctx.lineWidth = 1.2;
-        ctx.fillRect(sx - footW / 2, sy - footH, footW, footH);
-        ctx.strokeRect(sx - footW / 2, sy - footH, footW, footH);
-        ctx.fillStyle = '#00d2ff';
-        ctx.font = `${Math.max(8, Math.round(9 * scale))}px "JetBrains Mono", monospace`;
-        ctx.textAlign = 'center';
-        ctx.fillText(item.name || 'Furniture', sx, sy - footH / 2);
-    }
-
-    ctx.restore();
-}
-
-/**
- * Draw Rhodes Island Command Swivel Chair.
- */
-function pgDrawChair(ctx, sx, sy, scale, isNear) {
-    ctx.save();
-
-    // Drop shadow
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.32)';
-    ctx.beginPath();
-    ctx.ellipse(sx, sy + 4 * scale, 34 * scale, 12 * scale, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Proximity interactive glowing aura
-    if (isNear) {
-        ctx.save();
-        const pulse = 1.0 + Math.sin(performance.now() * 0.008) * 0.08;
-        ctx.shadowColor = '#00d2ff';
-        ctx.shadowBlur = 12;
-        ctx.strokeStyle = '#00d2ff';
-        ctx.lineWidth = 2 * scale;
-        ctx.beginPath();
-        ctx.ellipse(sx, sy + 4 * scale, 42 * scale * pulse, 15 * scale * pulse, 0, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-    }
-
-    // 5-Star Caster Legs Base
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 3 * scale;
-    ctx.lineCap = 'round';
-    for (let angle = 0; angle < Math.PI * 2; angle += (Math.PI * 2) / 5) {
-        const lx = sx + Math.cos(angle) * 20 * scale;
-        const ly = (sy + 2 * scale) + Math.sin(angle) * 8 * scale;
-        ctx.beginPath();
-        ctx.moveTo(sx, sy - 6 * scale);
-        ctx.lineTo(lx, ly);
-        ctx.stroke();
-
-        // Small wheels
-        ctx.fillStyle = '#0f172a';
-        ctx.beginPath();
-        ctx.arc(lx, ly, 2.5 * scale, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    // Center Hydraulic Lift Cylinder
-    ctx.fillStyle = '#64748b';
-    ctx.fillRect(sx - 3 * scale, sy - 26 * scale, 6 * scale, 20 * scale);
-
-    // Leather Seat Cushion
-    ctx.fillStyle = '#ffffff';
-    ctx.shadowColor = 'rgba(0,0,0,0.12)';
-    ctx.shadowBlur = 6;
-    ctx.beginPath();
-    ctx.ellipse(sx, sy - 26 * scale, 24 * scale, 9 * scale, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Cushion Rim & Stitching
-    ctx.strokeStyle = '#cbd5e1';
-    ctx.lineWidth = 1.5 * scale;
-    ctx.stroke();
-
-    // Seat Front Edge
-    ctx.fillStyle = '#f1f5f9';
-    ctx.beginPath();
-    ctx.ellipse(sx, sy - 24 * scale, 23 * scale, 6 * scale, 0, 0, Math.PI);
-    ctx.fill();
-
-    // Ergonomic Backrest
-    const backY = sy - 62 * scale;
-    // Outer Shell
-    ctx.fillStyle = '#1e293b';
-    ctx.beginPath();
-    if (ctx.roundRect) {
-        ctx.roundRect(sx - 18 * scale, backY, 36 * scale, 38 * scale, [8 * scale, 8 * scale, 2 * scale, 2 * scale]);
-    } else {
-        ctx.rect(sx - 18 * scale, backY, 36 * scale, 38 * scale);
-    }
-    ctx.fill();
-
-    // Inner White Cushion
-    ctx.fillStyle = '#f8fafc';
-    ctx.beginPath();
-    if (ctx.roundRect) {
-        ctx.roundRect(sx - 14 * scale, backY + 4 * scale, 28 * scale, 30 * scale, [6 * scale, 6 * scale, 2 * scale, 2 * scale]);
-    } else {
-        ctx.rect(sx - 14 * scale, backY + 4 * scale, 28 * scale, 30 * scale);
-    }
-    ctx.fill();
-
-    // Cyan LED Spine Line
-    ctx.fillStyle = '#00d2ff';
-    ctx.shadowColor = '#00d2ff';
-    ctx.shadowBlur = 6;
-    ctx.fillRect(sx - 1.5 * scale, backY + 8 * scale, 3 * scale, 22 * scale);
-
-    // Headrest
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    if (ctx.roundRect) {
-        ctx.roundRect(sx - 11 * scale, backY - 13 * scale, 22 * scale, 12 * scale, [4 * scale]);
-    } else {
-        ctx.rect(sx - 11 * scale, backY - 13 * scale, 22 * scale, 12 * scale);
-    }
-    ctx.fill();
-    ctx.strokeStyle = '#cbd5e1';
-    ctx.lineWidth = 1 * scale;
-    ctx.stroke();
-
-    // Armrests (Left & Right)
-    ctx.fillStyle = '#334155';
-    ctx.fillRect(sx - 25 * scale, sy - 42 * scale, 5 * scale, 16 * scale);
-    ctx.fillRect(sx + 20 * scale, sy - 42 * scale, 5 * scale, 16 * scale);
-
-    ctx.restore();
-}
-
-/**
- * Draw Rhodes Island Medical / Stasis Pod Bed.
- */
-function pgDrawBed(ctx, sx, sy, scale, isNear) {
-    ctx.save();
-
-    // Drop shadow
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.32)';
-    ctx.beginPath();
-    ctx.ellipse(sx, sy + 6 * scale, 76 * scale, 22 * scale, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Proximity glowing aura
-    if (isNear) {
-        ctx.save();
-        const pulse = 1.0 + Math.sin(performance.now() * 0.008) * 0.08;
-        ctx.shadowColor = '#00d2ff';
-        ctx.shadowBlur = 14;
-        ctx.strokeStyle = '#00d2ff';
-        ctx.lineWidth = 2 * scale;
-        ctx.beginPath();
-        ctx.ellipse(sx, sy + 6 * scale, 86 * scale * pulse, 26 * scale * pulse, 0, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-    }
-
-    const bedW = 135 * scale;
-    const bedH = 46 * scale;
-    const bedLeft = sx - bedW / 2;
-    const bedTop = sy - 32 * scale;
-
-    // Dark Titanium Chassis Plinth
-    ctx.fillStyle = '#1e293b';
-    ctx.beginPath();
-    if (ctx.roundRect) {
-        ctx.roundRect(bedLeft - 4 * scale, bedTop + 14 * scale, bedW + 8 * scale, 24 * scale, [6 * scale]);
-    } else {
-        ctx.rect(bedLeft - 4 * scale, bedTop + 14 * scale, bedW + 8 * scale, 24 * scale);
-    }
-    ctx.fill();
-
-    // Cyan Base Underglow Line
-    ctx.fillStyle = '#00d2ff';
-    ctx.shadowColor = '#00d2ff';
-    ctx.shadowBlur = 8;
-    ctx.fillRect(bedLeft + 8 * scale, bedTop + 34 * scale, bedW - 16 * scale, 3 * scale);
-
-    // Pristine White Medical Bed Pod Shell
-    ctx.fillStyle = '#ffffff';
-    ctx.shadowColor = 'rgba(0,0,0,0.12)';
-    ctx.shadowBlur = 8;
-    ctx.beginPath();
-    if (ctx.roundRect) {
-        ctx.roundRect(bedLeft, bedTop, bedW, bedH, [10 * scale]);
-    } else {
-        ctx.rect(bedLeft, bedTop, bedW, bedH);
-    }
-    ctx.fill();
-    ctx.strokeStyle = '#cbd5e1';
-    ctx.lineWidth = 1.5 * scale;
-    ctx.stroke();
-
-    // Memory Foam Mattress
-    ctx.fillStyle = '#f1f5f9';
-    ctx.beginPath();
-    if (ctx.roundRect) {
-        ctx.roundRect(bedLeft + 6 * scale, bedTop + 4 * scale, bedW - 12 * scale, bedH - 10 * scale, [6 * scale]);
-    } else {
-        ctx.rect(bedLeft + 6 * scale, bedTop + 4 * scale, bedW - 12 * scale, bedH - 10 * scale);
-    }
-    ctx.fill();
-
-    // Pillow at Headboard (Left side)
-    ctx.fillStyle = '#ffffff';
-    ctx.shadowColor = 'rgba(0,0,0,0.08)';
-    ctx.shadowBlur = 4;
-    ctx.beginPath();
-    if (ctx.roundRect) {
-        ctx.roundRect(bedLeft + 10 * scale, bedTop + 8 * scale, 28 * scale, 22 * scale, [5 * scale]);
-    } else {
-        ctx.rect(bedLeft + 10 * scale, bedTop + 8 * scale, 28 * scale, 22 * scale);
-    }
-    ctx.fill();
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 1 * scale;
-    ctx.stroke();
-
-    // Rhodes Island Folded Medical Blanket (Right 60% of Bed)
-    const blanketLeft = bedLeft + 46 * scale;
-    const blanketW = bedW - 52 * scale;
-    ctx.fillStyle = '#0284c7';
-    ctx.beginPath();
-    if (ctx.roundRect) {
-        ctx.roundRect(blanketLeft, bedTop + 6 * scale, blanketW, bedH - 14 * scale, [4 * scale, 6 * scale, 6 * scale, 4 * scale]);
-    } else {
-        ctx.rect(blanketLeft, bedTop + 6 * scale, blanketW, bedH - 14 * scale);
-    }
-    ctx.fill();
-
-    // White Decorative Blanket Stripe
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(blanketLeft + 10 * scale, bedTop + 6 * scale, 4 * scale, bedH - 14 * scale);
-
-    // High-Tech Headboard & Vital Signs Holographic Monitor
-    const headboardX = bedLeft - 10 * scale;
-    const headboardY = bedTop - 34 * scale;
-    ctx.fillStyle = '#0f172a';
-    ctx.beginPath();
-    if (ctx.roundRect) {
-        ctx.roundRect(headboardX, headboardY, 18 * scale, 56 * scale, [6 * scale, 2 * scale, 2 * scale, 6 * scale]);
-    } else {
-        ctx.rect(headboardX, headboardY, 18 * scale, 56 * scale);
-    }
-    ctx.fill();
-
-    // Hologram PRTS Monitor floating above headboard
-    ctx.save();
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-    ctx.strokeStyle = '#00d2ff';
-    ctx.lineWidth = 1.2 * scale;
-    ctx.shadowColor = '#00d2ff';
-    ctx.shadowBlur = 6;
-    ctx.beginPath();
-    if (ctx.roundRect) {
-        ctx.roundRect(headboardX - 4 * scale, headboardY - 24 * scale, 56 * scale, 20 * scale, [3 * scale]);
-    } else {
-        ctx.rect(headboardX - 4 * scale, headboardY - 24 * scale, 56 * scale, 20 * scale);
-    }
-    ctx.fill();
-    ctx.stroke();
-
-    // Heart rate text & pulse line
-    ctx.fillStyle = '#00d2ff';
-    ctx.font = `bold ${Math.max(7, Math.round(8 * scale))}px "JetBrains Mono", monospace`;
-    ctx.textAlign = 'left';
-    ctx.fillText('♥ 75 BPM', headboardX + 1 * scale, headboardY - 11 * scale);
-    ctx.fillStyle = '#38bdf8';
-    ctx.font = `${Math.max(6, Math.round(6.5 * scale))}px "JetBrains Mono", monospace`;
-    ctx.fillText('PRTS // STABLE', headboardX + 1 * scale, headboardY - 4 * scale);
-    ctx.restore();
-
-    ctx.restore();
-}
-
-/**
- * Check proximity between active player and furniture to display floating action prompt.
- */
-function pgUpdateFurnitureInteractions() {
-    const p = PG.player;
-    if (!p || !p.skel || p.isMoving) {
-        pgHideFurniturePrompt();
-        PG.nearestFurniture = null;
-        return;
-    }
-
-    let nearest = null;
-    let minDist = 90;
-
-    for (const item of PG.furniture) {
-        const d = Math.hypot(p.x - item.x, p.y - item.y);
-        if (d < minDist) {
-            minDist = d;
-            nearest = item;
-        }
-    }
-
-    PG.nearestFurniture = nearest;
-
-    if (nearest && !p.currentFurniture) {
-        pgShowFurniturePrompt(nearest);
-    } else {
-        pgHideFurniturePrompt();
-    }
-}
-
-function pgShowFurniturePrompt(item) {
-    const prompt = document.getElementById('pg-furniture-prompt');
-    const textEl = document.getElementById('pg-furniture-prompt-text');
-    if (!prompt || !textEl) return;
-
-    const screenX = item.x - PG.cameraX;
-    const screenY = item.y;
-    const scale = 0.82 + ((screenY - PG.FLOOR_MIN_Y) / (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y)) * 0.28;
-
-    prompt.style.left = `${screenX}px`;
-    prompt.style.top  = `${screenY - (105 * scale)}px`;
-    textEl.textContent = item.promptText;
-    prompt.style.display = 'inline-flex';
-}
-
-function pgHideFurniturePrompt() {
-    const prompt = document.getElementById('pg-furniture-prompt');
-    if (prompt) prompt.style.display = 'none';
-}
-
-/**
- * Trigger interaction with the nearest furniture.
- */
-function pgInteractNearestFurniture() {
-    if (PG.nearestFurniture) {
-        pgInteractWithFurniture(PG.nearestFurniture);
-    }
-}
-
-/**
- * Snap player to furniture and play Sit or Sleep animation.
- */
-function pgInteractWithFurniture(item) {
-    const p = PG.player;
-    if (!p || !p.skel) return;
-
-    p.currentFurniture = item;
-    p.pendingFurniture = null;
-    p.interactToken = (p.interactToken || 0) + 1;
-    p.isMoving = false;
-    p.isInteracting = true;
-    p.targetX = item.x;
-    p.targetY = item.y;
-    p.x = item.x;
-    p.y = item.y;
-
-    pgHideDestPin();
-    pgHideFurniturePrompt();
-
-    // Check if character supports the animation (e.g. Sit, Sleep)
-    const targetAnim = p.availableAnims.includes(item.anim) ? item.anim : (p.availableAnims.includes('Relax') ? 'Relax' : 'Default');
-    pgPlayPlayerAnim(targetAnim, true);
-    pgUpdateStatusBadge(`${targetAnim} (${item.statusText})`, '#e8c96e');
-    showToast(`✓ ${item.name}: ${item.actionText}`);
-}
-
-/**
- * Switch dormitory room preset theme (Blacksteel, Penguin Logistics, Warehouse, etc.)
- */
-async function pgChangeThemePreset(themeId) {
-    if (themeId === 'default') {
-        PG.furniture = [
-            { id: 'chair_01', type: 'chair', name: 'Ghế Chỉ Huy', x: 2950, y: 430, anim: 'Sit', promptText: 'Ngồi ghế (Sit)', actionText: 'Đang ngồi thư giãn', statusText: 'Đang ngồi', hitRadius: 55 },
-            { id: 'bed_01', type: 'bed', name: 'Giường Điều Trị', x: 3520, y: 430, anim: 'Sleep', promptText: 'Nằm ngủ (Sleep)', actionText: 'Đang nằm nghỉ ngơi', statusText: 'Đang ngủ', hitRadius: 90 }
-        ];
-        showToast('✓ Đã tải phòng mặc định Rhodes Island');
-        return;
-    }
-
-    try {
-        let db = window._furnitureDb;
-        if (!db) {
-            const resp = await fetch('furniture_database.json');
-            db = await resp.json();
-            window._furnitureDb = db;
-        }
-
-        const theme = db.themes && db.themes[themeId];
-        if (!theme) {
-            showToast('Chưa tìm thấy chủ đề phòng');
-            return;
-        }
-
-        const originX = 2200;
-        const horizonY = 320;
-        const tileW = 44.0;
-        const tileH = 34.0;
-
-        const newFurniture = [];
-        for (const item of theme.quickSetup) {
-            const gridX = item.gridX || 0;
-            const gridY = item.gridY || 0;
-            const rawW = item.width || 1;
-            const rawD = item.depth || 1;
-            const dir = item.dir || 0;
-            const footW = (dir === 1 ? rawD : rawW);
-            const footD = (dir === 1 ? rawW : rawD);
-
-            let wx = originX + (gridX + footW / 2.0) * tileW;
-            let wy = horizonY + 30 + ((gridY + footD * 0.7) * tileH);
-
-            if (item.location === 'WALL' || item.location === 'WALLPAPER') {
-                wy = horizonY - 40 - (gridY * 26.0);
-            } else if (item.location === 'CEILING') {
-                wy = 75.0 + (gridY * 16.0);
-            } else if (item.location === 'CARPET' || item.location === 'FLOOR_MAT') {
-                wy = horizonY + 20 + (gridY * tileH);
-            }
-
-            const anim = item.animMapping || 'Relax';
-            newFurniture.push({
-                id: item.furnitureId,
-                name: item.name,
-                x: wx,
-                y: wy,
-                gridX: gridX,
-                gridY: gridY,
-                width: rawW,
-                depth: rawD,
-                height: item.height || 1,
-                location: item.location,
-                subType: item.subType,
-                dir: dir,
-                anim: anim,
-                promptText: `${anim === 'Sit' ? 'Ngồi' : (anim === 'Sleep' ? 'Nằm' : 'Tương tác')} (${anim})`,
-                actionText: `Đang tương tác với ${item.name}`,
-                statusText: anim,
-                hitRadius: Math.max(45, (footW * 22)),
-                imageUrl: item.imageUrl
-            });
-        }
-
-        // Z-Index sort back-to-front
-        newFurniture.sort((a, b) => {
-            const za = (a.location === 'CEILING' ? -100 : (a.location === 'WALL' ? -50 : (a.location === 'CARPET' ? -10 : a.y)));
-            const zb = (b.location === 'CEILING' ? -100 : (b.location === 'WALL' ? -50 : (b.location === 'CARPET' ? -10 : b.y)));
-            return za - zb;
-        });
-
-        PG.furniture = newFurniture;
-        showToast(`✓ Đã tải chủ đề: ${theme.name} (${newFurniture.length} vật dụng trong suốt)`);
-    } catch(err) {
-        console.error('Failed to load theme preset:', err);
-        showToast('Lỗi khi tải dữ liệu phòng');
-    }
 }
 
 function pgUpdateStatusBadge(text, color = '#2ed573') {
