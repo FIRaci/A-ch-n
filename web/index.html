@@ -318,6 +318,44 @@
             white-space: nowrap;
         }
 
+        /* Floating Interactive Furniture Action Prompt */
+        .pg-furniture-prompt {
+            position: absolute;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(14, 14, 14, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-left: 3px solid #00d2ff;
+            padding: 7px 14px;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 50;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            transform: translate(-50%, -100%);
+            pointer-events: auto;
+            transition: transform 0.15s ease, background 0.15s, border-color 0.15s;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .pg-furniture-prompt:hover {
+            background: rgba(0, 210, 255, 0.18);
+            border-color: #00d2ff;
+            transform: translate(-50%, -108%);
+        }
+        .pg-furniture-prompt .key-badge {
+            background: #00d2ff;
+            color: #0a0d14;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-weight: 800;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
         /* Bottom HUD Bar */
         .pg-bottom-bar {
             display: flex;
@@ -620,8 +658,13 @@
         <!-- Primary WebGL Canvas for Spine Characters -->
         <canvas id="pg-canvas"></canvas>
         <!-- Dest-pin is drawn directly on pg-bg-canvas in world coordinates (no DOM element) -->
+        <!-- Floating Interactive Furniture Action Prompt -->
+        <div class="pg-furniture-prompt" id="pg-furniture-prompt" onclick="pgInteractNearestFurniture()">
+            <span class="key-badge">E</span>
+            <span id="pg-furniture-prompt-text">Ngồi ghế (Sit)</span>
+        </div>
         <!-- Instructions hint -->
-        <div class="pg-hint">💡 <b>Click nhân vật</b> để chuyển điều khiển · <b>W A S D / Phím Mũi Tên</b> di chuyển · <b>Phím Space (Cách)</b> để dừng lại</div>
+        <div class="pg-hint">💡 <b>[E] Tương tác</b> với Ghế / Giường khi đến gần · <b>Click nhân vật</b> đổi điều khiển · <b>W A S D</b> di chuyển · <b>Phím Space</b> dừng</div>
     </div>
 
     <!-- Bottom HUD Bar -->
@@ -1407,8 +1450,39 @@ const PG = {
         bounds: null,
         skelData: null,
         depthScale: 1.0,
-        availableAnims: []
+        availableAnims: [],
+        currentFurniture: null,
+        pendingFurniture: null
     },
+
+    // Interactive Furniture in the White Room (Chair & Bed)
+    furniture: [
+        {
+            id: 'chair_01',
+            type: 'chair',
+            name: 'Ghế Chỉ Huy Rhodes Island',
+            anim: 'Sit',
+            statusText: 'Đang ngồi ghế',
+            actionText: 'Đã ngồi xuống ghế chỉ huy',
+            promptText: 'Ngồi ghế (Sit)',
+            x: 2950,
+            y: 430,
+            hitRadius: 55
+        },
+        {
+            id: 'bed_01',
+            type: 'bed',
+            name: 'Giường Điều Trị Stasis Pod',
+            anim: 'Sleep',
+            statusText: 'Đang nằm ngủ',
+            actionText: 'Đã nằm lên giường điều trị',
+            promptText: 'Nằm ngủ (Sleep)',
+            x: 3520,
+            y: 430,
+            hitRadius: 80
+        }
+    ],
+    nearestFurniture: null,
 
     // Companion Chibis wandering in the room (Max 32)
     MAX_COMPANIONS: 32,
@@ -1488,6 +1562,15 @@ async function initPlayground() {
         window.addEventListener('keydown', (e) => {
             const k = e.key;
 
+            // E key: Interact with nearest furniture (Sit / Sleep)
+            if (e.code === 'KeyE' || k === 'e' || k === 'E') {
+                if (PG.nearestFurniture) {
+                    e.preventDefault();
+                    pgInteractWithFurniture(PG.nearestFurniture);
+                    return;
+                }
+            }
+
             // Spacebar: Stop moving immediately
             if (e.code === 'Space' || k === ' ') {
                 e.preventDefault();
@@ -1496,6 +1579,8 @@ async function initPlayground() {
                 p.isMoving = false;
                 p.isInteracting = false;
                 p.interactLockUntil = 0;
+                p.currentFurniture = null;
+                p.pendingFurniture = null;
                 p.targetX = p.x;
                 p.targetY = p.y;
                 pgHideDestPin();
@@ -1510,6 +1595,8 @@ async function initPlayground() {
                 // If pressing movement key, cancel manual click target and move directly
                 if (['w','a','s','d','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(k)) {
                     pgHideDestPin();
+                    PG.player.currentFurniture = null;
+                    PG.player.pendingFurniture = null;
                 }
             }
         });
@@ -1648,7 +1735,30 @@ function pgHandleCanvasClick(clickX, clickY) {
         }
     }
 
-    // 3. Otherwise: Click to Move on the Walkable Floor
+    // 3. Check if clicked on interactive furniture (Chair or Bed) -> Walk to it & Interact!
+    for (let i = 0; i < PG.furniture.length; i++) {
+        const item = PG.furniture[i];
+        const fScreenX = item.x - PG.cameraX;
+        const fScreenY = item.y;
+        const scale = 0.82 + ((fScreenY - PG.FLOOR_MIN_Y) / (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y)) * 0.28;
+        const hitRadiusX = item.hitRadius * scale;
+        const hitHeight = 90 * scale;
+
+        if (Math.abs(clickX - fScreenX) < hitRadiusX && clickY <= fScreenY + 20 && clickY >= fScreenY - hitHeight) {
+            p.interactToken = (p.interactToken || 0) + 1;
+            p.isInteracting = false;
+            p.interactLockUntil = 0;
+            p.currentFurniture = null;
+            p.pendingFurniture = item;
+            p.targetX = item.x;
+            p.targetY = item.y;
+            p.isMoving = true;
+            pgShowDestPin(item.x, item.y);
+            return;
+        }
+    }
+
+    // 4. Otherwise: Click to Move on the Walkable Floor
     const clampedTargetY = Math.max(PG.FLOOR_MIN_Y, Math.min(PG.FLOOR_MAX_Y, worldY));
     const clampedTargetX = Math.max(80, Math.min(PG.ROOM_W - 80, worldX));
 
@@ -1656,6 +1766,8 @@ function pgHandleCanvasClick(clickX, clickY) {
     p.interactToken = (p.interactToken || 0) + 1;
     p.isInteracting = false;
     p.interactLockUntil = 0;
+    p.currentFurniture = null;
+    p.pendingFurniture = null;
     p.targetX = clampedTargetX;
     p.targetY = clampedTargetY;
     p.isMoving = true;
@@ -1878,6 +1990,8 @@ function startPlaygroundLoop() {
             PG.bgCtx.save();
             PG.bgCtx.scale(dpr, dpr);
             pgDrawSciFiRoomBackground(PG.bgCtx, cw, ch);
+            // Draw interactive furniture (Chair & Bed)
+            pgDrawFurniture(PG.bgCtx, PG.cameraX);
             // Draw world-anchored destination arrow (stays in world space, not screen)
             pgDrawDestPin(PG.bgCtx, PG.cameraX);
             PG.bgCtx.restore();
@@ -1937,10 +2051,12 @@ function pgUpdatePlayerPhysics(delta) {
     if (PG.keys.w || PG.keys.ArrowUp)    ky -= 1; // Up into room (further)
     if (PG.keys.s || PG.keys.ArrowDown)  ky += 1; // Down closer to screen
 
-    if (kx !== 0 || ky !== 0) {
+        if (kx !== 0 || ky !== 0) {
         p.interactToken = (p.interactToken || 0) + 1;
         p.isInteracting = false;
         p.interactLockUntil = 0;
+        p.currentFurniture = null;
+        p.pendingFurniture = null;
         p.isMoving = true;
         p.targetX = p.x + kx * 400;
         p.targetY = p.y + ky * 400;
@@ -1977,11 +2093,21 @@ function pgUpdatePlayerPhysics(delta) {
             // Reached destination
             p.isMoving = false;
             pgHideDestPin();
-            const idleAnim = p.availableAnims.includes('Relax') ? 'Relax' : 'Default';
-            pgPlayPlayerAnim(idleAnim, true);
-            pgUpdateStatusBadge(`${idleAnim} (Đứng yên)`, '#2ed573');
+
+            if (p.pendingFurniture) {
+                const f = p.pendingFurniture;
+                p.pendingFurniture = null;
+                pgInteractWithFurniture(f);
+            } else {
+                const idleAnim = p.availableAnims.includes('Relax') ? 'Relax' : 'Default';
+                pgPlayPlayerAnim(idleAnim, true);
+                pgUpdateStatusBadge(`${idleAnim} (Đứng yên)`, '#2ed573');
+            }
         }
     }
+
+    // Check proximity to furniture for interactive prompt
+    pgUpdateFurnitureInteractions();
 }
 
 /**
@@ -2309,6 +2435,374 @@ function pgDrawDestPin(ctx, camX) {
     ctx.stroke();
 
     ctx.restore();
+}
+
+/**
+ * Draw all interactive furniture items (Chair & Bed) in the 2.5D Room.
+ */
+function pgDrawFurniture(ctx, camX) {
+    if (!PG.furniture) return;
+
+    for (const item of PG.furniture) {
+        const sx = item.x - camX;
+        const sy = item.y;
+        const scale = 0.82 + ((sy - PG.FLOOR_MIN_Y) / (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y)) * 0.28;
+        const isNear = (PG.nearestFurniture === item);
+
+        if (item.type === 'chair') {
+            pgDrawChair(ctx, sx, sy, scale, isNear);
+        } else if (item.type === 'bed') {
+            pgDrawBed(ctx, sx, sy, scale, isNear);
+        }
+    }
+}
+
+/**
+ * Draw Rhodes Island Command Swivel Chair.
+ */
+function pgDrawChair(ctx, sx, sy, scale, isNear) {
+    ctx.save();
+
+    // Drop shadow
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.32)';
+    ctx.beginPath();
+    ctx.ellipse(sx, sy + 4 * scale, 34 * scale, 12 * scale, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Proximity interactive glowing aura
+    if (isNear) {
+        ctx.save();
+        const pulse = 1.0 + Math.sin(performance.now() * 0.008) * 0.08;
+        ctx.shadowColor = '#00d2ff';
+        ctx.shadowBlur = 12;
+        ctx.strokeStyle = '#00d2ff';
+        ctx.lineWidth = 2 * scale;
+        ctx.beginPath();
+        ctx.ellipse(sx, sy + 4 * scale, 42 * scale * pulse, 15 * scale * pulse, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    // 5-Star Caster Legs Base
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 3 * scale;
+    ctx.lineCap = 'round';
+    for (let angle = 0; angle < Math.PI * 2; angle += (Math.PI * 2) / 5) {
+        const lx = sx + Math.cos(angle) * 20 * scale;
+        const ly = (sy + 2 * scale) + Math.sin(angle) * 8 * scale;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy - 6 * scale);
+        ctx.lineTo(lx, ly);
+        ctx.stroke();
+
+        // Small wheels
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(lx, ly, 2.5 * scale, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Center Hydraulic Lift Cylinder
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(sx - 3 * scale, sy - 26 * scale, 6 * scale, 20 * scale);
+
+    // Leather Seat Cushion
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(0,0,0,0.12)';
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    ctx.ellipse(sx, sy - 26 * scale, 24 * scale, 9 * scale, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Cushion Rim & Stitching
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.5 * scale;
+    ctx.stroke();
+
+    // Seat Front Edge
+    ctx.fillStyle = '#f1f5f9';
+    ctx.beginPath();
+    ctx.ellipse(sx, sy - 24 * scale, 23 * scale, 6 * scale, 0, 0, Math.PI);
+    ctx.fill();
+
+    // Ergonomic Backrest
+    const backY = sy - 62 * scale;
+    // Outer Shell
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+        ctx.roundRect(sx - 18 * scale, backY, 36 * scale, 38 * scale, [8 * scale, 8 * scale, 2 * scale, 2 * scale]);
+    } else {
+        ctx.rect(sx - 18 * scale, backY, 36 * scale, 38 * scale);
+    }
+    ctx.fill();
+
+    // Inner White Cushion
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+        ctx.roundRect(sx - 14 * scale, backY + 4 * scale, 28 * scale, 30 * scale, [6 * scale, 6 * scale, 2 * scale, 2 * scale]);
+    } else {
+        ctx.rect(sx - 14 * scale, backY + 4 * scale, 28 * scale, 30 * scale);
+    }
+    ctx.fill();
+
+    // Cyan LED Spine Line
+    ctx.fillStyle = '#00d2ff';
+    ctx.shadowColor = '#00d2ff';
+    ctx.shadowBlur = 6;
+    ctx.fillRect(sx - 1.5 * scale, backY + 8 * scale, 3 * scale, 22 * scale);
+
+    // Headrest
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+        ctx.roundRect(sx - 11 * scale, backY - 13 * scale, 22 * scale, 12 * scale, [4 * scale]);
+    } else {
+        ctx.rect(sx - 11 * scale, backY - 13 * scale, 22 * scale, 12 * scale);
+    }
+    ctx.fill();
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1 * scale;
+    ctx.stroke();
+
+    // Armrests (Left & Right)
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(sx - 25 * scale, sy - 42 * scale, 5 * scale, 16 * scale);
+    ctx.fillRect(sx + 20 * scale, sy - 42 * scale, 5 * scale, 16 * scale);
+
+    ctx.restore();
+}
+
+/**
+ * Draw Rhodes Island Medical / Stasis Pod Bed.
+ */
+function pgDrawBed(ctx, sx, sy, scale, isNear) {
+    ctx.save();
+
+    // Drop shadow
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.32)';
+    ctx.beginPath();
+    ctx.ellipse(sx, sy + 6 * scale, 76 * scale, 22 * scale, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Proximity glowing aura
+    if (isNear) {
+        ctx.save();
+        const pulse = 1.0 + Math.sin(performance.now() * 0.008) * 0.08;
+        ctx.shadowColor = '#00d2ff';
+        ctx.shadowBlur = 14;
+        ctx.strokeStyle = '#00d2ff';
+        ctx.lineWidth = 2 * scale;
+        ctx.beginPath();
+        ctx.ellipse(sx, sy + 6 * scale, 86 * scale * pulse, 26 * scale * pulse, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    const bedW = 135 * scale;
+    const bedH = 46 * scale;
+    const bedLeft = sx - bedW / 2;
+    const bedTop = sy - 32 * scale;
+
+    // Dark Titanium Chassis Plinth
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+        ctx.roundRect(bedLeft - 4 * scale, bedTop + 14 * scale, bedW + 8 * scale, 24 * scale, [6 * scale]);
+    } else {
+        ctx.rect(bedLeft - 4 * scale, bedTop + 14 * scale, bedW + 8 * scale, 24 * scale);
+    }
+    ctx.fill();
+
+    // Cyan Base Underglow Line
+    ctx.fillStyle = '#00d2ff';
+    ctx.shadowColor = '#00d2ff';
+    ctx.shadowBlur = 8;
+    ctx.fillRect(bedLeft + 8 * scale, bedTop + 34 * scale, bedW - 16 * scale, 3 * scale);
+
+    // Pristine White Medical Bed Pod Shell
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(0,0,0,0.12)';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    if (ctx.roundRect) {
+        ctx.roundRect(bedLeft, bedTop, bedW, bedH, [10 * scale]);
+    } else {
+        ctx.rect(bedLeft, bedTop, bedW, bedH);
+    }
+    ctx.fill();
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.5 * scale;
+    ctx.stroke();
+
+    // Memory Foam Mattress
+    ctx.fillStyle = '#f1f5f9';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+        ctx.roundRect(bedLeft + 6 * scale, bedTop + 4 * scale, bedW - 12 * scale, bedH - 10 * scale, [6 * scale]);
+    } else {
+        ctx.rect(bedLeft + 6 * scale, bedTop + 4 * scale, bedW - 12 * scale, bedH - 10 * scale);
+    }
+    ctx.fill();
+
+    // Pillow at Headboard (Left side)
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(0,0,0,0.08)';
+    ctx.shadowBlur = 4;
+    ctx.beginPath();
+    if (ctx.roundRect) {
+        ctx.roundRect(bedLeft + 10 * scale, bedTop + 8 * scale, 28 * scale, 22 * scale, [5 * scale]);
+    } else {
+        ctx.rect(bedLeft + 10 * scale, bedTop + 8 * scale, 28 * scale, 22 * scale);
+    }
+    ctx.fill();
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1 * scale;
+    ctx.stroke();
+
+    // Rhodes Island Folded Medical Blanket (Right 60% of Bed)
+    const blanketLeft = bedLeft + 46 * scale;
+    const blanketW = bedW - 52 * scale;
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+        ctx.roundRect(blanketLeft, bedTop + 6 * scale, blanketW, bedH - 14 * scale, [4 * scale, 6 * scale, 6 * scale, 4 * scale]);
+    } else {
+        ctx.rect(blanketLeft, bedTop + 6 * scale, blanketW, bedH - 14 * scale);
+    }
+    ctx.fill();
+
+    // White Decorative Blanket Stripe
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(blanketLeft + 10 * scale, bedTop + 6 * scale, 4 * scale, bedH - 14 * scale);
+
+    // High-Tech Headboard & Vital Signs Holographic Monitor
+    const headboardX = bedLeft - 10 * scale;
+    const headboardY = bedTop - 34 * scale;
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+        ctx.roundRect(headboardX, headboardY, 18 * scale, 56 * scale, [6 * scale, 2 * scale, 2 * scale, 6 * scale]);
+    } else {
+        ctx.rect(headboardX, headboardY, 18 * scale, 56 * scale);
+    }
+    ctx.fill();
+
+    // Hologram PRTS Monitor floating above headboard
+    ctx.save();
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.strokeStyle = '#00d2ff';
+    ctx.lineWidth = 1.2 * scale;
+    ctx.shadowColor = '#00d2ff';
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    if (ctx.roundRect) {
+        ctx.roundRect(headboardX - 4 * scale, headboardY - 24 * scale, 56 * scale, 20 * scale, [3 * scale]);
+    } else {
+        ctx.rect(headboardX - 4 * scale, headboardY - 24 * scale, 56 * scale, 20 * scale);
+    }
+    ctx.fill();
+    ctx.stroke();
+
+    // Heart rate text & pulse line
+    ctx.fillStyle = '#00d2ff';
+    ctx.font = `bold ${Math.max(7, Math.round(8 * scale))}px "JetBrains Mono", monospace`;
+    ctx.textAlign = 'left';
+    ctx.fillText('♥ 75 BPM', headboardX + 1 * scale, headboardY - 11 * scale);
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = `${Math.max(6, Math.round(6.5 * scale))}px "JetBrains Mono", monospace`;
+    ctx.fillText('PRTS // STABLE', headboardX + 1 * scale, headboardY - 4 * scale);
+    ctx.restore();
+
+    ctx.restore();
+}
+
+/**
+ * Check proximity between active player and furniture to display floating action prompt.
+ */
+function pgUpdateFurnitureInteractions() {
+    const p = PG.player;
+    if (!p || !p.skel || p.isMoving) {
+        pgHideFurniturePrompt();
+        PG.nearestFurniture = null;
+        return;
+    }
+
+    let nearest = null;
+    let minDist = 90;
+
+    for (const item of PG.furniture) {
+        const d = Math.hypot(p.x - item.x, p.y - item.y);
+        if (d < minDist) {
+            minDist = d;
+            nearest = item;
+        }
+    }
+
+    PG.nearestFurniture = nearest;
+
+    if (nearest && !p.currentFurniture) {
+        pgShowFurniturePrompt(nearest);
+    } else {
+        pgHideFurniturePrompt();
+    }
+}
+
+function pgShowFurniturePrompt(item) {
+    const prompt = document.getElementById('pg-furniture-prompt');
+    const textEl = document.getElementById('pg-furniture-prompt-text');
+    if (!prompt || !textEl) return;
+
+    const screenX = item.x - PG.cameraX;
+    const screenY = item.y;
+    const scale = 0.82 + ((screenY - PG.FLOOR_MIN_Y) / (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y)) * 0.28;
+
+    prompt.style.left = `${screenX}px`;
+    prompt.style.top  = `${screenY - (105 * scale)}px`;
+    textEl.textContent = item.promptText;
+    prompt.style.display = 'inline-flex';
+}
+
+function pgHideFurniturePrompt() {
+    const prompt = document.getElementById('pg-furniture-prompt');
+    if (prompt) prompt.style.display = 'none';
+}
+
+/**
+ * Trigger interaction with the nearest furniture.
+ */
+function pgInteractNearestFurniture() {
+    if (PG.nearestFurniture) {
+        pgInteractWithFurniture(PG.nearestFurniture);
+    }
+}
+
+/**
+ * Snap player to furniture and play Sit or Sleep animation.
+ */
+function pgInteractWithFurniture(item) {
+    const p = PG.player;
+    if (!p || !p.skel) return;
+
+    p.currentFurniture = item;
+    p.pendingFurniture = null;
+    p.interactToken = (p.interactToken || 0) + 1;
+    p.isMoving = false;
+    p.isInteracting = true;
+    p.targetX = item.x;
+    p.targetY = item.y;
+    p.x = item.x;
+    p.y = item.y;
+
+    pgHideDestPin();
+    pgHideFurniturePrompt();
+
+    // Check if character supports the animation (e.g. Sit, Sleep)
+    const targetAnim = p.availableAnims.includes(item.anim) ? item.anim : (p.availableAnims.includes('Relax') ? 'Relax' : 'Default');
+    pgPlayPlayerAnim(targetAnim, true);
+    pgUpdateStatusBadge(`${targetAnim} (${item.statusText})`, '#e8c96e');
+    showToast(`✓ ${item.name}: ${item.actionText}`);
 }
 
 function pgUpdateStatusBadge(text, color = '#2ed573') {
