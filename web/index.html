@@ -276,23 +276,7 @@
             display: block;
             z-index: 2;
         }
-        .pg-dest-pin {
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            border: 2px solid #00d2ff;
-            background: rgba(0, 210, 255, 0.25);
-            transform: translate(-50%, -50%) scale(0);
-            pointer-events: none;
-            transition: transform .25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity .3s;
-            box-shadow: 0 0 12px #00d2ff;
-            z-index: 25;
-        }
-        .pg-dest-pin.active {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 1;
-        }
+        /* dest-pin is now drawn on canvas in world-space — no CSS element needed */
 
         .pg-hint {
             position: absolute;
@@ -599,8 +583,7 @@
         <canvas id="pg-bg-canvas"></canvas>
         <!-- Primary WebGL Canvas for Spine Characters -->
         <canvas id="pg-canvas"></canvas>
-        <!-- Click to move destination pin -->
-        <div class="pg-dest-pin" id="pg-dest-pin"></div>
+        <!-- Dest-pin is drawn directly on pg-bg-canvas in world coordinates (no DOM element) -->
         <!-- Instructions hint -->
         <div class="pg-hint">💡 <b>Click nhân vật</b> để chuyển điều khiển · <b>W A S D / Phím Mũi Tên</b> di chuyển · <b>Phím Space (Cách)</b> để dừng lại</div>
     </div>
@@ -1641,8 +1624,8 @@ function pgHandleCanvasClick(clickX, clickY) {
     p.targetY = clampedTargetY;
     p.isMoving = true;
 
-    // Show destination ping marker
-    pgShowDestPin(clickX, clickY);
+    // Show destination arrow in WORLD coordinates (stays anchored, not screen)
+    pgShowDestPin(clampedTargetX, clampedTargetY);
 }
 
 /**
@@ -1859,6 +1842,8 @@ function startPlaygroundLoop() {
             PG.bgCtx.save();
             PG.bgCtx.scale(dpr, dpr);
             pgDrawSciFiRoomBackground(PG.bgCtx, cw, ch);
+            // Draw world-anchored destination arrow (stays in world space, not screen)
+            pgDrawDestPin(PG.bgCtx, PG.cameraX);
             PG.bgCtx.restore();
         }
 
@@ -2190,19 +2175,86 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
 }
 
 /**
- * Show click-to-move destination ping pin.
+ * Show destination arrow at a WORLD position (not screen coords).
+ * The arrow is drawn on the bg canvas each frame so it never scrolls with the camera.
  */
-function pgShowDestPin(screenX, screenY) {
-    const pin = document.getElementById('pg-dest-pin');
-    if (!pin) return;
-    pin.style.left = `${screenX}px`;
-    pin.style.top  = `${screenY}px`;
-    pin.classList.add('active');
+function pgShowDestPin(worldX, worldY) {
+    PG.destPinWorldX = worldX;
+    PG.destPinWorldY = worldY;
+    PG.destPinVisible = true;
+    PG.destPinBorn = performance.now();
 }
 
 function pgHideDestPin() {
-    const pin = document.getElementById('pg-dest-pin');
-    if (pin) pin.classList.remove('active');
+    PG.destPinVisible = false;
+}
+
+/**
+ * Draw the animated world-anchored destination arrow on the 2D background canvas.
+ * Called from the render loop after pgDrawSciFiRoomBackground.
+ */
+function pgDrawDestPin(ctx, camX) {
+    if (!PG.destPinVisible) return;
+
+    const screenX = PG.destPinWorldX - camX;
+    const screenY = PG.destPinWorldY;
+    const age = performance.now() - (PG.destPinBorn || 0);
+
+    // Fade in quickly, then fade out after 2.5s
+    let alpha;
+    if (age < 200) {
+        alpha = age / 200;
+    } else if (age < 2200) {
+        alpha = 1.0;
+    } else if (age < 2700) {
+        alpha = 1.0 - (age - 2200) / 500;
+    } else {
+        PG.destPinVisible = false;
+        return;
+    }
+
+    const bounce = Math.sin(performance.now() * 0.007) * 6;
+    const arrowY = screenY - 32 + bounce;
+    const size = 14;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    // Glow shadow
+    ctx.shadowColor = '#00d2ff';
+    ctx.shadowBlur = 14;
+
+    // Downward-pointing chevron arrow (↓)
+    ctx.strokeStyle = '#00d2ff';
+    ctx.lineWidth = 2.8;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    // Top chevron
+    ctx.beginPath();
+    ctx.moveTo(screenX - size, arrowY - size * 0.6);
+    ctx.lineTo(screenX, arrowY);
+    ctx.lineTo(screenX + size, arrowY - size * 0.6);
+    ctx.stroke();
+
+    // Bottom chevron (stacked for a double-chevron look)
+    ctx.beginPath();
+    ctx.moveTo(screenX - size, arrowY - size * 0.6 - size);
+    ctx.lineTo(screenX, arrowY - size);
+    ctx.lineTo(screenX + size, arrowY - size * 0.6 - size);
+    ctx.stroke();
+
+    // Small circle at landing point
+    ctx.fillStyle = 'rgba(0, 210, 255, 0.30)';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.ellipse(screenX, screenY, 18, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#00d2ff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.restore();
 }
 
 function pgUpdateStatusBadge(text, color = '#2ed573') {
