@@ -2028,7 +2028,7 @@ function pgUpdateCompanions(delta) {
 }
 
 /**
- * Draw the Arknights Rhodes Island Tactical Command Deck Background (8,000px Multi-Sector).
+ * Draw the Pristine Sci-Fi Rhodes Island White Room Background (Expanded 8,000px Multi-Sector).
  */
 function pgDrawSciFiRoomBackground(ctx, cw, ch) {
     ctx.clearRect(0, 0, cw, ch);
@@ -2036,121 +2036,101 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
     const camX = PG.cameraX;
     const horizon = PG.HORIZON_Y;
 
-    // ── 1. Back Wall (Dark Titanium Armor Plates & PRTS Structural Panels) ──
+    // ── 1. Back Wall (High-Tech Rhodes Island White Wall Panels) ──
     const wallGrad = ctx.createLinearGradient(0, 0, 0, horizon);
-    wallGrad.addColorStop(0, '#111317');
-    wallGrad.addColorStop(0.5, '#181b22');
-    wallGrad.addColorStop(1, '#1e222a');
+    wallGrad.addColorStop(0, '#f8fafc');
+    wallGrad.addColorStop(0.6, '#f1f5f9');
+    wallGrad.addColorStop(1, '#e2e8f0');
     ctx.fillStyle = wallGrad;
     ctx.fillRect(0, 0, cw, horizon);
 
-    // Diagonal hazard warning stripes along top ceiling rim
-    ctx.save();
-    ctx.fillStyle = 'rgba(232, 201, 110, 0.15)';
-    const stripeOffset = Math.floor(camX % 30);
-    for (let x = -30; x < cw + 60; x += 30) {
-        ctx.beginPath();
-        ctx.moveTo(x - stripeOffset, 0);
-        ctx.lineTo(x + 15 - stripeOffset, 0);
-        ctx.lineTo(x + 5 - stripeOffset, 8);
-        ctx.lineTo(x - 10 - stripeOffset, 8);
-        ctx.closePath();
-        ctx.fill();
-    }
-    ctx.restore();
-
-    // Architectural Vertical Columns every 400px across the entire 8,000px world
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-    ctx.lineWidth = 2;
-    const startSeam = Math.floor(camX / 400) * 400;
-    for (let wx = startSeam; wx <= camX + cw + 500; wx += 400) {
+    // Architectural Vertical Seams every 380px across the entire 8,000px world
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+    ctx.lineWidth = 1.5;
+    const startSeam = Math.floor(camX / 380) * 380;
+    for (let wx = startSeam; wx <= camX + cw + 500; wx += 380) {
         const sx = wx - camX;
         ctx.beginPath();
         ctx.moveTo(sx, 0);
         ctx.lineTo(sx, horizon);
         ctx.stroke();
 
-        // Structural joint brackets
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
-        ctx.fillRect(sx - 4, 70, 8, 16);
-        ctx.fillRect(sx - 4, 170, 8, 16);
-
-        // Small red/amber LED status indicator
-        ctx.fillStyle = (wx % 800 === 0) ? '#e02020' : '#e8c96e';
-        ctx.fillRect(sx - 2, 74, 4, 4);
+        // High-tech wall panel joint nodes
+        ctx.fillStyle = 'rgba(100, 116, 139, 0.35)';
+        ctx.fillRect(sx - 3, 70, 6, 14);
+        ctx.fillRect(sx - 3, 170, 6, 14);
     }
 
-    // Horizontal Steel Conduits & Panel Dividers
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
-    ctx.lineWidth = 1.5;
+    // Horizontal Wall Dividers
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(0, 78); ctx.lineTo(cw, 78);
-    ctx.moveTo(0, 178); ctx.lineTo(cw, 178);
+    ctx.moveTo(0, 77); ctx.lineTo(cw, 77);
+    ctx.moveTo(0, 177); ctx.lineTo(cw, 177);
     ctx.stroke();
 
-    // Overhead Pure White LED Strip
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 8, cw, 2);
+    // Overhead Sci-Fi Ambient Light Bar
+    const lightGrad = ctx.createLinearGradient(0, 0, cw, 0);
+    lightGrad.addColorStop(0, 'rgba(0, 210, 255, 0.35)');
+    lightGrad.addColorStop(0.5, 'rgba(0, 210, 255, 0.85)');
+    lightGrad.addColorStop(1, 'rgba(0, 210, 255, 0.35)');
+    ctx.fillStyle = lightGrad;
+    ctx.fillRect(0, 6, cw, 5);
 
-    // Ambient soft downward illumination
-    const glowGrad = ctx.createLinearGradient(0, 10, 0, 120);
-    glowGrad.addColorStop(0, 'rgba(255, 255, 255, 0.06)');
-    glowGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    // Ambient soft downward glow below overhead light
+    const glowGrad = ctx.createLinearGradient(0, 11, 0, 110);
+    glowGrad.addColorStop(0, 'rgba(0, 210, 255, 0.10)');
+    glowGrad.addColorStop(1, 'rgba(0, 210, 255, 0)');
     ctx.fillStyle = glowGrad;
-    ctx.fillRect(0, 10, cw, 110);
+    ctx.fillRect(0, 11, cw, 99);
 
     // ── Multi-Sector Rhodes Island Emblems across 8,000px ──
     const sectors = [
         { x: 1600, title: 'SEC-01 // TACTICAL BRIDGE', code: 'PRTS NEURAL LINK ONLINE' },
-        { x: 3200, title: 'RHODES ISLAND', code: 'MAIN LANDSHIP HANGAR // DECK 04' },
-        { x: 4800, title: 'SEC-02 // BIOMEDICAL', code: 'ORIGINIUM RESEARCH & CONTAINMENT' },
-        { x: 6400, title: 'SEC-03 // ENGINEERING', code: 'REACTOR CORE WING // SECTOR 08' }
+        { x: 3200, title: 'RHODES ISLAND', code: 'MAIN COMMAND CENTER // DECK 04' },
+        { x: 4800, title: 'SEC-02 // BIOMEDICAL', code: 'ORIGINIUM RESEARCH & LABS' },
+        { x: 6400, title: 'SEC-03 // ENGINEERING', code: 'WORKSHOP & CORE REPOSITORIES' }
     ];
 
     sectors.forEach(sec => {
         const secSx = sec.x - camX;
         if (secSx > -350 && secSx < cw + 350) {
             ctx.save();
-
-            // Rhodes Island Triangle Outline (Clean White/Red Accent)
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(100, 116, 139, 0.35)';
+            ctx.lineWidth = 3.5;
             ctx.beginPath();
             ctx.moveTo(secSx, 45);
             ctx.lineTo(secSx - 70, 185);
             ctx.lineTo(secSx + 70, 185);
             ctx.closePath();
             ctx.stroke();
-
-            // Inner Rook/Tower Silhouette
-            ctx.fillStyle = 'rgba(224, 32, 32, 0.12)';
+            ctx.fillStyle = 'rgba(100, 116, 139, 0.07)';
             ctx.fill();
 
-            // Tactical Decal Text
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = 'rgba(71, 85, 105, 0.85)';
             ctx.font = 'bold 12px "Plus Jakarta Sans", system-ui, sans-serif';
             ctx.textAlign = 'center';
-            ctx.letterSpacing = '1.5px';
-            ctx.fillText(sec.title, secSx, 142);
+            ctx.letterSpacing = '1px';
+            ctx.fillText(sec.title, secSx, 140);
 
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+            ctx.fillStyle = 'rgba(100, 116, 139, 0.65)';
             ctx.font = '10px "JetBrains Mono", monospace';
             ctx.letterSpacing = '0.5px';
-            ctx.fillText(sec.code, secSx, 160);
+            ctx.fillText(sec.code, secSx, 158);
             ctx.restore();
         }
     });
 
-    // ── 2. Perspective Tactical Deck Floor (Deep Dark Matte Carbon) ──
+    // ── 2. Perspective Floor (Clean White/Platinum Sci-Fi Tiles with Depth) ──
     const floorGrad = ctx.createLinearGradient(0, horizon, 0, ch);
-    floorGrad.addColorStop(0, '#15171c');
-    floorGrad.addColorStop(0.4, '#101216');
-    floorGrad.addColorStop(1, '#0a0b0d');
+    floorGrad.addColorStop(0, '#f1f5f9');
+    floorGrad.addColorStop(0.35, '#e2e8f0');
+    floorGrad.addColorStop(1, '#cbd5e1');
     ctx.fillStyle = floorGrad;
     ctx.fillRect(0, horizon, cw, ch - horizon);
 
     // Perspective Horizontal Depth Lines (Grid)
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.40)';
     ctx.lineWidth = 1;
     const depthYLines = [285, 315, 355, 405, 465, 535, 615, 700];
     for (const dy of depthYLines) {
@@ -2163,10 +2143,10 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
     }
 
     // Perspective Converging Longitudinal Lines
-    const startGrid = Math.floor(camX / 160) * 160;
-    for (let wx = startGrid; wx <= camX + cw + 500; wx += 160) {
+    const startGrid = Math.floor(camX / 150) * 150;
+    for (let wx = startGrid; wx <= camX + cw + 500; wx += 150) {
         const topSx = wx - camX;
-        const bottomOffset = (wx - (camX + cw / 2)) * 0.65;
+        const bottomOffset = (wx - (camX + cw / 2)) * 0.60;
         const bottomSx = topSx + bottomOffset;
 
         ctx.beginPath();
@@ -2175,10 +2155,10 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
         ctx.stroke();
     }
 
-    // Runway Stencil Zone Numbers & Guidance Chevrons
+    // Subtle Zone Watermarks on Floor
     ctx.save();
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.font = '900 48px "JetBrains Mono", monospace';
+    ctx.fillStyle = 'rgba(100, 116, 139, 0.10)';
+    ctx.font = '900 42px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     for (let i = 1; i <= 5; i++) {
         const zx = (i * 1500) - camX;
@@ -2188,16 +2168,15 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
     }
     ctx.restore();
 
-    // Structural Baseboard with Warning Stripe & Crisp White LED Line
-    ctx.fillStyle = '#0a0a0a';
-    ctx.fillRect(0, horizon - 2, cw, 4);
+    // Luminous Baseboard LED Strip & Dark Metallic Joint
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(0, horizon - 2, cw, 3);
 
-    // White/Red Horizon Light Line
     ctx.save();
-    ctx.shadowColor = '#ffffff';
-    ctx.shadowBlur = 8;
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
+    ctx.shadowColor = '#00d2ff';
+    ctx.shadowBlur = 12;
+    ctx.strokeStyle = '#00d2ff';
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.moveTo(0, horizon + 1);
     ctx.lineTo(cw, horizon + 1);
@@ -2210,63 +2189,37 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
         const sx = c.x - camX;
         const sy = c.y;
         if (sx > -100 && sx < cw + 100) {
-            // Soft outer occlusion shadow
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+            // Soft outer shadow
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.28)';
             ctx.beginPath();
             ctx.ellipse(sx, sy, 40 * c.depthScale, 13 * c.depthScale, 0, 0, Math.PI * 2);
             ctx.fill();
 
             // Dark inner core shadow
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.48)';
             ctx.beginPath();
             ctx.ellipse(sx, sy, 24 * c.depthScale, 7.5 * c.depthScale, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Active Controlled Character: Arknights Tactical Target Ring
+            // Active Controlled Character: High-Tech Glowing Indicator Ring
             if (c === PG.player) {
                 ctx.save();
-                const time = performance.now() * 0.003;
-                const pulse = 1.0 + Math.sin(time * 2) * 0.05;
-                const rx = 44 * c.depthScale * pulse;
-                const ry = 15 * c.depthScale * pulse;
-
-                // Glowing outer tactical ellipse
-                ctx.shadowColor = '#ffffff';
-                ctx.shadowBlur = 8;
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.ellipse(sx, sy, rx, ry, 0, 0, Math.PI * 2);
-                ctx.stroke();
-
-                // 4 Corner Brackets (Tactical Reticle Style)
-                ctx.strokeStyle = '#e02020';
-                ctx.lineWidth = 2.5;
-                const bracketLen = 8 * c.depthScale;
-
-                // Left bracket
-                ctx.beginPath();
-                ctx.moveTo(sx - rx - 4, sy - bracketLen);
-                ctx.lineTo(sx - rx - 4, sy);
-                ctx.lineTo(sx - rx - 4 + bracketLen, sy);
-                ctx.stroke();
-
-                // Right bracket
-                ctx.beginPath();
-                ctx.moveTo(sx + rx + 4, sy - bracketLen);
-                ctx.lineTo(sx + rx + 4, sy);
-                ctx.lineTo(sx + rx + 4 - bracketLen, sy);
-                ctx.stroke();
-
-                // Tactical Top Beacon Pointer (Arknights Red/White)
-                const headY = sy - (125 * c.depthScale);
-                ctx.fillStyle = '#e02020';
-                ctx.shadowColor = '#e02020';
+                const pulse = 1.0 + Math.sin(performance.now() * 0.006) * 0.08;
+                ctx.shadowColor = '#00d2ff';
                 ctx.shadowBlur = 10;
+                ctx.strokeStyle = '#00d2ff';
+                ctx.lineWidth = 2.2;
+                ctx.beginPath();
+                ctx.ellipse(sx, sy, 44 * c.depthScale * pulse, 15 * c.depthScale * pulse, 0, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Small tactical top chevron pointing down above head
+                ctx.fillStyle = '#00d2ff';
+                const headY = sy - (125 * c.depthScale);
                 ctx.beginPath();
                 ctx.moveTo(sx, headY - 8);
-                ctx.lineTo(sx - 6, headY - 20);
-                ctx.lineTo(sx + 6, headY - 20);
+                ctx.lineTo(sx - 6, headY - 18);
+                ctx.lineTo(sx + 6, headY - 18);
                 ctx.closePath();
                 ctx.fill();
 
@@ -2322,12 +2275,12 @@ function pgDrawDestPin(ctx, camX) {
     ctx.save();
     ctx.globalAlpha = alpha;
 
-    // Glowing White & Red Tactical Chevron
-    ctx.shadowColor = '#ffffff';
-    ctx.shadowBlur = 12;
+    // Glowing Cyan Tactical Chevron
+    ctx.shadowColor = '#00d2ff';
+    ctx.shadowBlur = 14;
 
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#00d2ff';
+    ctx.lineWidth = 2.8;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
 
@@ -2338,23 +2291,21 @@ function pgDrawDestPin(ctx, camX) {
     ctx.lineTo(screenX + size, arrowY - size * 0.6);
     ctx.stroke();
 
-    // Bottom red chevron (stacked)
-    ctx.strokeStyle = '#e02020';
-    ctx.shadowColor = '#e02020';
+    // Bottom chevron (stacked for a double-chevron look)
     ctx.beginPath();
     ctx.moveTo(screenX - size, arrowY - size * 0.6 - size);
     ctx.lineTo(screenX, arrowY - size);
     ctx.lineTo(screenX + size, arrowY - size * 0.6 - size);
     ctx.stroke();
 
-    // Landing Beacon Target Ring
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+    // Small circle at landing point
+    ctx.fillStyle = 'rgba(0, 210, 255, 0.30)';
     ctx.shadowBlur = 8;
     ctx.beginPath();
-    ctx.ellipse(screenX, screenY, 20, 8, 0, 0, Math.PI * 2);
+    ctx.ellipse(screenX, screenY, 18, 7, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.8;
+    ctx.strokeStyle = '#00d2ff';
+    ctx.lineWidth = 1.5;
     ctx.stroke();
 
     ctx.restore();
