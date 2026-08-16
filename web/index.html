@@ -150,20 +150,238 @@
         .code-box{background:#060910;border:1px solid var(--border);border-radius:6px;padding:11px;
             font-family:'JetBrains Mono',monospace;font-size:11px;color:#a5b4fc;overflow-x:auto;line-height:1.55;user-select:all;cursor:copy}
 
-        /* ── Other tabs ──────────────────────────────────── */
-        .guide{display:none;grid-column:1/-1;gap:18px} .guide.vis{display:grid;grid-template-columns:repeat(3,1fr)}
-        .eng-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad);padding:22px;display:flex;flex-direction:column;gap:12px}
-        .eb{align-self:flex-start;padding:3px 9px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase}
-        .eb-web{background:rgba(0,210,255,.15);color:var(--ac)} .eb-god{background:rgba(71,140,191,.2);color:#478cbf} .eb-uni{background:rgba(255,255,255,.15);color:#fff}
-        .game-panel{grid-column:1/-1;display:none;background:#111622;border-radius:var(--rad);border:1px solid var(--border);padding:18px;flex-direction:column;gap:14px}
-        .game-panel.vis{display:flex}
-        .dorm{width:100%;height:440px;background:linear-gradient(180deg,#1e293b,#0f172a);border-radius:var(--rsm);position:relative;overflow:hidden;border:2px dashed rgba(255,255,255,.1)}
-        .dfloor{position:absolute;bottom:0;left:0;right:0;height:110px;background:linear-gradient(180deg,#334155,#1e293b);border-top:4px solid #475569}
-        .furn{position:absolute;bottom:28px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;font-size:11px;color:var(--mt);cursor:pointer;transition:all .2s}
-        .furn:hover{transform:scale(1.05);background:rgba(255,255,255,.1)}
-        .fbed{left:70px;width:145px;height:75px;border-color:#38bdf8} .fchair{right:130px;width:85px;height:85px;border-color:#a855f7}
-        .dorm-char{position:absolute;bottom:48px;left:300px;cursor:pointer;transition:all .4s ease;display:flex;flex-direction:column;align-items:center}
-        #dorm-canvas{background:transparent;display:block}
+        /* ── 2.5D Sci-Fi White Room Playground ───────────────── */
+        .playground-panel {
+            grid-column: 1 / -1;
+            display: none;
+            background: #0b0f19;
+            border-radius: var(--rad);
+            border: 1px solid var(--border);
+            padding: 16px;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .playground-panel.vis { display: flex; }
+
+        .pg-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: rgba(20, 27, 41, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: var(--rsm);
+            padding: 10px 14px;
+        }
+        .pg-search-wrap {
+            position: relative;
+            width: 320px;
+            max-width: 100%;
+        }
+        .pg-search-wrap input {
+            width: 100%;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--rsm);
+            padding: 8px 12px 8px 34px;
+            color: #fff;
+            font-size: 12px;
+            outline: none;
+            transition: all .2s;
+        }
+        .pg-search-wrap input:focus {
+            border-color: var(--ac);
+            box-shadow: 0 0 10px var(--glow);
+        }
+        .pg-search-wrap i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--mt);
+            pointer-events: none;
+        }
+        .pg-search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #141b29;
+            border: 1px solid var(--border);
+            border-radius: var(--rsm);
+            margin-top: 4px;
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+            display: none;
+        }
+        .pg-search-results.show { display: block; }
+        .pg-res-item {
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: background .15s;
+        }
+        .pg-res-item:hover { background: rgba(0, 210, 255, 0.15); color: #fff; }
+
+        .pg-status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .pg-action-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* 2.5D Room Viewport */
+        .pg-viewport-container {
+            position: relative;
+            width: 100%;
+            height: 540px;
+            border-radius: var(--rsm);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #e2e8f0;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.1);
+            cursor: crosshair;
+            user-select: none;
+        }
+        #pg-bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 1;
+            pointer-events: none;
+        }
+        #pg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 2;
+        }
+        .pg-dest-pin {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #00d2ff;
+            background: rgba(0, 210, 255, 0.25);
+            transform: translate(-50%, -50%) scale(0);
+            pointer-events: none;
+            transition: transform .25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity .3s;
+            box-shadow: 0 0 12px #00d2ff;
+            z-index: 25;
+        }
+        .pg-dest-pin.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        /* Floating Emote Bubble */
+        .pg-emote-bubble {
+            position: absolute;
+            transform: translate(-50%, -100%) scale(0);
+            background: rgba(255, 255, 255, 0.95);
+            color: #0f172a;
+            font-weight: 800;
+            font-size: 16px;
+            padding: 6px 14px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            pointer-events: none;
+            z-index: 30;
+            transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid #00d2ff;
+        }
+        .pg-emote-bubble.show {
+            transform: translate(-50%, -100%) scale(1.1);
+        }
+        .pg-emote-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #00d2ff;
+        }
+
+        .pg-hint {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            color: #e2e8f0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            pointer-events: none;
+            z-index: 20;
+            white-space: nowrap;
+        }
+
+        /* Bottom HUD Bar */
+        .pg-bottom-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: rgba(20, 27, 41, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: var(--rsm);
+            padding: 12px 16px;
+        }
+        .pg-bottom-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .pg-anim-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .pg-anim-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pg-anim-btn:hover { background: rgba(0, 210, 255, 0.15); border-color: var(--ac); }
+        .pg-anim-btn.active { background: var(--ac); color: #0a0d14; border-color: var(--ac); }
+
         .toast{position:fixed;bottom:22px;right:22px;background:#1a2236;color:#fff;padding:11px 18px;border-radius:8px;border-left:4px solid var(--ac);box-shadow:0 10px 30px rgba(0,0,0,.5);display:flex;align-items:center;gap:9px;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1)}
         .toast.show{transform:translateY(0);opacity:1}
     </style>
@@ -180,8 +398,7 @@
     </div>
     <nav class="nav">
         <button class="tab-btn active" id="tb-viewer" onclick="switchTab('viewer')"><i data-lucide="eye" size="15"></i> Spine 2D Viewer</button>
-        <button class="tab-btn" id="tb-game"   onclick="switchTab('game')"><i data-lucide="gamepad-2" size="15"></i> Mini Game Demo</button>
-        <button class="tab-btn" id="tb-eng"    onclick="switchTab('eng')"><i data-lucide="cpu" size="15"></i> Chọn Game Engine</button>
+        <button class="tab-btn" id="tb-game"   onclick="switchTab('game')"><i data-lucide="gamepad-2" size="15"></i> Chibi 2.5D Playground</button>
     </nav>
 </header>
 
@@ -287,42 +504,60 @@
     </div>
 </main>
 
-<!-- ══════════════  GAME TAB  ══════════════ -->
-<div class="game-panel" id="tab-game">
-    <div>
-        <h2>🎮 Arknights Dormitory Chibi Playground</h2>
-        <p style="font-size:13px;color:var(--mt);margin-top:4px">Click nhân vật → Interact · Click Giường → Sleep · Click Ghế → Sit</p>
-    </div>
-    <div class="dorm">
-        <div class="furn fbed" onclick="dormAnim('Sleep')"><i data-lucide="bed" size="20" color="#38bdf8"></i><span style="font-weight:700;margin-top:4px;font-size:11px">Sleep</span></div>
-        <div class="furn fchair" onclick="dormAnim('Sit')"><i data-lucide="armchair" size="20" color="#a855f7"></i><span style="font-weight:700;margin-top:4px;font-size:11px">Sit</span></div>
-        <div class="dfloor"></div>
-        <div class="dorm-char" id="dorm-char" onclick="dormAnim('Interact')">
-            <div style="background:rgba(0,0,0,.7);border:1px solid var(--border);padding:2px 9px;border-radius:10px;font-size:10px;text-align:center;margin-bottom:5px" id="dorm-status">Default (Idle)</div>
-            <canvas id="dorm-canvas" width="220" height="240"></canvas>
+<!-- ══════════════  PLAYGROUND TAB  ══════════════ -->
+<div class="playground-panel" id="tab-game">
+    <!-- Top HUD Bar -->
+    <div class="pg-top-bar">
+        <div class="pg-search-wrap">
+            <i data-lucide="search" size="15"></i>
+            <input type="text" id="pg-search-input" placeholder="Tìm & chuyển nhân vật (Amiya, Surtr, Chen...)" oninput="pgSearchOps(this.value)">
+            <div class="pg-search-results" id="pg-search-results"></div>
+        </div>
+        <div class="pg-status-badge">
+            <span class="badge" id="pg-badge-name">阿米娅 (Amiya)</span>
+            <span class="badge" id="pg-badge-skin" style="color:#00d2ff">默认</span>
+            <span class="badge" id="pg-badge-state" style="color:#2ed573">Relax (Đứng yên)</span>
+        </div>
+        <div class="pg-action-group">
+            <button class="btn btn-ac" onclick="pgSpawnCompanion()"><i data-lucide="user-plus" size="13"></i> Gọi Đồng Đội (+)</button>
+            <button class="btn" id="pg-cam-btn" onclick="pgToggleCameraFollow()"><i data-lucide="video" size="13"></i> Camera: Bám theo</button>
+            <button class="btn" onclick="pgResetRoom()"><i data-lucide="rotate-ccw" size="13"></i> Căn giữa</button>
         </div>
     </div>
-</div>
 
-<!-- ══════════════  ENGINE TAB  ══════════════ -->
-<div class="guide" id="tab-eng">
-    <div class="eng-card">
-        <span class="eb eb-web">Tốt nhất cho Web Game</span>
-        <h3>1. PixiJS + @pixi-spine</h3>
-        <p style="font-size:13px;color:var(--mt);line-height:1.6">Web Game chạy thẳng trình duyệt, không cần cài đặt. PixiJS renderer 2D WebGL nhanh nhất thế giới, hỗ trợ Spine 3.8 binary trực tiếp.</p>
-        <ul style="font-size:13px;color:var(--mt);margin-left:16px;line-height:1.7"><li>~100–200KB/nhân vật · 60fps mượt mà</li><li>Idle→Move→Sit chuyển tức thì</li><li>Deploy Vercel / GitHub Pages 1 click</li></ul>
+    <!-- 2.5D Sci-Fi White Room Canvas Viewport -->
+    <div class="pg-viewport-container" id="pg-viewport">
+        <!-- 2D Background Canvas for Room, Floor Grid & Shadows -->
+        <canvas id="pg-bg-canvas"></canvas>
+        <!-- Primary WebGL Canvas for Spine Characters -->
+        <canvas id="pg-canvas"></canvas>
+        <!-- Click to move destination pin -->
+        <div class="pg-dest-pin" id="pg-dest-pin"></div>
+        <!-- Interaction Emote Bubble -->
+        <div class="pg-emote-bubble" id="pg-emote-bubble">♡</div>
+        <!-- Instructions hint -->
+        <div class="pg-hint">💡 Click sàn hoặc dùng <b>W A S D / Phím Mũi Tên</b> để di chuyển · <b>Click nhân vật</b> để tương tác (Interact/Special)</div>
     </div>
-    <div class="eng-card">
-        <span class="eb eb-god">Tốt nhất cho App Game</span>
-        <h3>2. Godot Engine 4</h3>
-        <p style="font-size:13px;color:var(--mt);line-height:1.6">Xuất APK Android, iOS, Windows, Web từ cùng codebase. Godot 4 siêu nhẹ (~50MB), GDScript dễ học như Python.</p>
-        <ul style="font-size:13px;color:var(--mt);margin-left:16px;line-height:1.7"><li>Plugin godot-spine / SpriteFrames</li><li>Build Tower Defense / Ký Túc Xá nhanh</li><li>Miễn phí 100% · MIT License</li></ul>
-    </div>
-    <div class="eng-card">
-        <span class="eb eb-uni">Chuẩn Công Nghiệp Gacha</span>
-        <h3>3. Unity + Spine-Unity 3.8</h3>
-        <p style="font-size:13px;color:var(--mt);line-height:1.6">Thư viện chính thức từ Esoteric Software. Kéo thả .skel/.atlas/.png vào Assets → tự động tạo Animation Clips.</p>
-        <ul style="font-size:13px;color:var(--mt);margin-left:16px;line-height:1.7"><li>State Machine · IK · Mesh deform</li><li>Gacha RPG / Auto-battler lớn</li><li>C# scripting mạnh mẽ</li></ul>
+
+    <!-- Bottom HUD Bar -->
+    <div class="pg-bottom-bar">
+        <div class="pg-bottom-section">
+            <label class="lbl" style="margin:0">TRANG PHỤC:</label>
+            <select class="sel" id="pg-skin-sel" onchange="pgChangeSkin(this.value)" style="width:160px;margin:0"></select>
+        </div>
+        <div class="pg-bottom-section" style="flex:1">
+            <label class="lbl" style="margin:0">ĐỘNG TÁC:</label>
+            <div class="pg-anim-buttons" id="pg-anim-buttons">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+        <div class="pg-bottom-section">
+            <label class="lbl" style="margin:0">TỐC ĐỘ:</label>
+            <div class="slider-wrap">
+                <input type="range" id="pg-speed-sl" min="0.5" max="2.0" step="0.1" value="1.0" oninput="pgSetSpeed(this.value)">
+                <span id="pg-speed-lbl" style="min-width:30px">x1.0</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -509,7 +744,8 @@ async function loadSpineAssets(glCtx, prefix, fileRel, scale = 0.5, localUrls = 
         pngUrl   = proxy(`${directPrefix}.png`);
     }
 
-    const cacheKey = directPrefix;
+    const contextId = glCtx && glCtx.canvas ? (glCtx.canvas.id || 'default') : 'default';
+    const cacheKey  = `${directPrefix}_${contextId}`;
 
     // Check pre-parsed SkeletonData cache for instant switching
     if (_assetCache.skelData.has(cacheKey)) {
@@ -997,88 +1233,925 @@ async function loadLocalFilesList() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   DORM GAME (Mini Spine renderer in the game tab)
+   2.5D CHIBI PLAYGROUND ENGINE (Rhodes Island Sci-Fi White Room)
 ═══════════════════════════════════════════════════════════ */
-function dormAnim(anim) {
-    const ch = document.getElementById('dorm-char');
-    const st = document.getElementById('dorm-status');
-    const labels = {Interact:'Chạm vào ♡', Sleep:'Ngủ zzz...', Sit:'Ngồi nghỉ'};
-    st.textContent = `${anim} (${labels[anim]||anim})`;
-    if (anim==='Sleep') { ch.style.left='120px'; ch.style.bottom='72px'; }
-    if (anim==='Sit')   { ch.style.left='calc(100% - 210px)'; ch.style.bottom='60px'; }
-    if (dormState) {
-        try {
-            dormState.setAnimation(0, anim, anim!=='Interact');
-            if (anim==='Interact') {
-                ch.style.transform='scale(1.2) translateY(-10px)';
-                setTimeout(()=>{
-                    ch.style.transform='';
-                    st.textContent='Default (Idle)';
-                    dormState?.setAnimation(0,'Default',true);
-                },900);
+const PG = {
+    canvas: null,
+    gl: null,
+    renderer: null,
+    bgCanvas: null,
+    bgCtx: null,
+    rafId: null,
+    lastTs: null,
+
+    // World & Room Dimensions
+    ROOM_W: 3200,
+    ROOM_H: 600,
+    HORIZON_Y: 230,      // Horizon line separating back wall and floor
+    FLOOR_MIN_Y: 260,    // Top walkable bound (far in room)
+    FLOOR_MAX_Y: 530,    // Bottom walkable bound (near foreground)
+
+    // Camera
+    cameraX: 0,
+    targetCameraX: 0,
+    cameraFollow: true,
+    isPanning: false,
+    panStartX: 0,
+    panStartCamX: 0,
+
+    // Primary Player Chibi
+    player: {
+        op: null,
+        meta: null,
+        skin: '默认',
+        x: 1600,
+        y: 400,
+        targetX: 1600,
+        targetY: 400,
+        facing: 1,           // 1 = facing right, -1 = facing left
+        isMoving: false,
+        isInteracting: false,
+        interactLockUntil: 0,
+        speed: 170,          // Synchronized with footstep frame rate (~170px/s)
+        speedMultiplier: 1.0,
+        curAnim: 'Relax',
+        skel: null,
+        state: null,
+        bounds: null,
+        skelData: null,
+        depthScale: 1.0,
+        availableAnims: []
+    },
+
+    // Companion Chibis wandering in the room
+    companions: [],
+
+    // Key inputs
+    keys: { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false }
+};
+
+/**
+ * Initialize or switch to the 2.5D Playground tab.
+ */
+async function initPlayground() {
+    const container = document.getElementById('pg-viewport');
+    PG.canvas   = document.getElementById('pg-canvas');
+    PG.bgCanvas = document.getElementById('pg-bg-canvas');
+    if (!PG.canvas || !PG.bgCanvas) return;
+
+    // Set high-DPI canvas dimensions
+    const cw = container.clientWidth || 900;
+    const ch = container.clientHeight || 540;
+    PG.canvas.width   = cw;
+    PG.canvas.height  = ch;
+    PG.bgCanvas.width = cw;
+    PG.bgCanvas.height = ch;
+    PG.bgCtx = PG.bgCanvas.getContext('2d');
+    PG.ROOM_H = ch;
+
+    // Init WebGL Context for Playground
+    if (!PG.gl) {
+        PG.gl = PG.canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false });
+        if (PG.gl) {
+            PG.renderer = new spine.webgl.SceneRenderer(PG.canvas, PG.gl);
+        }
+    }
+
+    // Attach user input listeners once
+    if (!PG.canvas._hasPgListeners) {
+        PG.canvas._hasPgListeners = true;
+
+        // Click on canvas (Click to Move or Click on Character)
+        PG.canvas.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            const rect = PG.canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            pgHandleCanvasClick(clickX, clickY);
+        });
+
+        // Mouse drag for Free Pan
+        PG.canvas.addEventListener('mousedown', (e) => {
+            if (e.button === 1 || (e.button === 0 && !PG.cameraFollow)) {
+                PG.isPanning = true;
+                PG.panStartX = e.clientX;
+                PG.panStartCamX = PG.cameraX;
+                PG.canvas.style.cursor = 'grabbing';
             }
-        } catch(e){}
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (PG.isPanning) {
+                const dx = e.clientX - PG.panStartX;
+                PG.cameraX = Math.max(0, Math.min(PG.ROOM_W - PG.canvas.width, PG.panStartCamX - dx));
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (PG.isPanning) {
+                PG.isPanning = false;
+                PG.canvas.style.cursor = 'crosshair';
+            }
+        });
+
+        // Keyboard Controls
+        window.addEventListener('keydown', (e) => {
+            const k = e.key;
+            if (k in PG.keys) {
+                PG.keys[k] = true;
+                // If pressing movement key, cancel manual click target and move directly
+                if (['w','a','s','d','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(k)) {
+                    pgHideDestPin();
+                }
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            const k = e.key;
+            if (k in PG.keys) PG.keys[k] = false;
+        });
+
+        // Window resize
+        window.addEventListener('resize', () => {
+            if (PG.canvas && document.getElementById('tab-game').classList.contains('vis')) {
+                const ncw = container.clientWidth || 900;
+                const nch = container.clientHeight || 540;
+                PG.canvas.width = ncw;
+                PG.canvas.height = nch;
+                PG.ROOM_H = nch;
+            }
+        });
     }
+
+    // Load initial player operator if not loaded
+    const targetOp = curOp || OPS.find(o => o.id === 'char_002_amiya') || OPS[0];
+    if (!PG.player.op || PG.player.op.id !== targetOp.id) {
+        await pgLoadPlayerOperator(targetOp, curSkin || '默认');
+    }
+
+    // Center camera on player
+    PG.cameraX = Math.max(0, Math.min(PG.ROOM_W - PG.canvas.width, PG.player.x - PG.canvas.width / 2));
+    PG.targetCameraX = PG.cameraX;
+
+    // Start 60 FPS Playground Render & Physics Loop
+    startPlaygroundLoop();
 }
 
-function startDormRenderLoop(canvas) {
-    if (dormRafId) { cancelAnimationFrame(dormRafId); dormRafId = null; }
-    dormLastTs = performance.now()/1000;
-    function dormLoop() {
-        if (!dormSkel || !dormState || !dormRenderer || !dormGl) return;
-        const now   = performance.now()/1000;
-        const delta = Math.min(now - dormLastTs, 0.064);
-        dormLastTs = now;
-        dormState.update(delta);
-        dormState.apply(dormSkel);
-        dormSkel.updateWorldTransform();
+/**
+ * Load Spine assets for the player character in the playground.
+ */
+async function pgLoadPlayerOperator(op, skinName = '默认') {
+    PG.player.op = op;
+    PG.player.skin = skinName;
 
-        const vpW = canvas.width;
-        const vpH = canvas.height;
-        dormRenderer.camera.viewportWidth  = vpW;
-        dormRenderer.camera.viewportHeight = vpH;
-        const fitPad = Math.max(1 - 2 * ANIM_PAD, 0.1);
-        const zoomX  = (dormBounds.w || 100) / (vpW * fitPad);
-        const zoomY  = (dormBounds.h || 100) / (vpH * fitPad);
-        dormRenderer.camera.position.x = dormBounds.cx;
-        dormRenderer.camera.position.y = dormBounds.cy;
-        dormRenderer.camera.zoom       = Math.max(zoomX, zoomY);
-        dormGl.clearColor(0,0,0,0);
-        dormGl.clear(dormGl.COLOR_BUFFER_BIT);
-        dormGl.viewport(0,0,vpW,vpH);
-        dormRenderer.begin();
-        dormRenderer.drawSkeleton(dormSkel, true);
-        dormRenderer.end();
-        dormRafId = requestAnimationFrame(dormLoop);
+    // Fetch meta.json
+    let opMeta = _assetCache.meta.get(op.id);
+    if (!opMeta) {
+        const directUrl = `${CDN}${op.id}/meta.json`;
+        let metaRes = await fetch(proxy(directUrl)).catch(() => null);
+        if (!metaRes || !metaRes.ok) metaRes = await fetch(directUrl);
+        if (metaRes && metaRes.ok) {
+            opMeta = await metaRes.json();
+            _assetCache.meta.set(op.id, opMeta);
+        }
     }
-    dormRafId = requestAnimationFrame(dormLoop);
-}
+    PG.player.meta = opMeta;
 
-async function initDormSpine() {
-    if (!meta || !curOp) return;
-    if (dormRafId) { cancelAnimationFrame(dormRafId); dormRafId=null; }
-    const skins    = meta?.skin || {};
-    const skinData = skins['默认'] || skins[Object.keys(skins)[0]] || {};
-    const modelDat = skinData['基建'];
-    if (!modelDat) return;
-    const prefix  = meta?.prefix || `${CDN}${curOp.id}/`;
-    const fileRel = modelDat.file;
-    const canvas  = document.getElementById('dorm-canvas');
-    if (!dormGl) {
-        dormGl = canvas.getContext('webgl', {alpha:true, premultipliedAlpha:false});
-        if (!dormGl) return;
-        dormRenderer = new spine.webgl.SceneRenderer(canvas, dormGl);
-    }
+    // Build skin dropdown
+    pgBuildSkinSelect(opMeta);
+
+    // Resolve model file
+    const skins    = opMeta?.skin || {};
+    const skinData = skins[skinName] || skins[Object.keys(skins)[0]] || {};
+    const modelDat = skinData['基建'] || skinData[Object.keys(skinData)[0]];
+    const prefix   = opMeta?.prefix || `${CDN}${op.id}/`;
+    const fileRel  = modelDat?.file;
+
+    const localUrls = findLocalFiles(op.name_cn, skinName, '基建');
+
     try {
-        const localUrls = findLocalFiles(curOp.name_cn, '默认', '基建');
-        const r = await loadSpineAssets(dormGl, prefix, fileRel, 0.35, localUrls);
-        dormSkel   = r.skel;
-        dormState  = r.state;
-        dormBounds = r.bounds;
-        dormState.setAnimation(0,'Default',true);
-        startDormRenderLoop(canvas);
-    } catch(e) { console.log('Dorm error:', e); }
+        const result = await loadSpineAssets(PG.gl, prefix, fileRel, 0.42, localUrls);
+        PG.player.skel     = result.skel;
+        PG.player.state    = result.state;
+        PG.player.bounds   = result.bounds;
+        PG.player.skelData = result.skelData;
+
+        // Animations list
+        PG.player.availableAnims = result.skelData.animations.map(a => a.name);
+
+        // Build bottom animation buttons
+        pgBuildAnimButtons(PG.player.availableAnims);
+
+        // Default initial animation: Relax (or Default)
+        const initAnim = PG.player.availableAnims.includes('Relax') ? 'Relax' : (PG.player.availableAnims[0] || 'Default');
+        pgPlayPlayerAnim(initAnim, true);
+
+        // Update status badges
+        document.getElementById('pg-badge-name').textContent = `${op.name_cn} (${op.name_en})`;
+        document.getElementById('pg-badge-skin').textContent = skinName;
+        pgUpdateStatusBadge(`${initAnim} (Đứng yên)`, '#2ed573');
+
+        showToast(`✓ Sân chơi: Đã nạp ${op.name_cn} · ${skinName}`);
+    } catch(e) {
+        showToast(`⚠ Không thể tải model: ${e.message}`);
+    }
 }
+
+/**
+ * Handle clicks on the 2.5D Playground Canvas:
+ * Distinguish between clicking on a character (trigger interaction) or clicking on the floor (walk).
+ */
+function pgHandleCanvasClick(clickX, clickY) {
+    const worldX = clickX + PG.cameraX;
+    const worldY = clickY; // Screen top-down Y
+
+    // Check if clicked on player character bounds
+    const p = PG.player;
+    if (p.skel) {
+        const pScreenX = p.x - PG.cameraX;
+        const pScreenY = p.y;
+        const hitRadiusX = 45 * p.depthScale;
+        const hitHeight  = 130 * p.depthScale;
+
+        // Bounding box from feet upwards
+        if (Math.abs(clickX - pScreenX) < hitRadiusX && clickY <= pScreenY + 10 && clickY >= pScreenY - hitHeight) {
+            pgTriggerPlayerInteraction();
+            return;
+        }
+    }
+
+    // Check if clicked on any companion character
+    for (const comp of PG.companions) {
+        const cScreenX = comp.x - PG.cameraX;
+        const cScreenY = comp.y;
+        const hitRadiusX = 45 * comp.depthScale;
+        const hitHeight  = 130 * comp.depthScale;
+
+        if (Math.abs(clickX - cScreenX) < hitRadiusX && clickY <= cScreenY + 10 && clickY >= cScreenY - hitHeight) {
+            pgTriggerCompanionInteraction(comp);
+            return;
+        }
+    }
+
+    // Otherwise: Click to Move on the Walkable Floor
+    const clampedTargetY = Math.max(PG.FLOOR_MIN_Y, Math.min(PG.FLOOR_MAX_Y, worldY));
+    const clampedTargetX = Math.max(80, Math.min(PG.ROOM_W - 80, worldX));
+
+    p.targetX = clampedTargetX;
+    p.targetY = clampedTargetY;
+    p.isMoving = true;
+
+    // Show destination ping marker
+    pgShowDestPin(clickX, clickY);
+}
+
+/**
+ * Trigger player interaction (50/50 Interact or Special) with Cooldown Lock & Emote.
+ */
+function pgTriggerPlayerInteraction() {
+    const p = PG.player;
+    const now = performance.now();
+
+    // Check if interaction lock is active (cannot spam click)
+    if (p.isInteracting && now < p.interactLockUntil) {
+        return;
+    }
+
+    p.isInteracting = true;
+    p.isMoving = false;
+    pgHideDestPin();
+
+    const anims = p.availableAnims;
+    let chosenAnim = 'Interact';
+    let emote = '♡';
+
+    const hasSpecial  = anims.includes('Special');
+    const hasInteract = anims.includes('Interact');
+
+    if (hasSpecial && hasInteract) {
+        if (Math.random() < 0.5) {
+            chosenAnim = 'Special';
+            emote = '✨';
+        } else {
+            chosenAnim = 'Interact';
+            emote = Math.random() < 0.5 ? '♡' : '♪';
+        }
+    } else if (hasSpecial) {
+        chosenAnim = 'Special';
+        emote = '✨';
+    } else if (hasInteract) {
+        chosenAnim = 'Interact';
+        emote = Math.random() < 0.5 ? '♡' : '♪';
+    } else {
+        chosenAnim = anims[0] || 'Default';
+        emote = '!';
+    }
+
+    // Play animation
+    const entry = pgPlayPlayerAnim(chosenAnim, false);
+    const duration = (entry && entry.animation) ? Math.max(entry.animation.duration, 1.4) : 1.6;
+    p.interactLockUntil = now + (duration * 1000) / p.speedMultiplier;
+
+    // Show floating emote bubble over head
+    pgShowEmote(emote, p.x, p.y, p.depthScale);
+    pgUpdateStatusBadge(`${chosenAnim} (Tương tác)`, '#fdcb6e');
+
+    // Return to Relax when finished
+    setTimeout(() => {
+        if (p.isInteracting && !p.isMoving) {
+            p.isInteracting = false;
+            const idleAnim = p.availableAnims.includes('Relax') ? 'Relax' : 'Default';
+            pgPlayPlayerAnim(idleAnim, true);
+            pgUpdateStatusBadge(`${idleAnim} (Đứng yên)`, '#2ed573');
+        }
+    }, (duration * 1000) / p.speedMultiplier);
+}
+
+function pgTriggerCompanionInteraction(comp) {
+    const anims = comp.availableAnims;
+    const chosenAnim = anims.includes('Interact') ? 'Interact' : (anims.includes('Special') ? 'Special' : 'Default');
+    comp.state.setAnimation(0, chosenAnim, false);
+    comp.state.addAnimation(0, 'Relax', true, 0);
+    pgShowEmote('♡', comp.x, comp.y, comp.depthScale);
+}
+
+function pgPlayPlayerAnim(animName, loop = true) {
+    const p = PG.player;
+    if (!p.state) return null;
+    p.curAnim = animName;
+    try {
+        const entry = p.state.setAnimation(0, animName, loop);
+        p.state.timeScale = p.speedMultiplier;
+        return entry;
+    } catch(e) {
+        return null;
+    }
+}
+
+/**
+ * 60 FPS Render & Physics Loop for the 2.5D Sci-Fi White Room Playground.
+ */
+function startPlaygroundLoop() {
+    if (PG.rafId) cancelAnimationFrame(PG.rafId);
+    PG.lastTs = performance.now() / 1000;
+
+    function loop() {
+        if (!document.getElementById('tab-game').classList.contains('vis')) return;
+
+        const now   = performance.now() / 1000;
+        const delta = Math.min(now - PG.lastTs, 0.064);
+        PG.lastTs = now;
+
+        const canvas = PG.canvas;
+        const gl     = PG.gl;
+        if (!canvas || !gl || !PG.renderer) return;
+
+        // Resize canvas if needed
+        const cw = Math.floor(canvas.clientWidth  || canvas.width || 900);
+        const ch = Math.floor(canvas.clientHeight || canvas.height || 540);
+        if (canvas.width !== cw || canvas.height !== ch) {
+            canvas.width  = cw;
+            canvas.height = ch;
+            if (PG.bgCanvas) {
+                PG.bgCanvas.width  = cw;
+                PG.bgCanvas.height = ch;
+            }
+            PG.ROOM_H = ch;
+        }
+
+        // ── 1. Update Player Physics & Inputs ──
+        pgUpdatePlayerPhysics(delta);
+
+        // ── 2. Update Companion AI ──
+        pgUpdateCompanions(delta);
+
+        // ── 3. Smooth Camera Tracking ──
+        if (PG.cameraFollow) {
+            const targetCam = PG.player.x - cw / 2;
+            PG.cameraX += (targetCam - PG.cameraX) * 0.09;
+            PG.cameraX = Math.max(0, Math.min(PG.ROOM_W - cw, PG.cameraX));
+        }
+
+        // ── 4. Render 2.5D Sci-Fi White Room Background on 2D Context ──
+        if (!PG.bgCtx && PG.bgCanvas) {
+            PG.bgCtx = PG.bgCanvas.getContext('2d');
+        }
+        if (PG.bgCtx) {
+            pgDrawSciFiRoomBackground(PG.bgCtx, cw, ch);
+        }
+
+        // ── 5. Clear WebGL Canvas with Transparent Alpha ──
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        // ── 6. Render Spine Characters (Player + Companions sorted by depth) ──
+        const allChars = [PG.player, ...PG.companions].filter(c => c && c.skel && c.state);
+        // Sort by Y position for proper 2.5D depth sorting (characters further up rendered first)
+        allChars.sort((a, b) => a.y - b.y);
+
+        // Update camera position for Spine WebGL SceneRenderer
+        PG.renderer.camera.viewportWidth  = cw;
+        PG.renderer.camera.viewportHeight = ch;
+        PG.renderer.camera.position.x = PG.cameraX + cw / 2;
+        PG.renderer.camera.position.y = ch / 2;
+        PG.renderer.camera.zoom = 1.0;
+
+        gl.viewport(0, 0, cw, ch);
+
+        PG.renderer.begin();
+        for (const char of allChars) {
+            char.state.update(delta);
+            char.state.apply(char.skel);
+
+            // World coordinates to Spine WebGL coordinates (feet at char.y from top)
+            char.skel.x = char.x;
+            char.skel.y = ch - char.y;
+            char.skel.scaleX = char.facing * char.depthScale * 0.42;
+            char.skel.scaleY = char.depthScale * 0.42;
+            char.skel.updateWorldTransform();
+
+            PG.renderer.drawSkeleton(char.skel, true);
+        }
+        PG.renderer.end();
+
+        PG.rafId = requestAnimationFrame(loop);
+    }
+
+    PG.rafId = requestAnimationFrame(loop);
+}
+
+/**
+ * Update player kinematics, keyboard input, velocity, and animation synchronization.
+ */
+function pgUpdatePlayerPhysics(delta) {
+    const p = PG.player;
+    if (!p.skel) return;
+
+    // Check keyboard WASD / Arrow keys
+    let kx = 0, ky = 0;
+    if (PG.keys.a || PG.keys.ArrowLeft)  kx -= 1;
+    if (PG.keys.d || PG.keys.ArrowRight) kx += 1;
+    if (PG.keys.w || PG.keys.ArrowUp)    ky -= 1; // Up into room (further)
+    if (PG.keys.s || PG.keys.ArrowDown)  ky += 1; // Down closer to screen
+
+    if ((kx !== 0 || ky !== 0) && !p.isInteracting) {
+        p.isMoving = true;
+        p.targetX = p.x + kx * 400;
+        p.targetY = p.y + ky * 400;
+    }
+
+    if (p.isMoving && !p.isInteracting) {
+        const dx = p.targetX - p.x;
+        const dy = p.targetY - p.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist > 3) {
+            // Update facing direction
+            if (Math.abs(dx) > 1) {
+                p.facing = dx > 0 ? 1 : -1;
+            }
+
+            // Move step (synchronized with footstep speed)
+            const step = Math.min(dist, p.speed * p.speedMultiplier * delta);
+            p.x += (dx / dist) * step;
+            p.y += (dy / dist) * step;
+
+            // Clamp within walkable floor bounds
+            p.x = Math.max(80, Math.min(PG.ROOM_W - 80, p.x));
+            p.y = Math.max(PG.FLOOR_MIN_Y, Math.min(PG.FLOOR_MAX_Y, p.y));
+
+            // Update 2.5D depth scale (0.82 at back wall, 1.10 at front)
+            p.depthScale = 0.82 + ((p.y - PG.FLOOR_MIN_Y) / (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y)) * 0.28;
+
+            if (p.curAnim !== 'Move') {
+                pgPlayPlayerAnim('Move', true);
+                pgUpdateStatusBadge('Move (Đang di chuyển)', '#00d2ff');
+            }
+        } else {
+            // Reached destination
+            p.isMoving = false;
+            pgHideDestPin();
+            const idleAnim = p.availableAnims.includes('Relax') ? 'Relax' : 'Default';
+            pgPlayPlayerAnim(idleAnim, true);
+            pgUpdateStatusBadge(`${idleAnim} (Đứng yên)`, '#2ed573');
+        }
+    }
+}
+
+/**
+ * Update companion Chibis autonomous wandering behavior.
+ */
+function pgUpdateCompanions(delta) {
+    for (const comp of PG.companions) {
+        if (!comp.skel) continue;
+
+        comp.wanderTimer = (comp.wanderTimer || 0) - delta;
+        if (comp.wanderTimer <= 0) {
+            // Pick a new random target point every 4-8 seconds
+            comp.wanderTimer = 4 + Math.random() * 5;
+            if (Math.random() < 0.65) {
+                comp.targetX = comp.x + (Math.random() - 0.5) * 500;
+                comp.targetY = PG.FLOOR_MIN_Y + Math.random() * (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y);
+                comp.isMoving = true;
+                comp.state.setAnimation(0, 'Move', true);
+            } else {
+                comp.isMoving = false;
+                comp.state.setAnimation(0, 'Relax', true);
+            }
+        }
+
+        if (comp.isMoving) {
+            const dx = comp.targetX - comp.x;
+            const dy = comp.targetY - comp.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist > 4) {
+                if (Math.abs(dx) > 1) comp.facing = dx > 0 ? 1 : -1;
+                const step = Math.min(dist, 140 * delta);
+                comp.x += (dx / dist) * step;
+                comp.y += (dy / dist) * step;
+                comp.x = Math.max(80, Math.min(PG.ROOM_W - 80, comp.x));
+                comp.y = Math.max(PG.FLOOR_MIN_Y, Math.min(PG.FLOOR_MAX_Y, comp.y));
+                comp.depthScale = 0.82 + ((comp.y - PG.FLOOR_MIN_Y) / (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y)) * 0.28;
+            } else {
+                comp.isMoving = false;
+                comp.state.setAnimation(0, 'Relax', true);
+            }
+        }
+    }
+}
+
+/**
+ * Draw the Minimalist Sci-Fi Rhodes Island White Room Background.
+ */
+function pgDrawSciFiRoomBackground(ctx, cw, ch) {
+    ctx.clearRect(0, 0, cw, ch);
+
+    const camX = PG.cameraX;
+    const horizon = PG.HORIZON_Y;
+
+    // ── 1. Back Wall (High-Tech Rhodes Island White Wall Panels) ──
+    const wallGrad = ctx.createLinearGradient(0, 0, 0, horizon);
+    wallGrad.addColorStop(0, '#f8fafc');
+    wallGrad.addColorStop(0.6, '#f1f5f9');
+    wallGrad.addColorStop(1, '#e2e8f0');
+    ctx.fillStyle = wallGrad;
+    ctx.fillRect(0, 0, cw, horizon);
+
+    // Architectural Vertical Seams every 360px in world coords
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.5)';
+    ctx.lineWidth = 1.5;
+    const startSeam = Math.floor(camX / 360) * 360;
+    for (let wx = startSeam; wx <= camX + cw + 400; wx += 360) {
+        const sx = wx - camX;
+        ctx.beginPath();
+        ctx.moveTo(sx, 0);
+        ctx.lineTo(sx, horizon);
+        ctx.stroke();
+
+        // High-tech wall panel joint nodes
+        ctx.fillStyle = 'rgba(100, 116, 139, 0.4)';
+        ctx.fillRect(sx - 3, 60, 6, 14);
+        ctx.fillRect(sx - 3, 150, 6, 14);
+    }
+
+    // Horizontal Wall Dividers
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, 67); ctx.lineTo(cw, 67);
+    ctx.moveTo(0, 157); ctx.lineTo(cw, 157);
+    ctx.stroke();
+
+    // Overhead Sci-Fi Light Bar
+    const lightGrad = ctx.createLinearGradient(0, 0, cw, 0);
+    lightGrad.addColorStop(0, 'rgba(0, 210, 255, 0.4)');
+    lightGrad.addColorStop(0.5, 'rgba(0, 210, 255, 0.9)');
+    lightGrad.addColorStop(1, 'rgba(0, 210, 255, 0.4)');
+    ctx.fillStyle = lightGrad;
+    ctx.fillRect(0, 6, cw, 6);
+
+    // Ambient soft downward glow below overhead light
+    const glowGrad = ctx.createLinearGradient(0, 12, 0, 100);
+    glowGrad.addColorStop(0, 'rgba(0, 210, 255, 0.12)');
+    glowGrad.addColorStop(1, 'rgba(0, 210, 255, 0)');
+    ctx.fillStyle = glowGrad;
+    ctx.fillRect(0, 12, cw, 88);
+
+    // Rhodes Island Center Watermark Emblem
+    const centerSx = 1600 - camX;
+    if (centerSx > -300 && centerSx < cw + 300) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(100, 116, 139, 0.35)';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(centerSx, 38);
+        ctx.lineTo(centerSx - 65, 165);
+        ctx.lineTo(centerSx + 65, 165);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(100, 116, 139, 0.08)';
+        ctx.fill();
+
+        // Inner RI logo text
+        ctx.fillStyle = 'rgba(100, 116, 139, 0.5)';
+        ctx.font = 'bold 13px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('RHODES ISLAND', centerSx, 125);
+        ctx.font = '10px monospace';
+        ctx.fillText('SEC-01 // BASE LAB', centerSx, 142);
+        ctx.restore();
+    }
+
+    // ── 2. Perspective Floor (Clean White Sci-Fi Tiles with Depth) ──
+    const floorGrad = ctx.createLinearGradient(0, horizon, 0, ch);
+    floorGrad.addColorStop(0, '#f1f5f9');
+    floorGrad.addColorStop(0.4, '#e2e8f0');
+    floorGrad.addColorStop(1, '#cbd5e1');
+    ctx.fillStyle = floorGrad;
+    ctx.fillRect(0, horizon, cw, ch - horizon);
+
+    // Perspective Horizontal Depth Lines (Grid)
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+    ctx.lineWidth = 1;
+    const depthYLines = [245, 268, 298, 338, 388, 448, 520, 605];
+    for (const dy of depthYLines) {
+        if (dy > horizon && dy < ch) {
+            ctx.beginPath();
+            ctx.moveTo(0, dy);
+            ctx.lineTo(cw, dy);
+            ctx.stroke();
+        }
+    }
+
+    // Perspective Converging Longitudinal Lines
+    const startGrid = Math.floor(camX / 140) * 140;
+    for (let wx = startGrid; wx <= camX + cw + 400; wx += 140) {
+        const topSx = wx - camX;
+        const bottomOffset = (wx - (camX + cw / 2)) * 0.55;
+        const bottomSx = topSx + bottomOffset;
+
+        ctx.beginPath();
+        ctx.moveTo(topSx, horizon);
+        ctx.lineTo(bottomSx, ch);
+        ctx.stroke();
+    }
+
+    // Luminous Baseboard LED Strip & Dark Metallic Joint
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(0, horizon - 2, cw, 3);
+
+    ctx.save();
+    ctx.shadowColor = '#00d2ff';
+    ctx.shadowBlur = 12;
+    ctx.strokeStyle = '#00d2ff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0, horizon + 1);
+    ctx.lineTo(cw, horizon + 1);
+    ctx.stroke();
+    ctx.restore();
+
+    // ── 3. Draw Soft Realistic Drop Shadows under Chibi Feet ──
+    const allChars = [PG.player, ...PG.companions].filter(c => c && c.skel);
+    for (const c of allChars) {
+        const sx = c.x - camX;
+        const sy = c.y;
+        if (sx > -100 && sx < cw + 100) {
+            // Soft outer shadow
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.28)';
+            ctx.beginPath();
+            ctx.ellipse(sx, sy, 38 * c.depthScale, 12 * c.depthScale, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Dark inner core shadow
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
+            ctx.beginPath();
+            ctx.ellipse(sx, sy, 22 * c.depthScale, 6.5 * c.depthScale, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+}
+
+/**
+ * Show click-to-move destination ping pin.
+ */
+function pgShowDestPin(screenX, screenY) {
+    const pin = document.getElementById('pg-dest-pin');
+    if (!pin) return;
+    pin.style.left = `${screenX}px`;
+    pin.style.top  = `${screenY}px`;
+    pin.classList.add('active');
+}
+
+function pgHideDestPin() {
+    const pin = document.getElementById('pg-dest-pin');
+    if (pin) pin.classList.remove('active');
+}
+
+/**
+ * Show floating emote bubble over Chibi's head.
+ */
+let _emoteTimer;
+function pgShowEmote(text, worldX, worldY, scale) {
+    const el = document.getElementById('pg-emote-bubble');
+    if (!el) return;
+
+    const screenX = worldX - PG.cameraX;
+    const screenY = worldY - (175 * scale);
+
+    el.textContent = text;
+    el.style.left = `${screenX}px`;
+    el.style.top  = `${screenY}px`;
+    el.classList.add('show');
+
+    clearTimeout(_emoteTimer);
+    _emoteTimer = setTimeout(() => {
+        el.classList.remove('show');
+    }, 1400);
+}
+
+function pgUpdateStatusBadge(text, color = '#2ed573') {
+    const el = document.getElementById('pg-badge-state');
+    if (el) {
+        el.textContent = text;
+        el.style.color = color;
+    }
+}
+
+/**
+ * Build skin selector dropdown for playground.
+ */
+function pgBuildSkinSelect(meta) {
+    const sel = document.getElementById('pg-skin-sel');
+    if (!sel) return;
+    sel.innerHTML = '';
+    const skins = Object.keys(meta?.skin || {'默认':{}});
+    skins.forEach(s => {
+        const o = document.createElement('option');
+        o.value = o.textContent = s;
+        if (s === PG.player.skin) o.selected = true;
+        sel.appendChild(o);
+    });
+}
+
+function pgChangeSkin(skinName) {
+    if (PG.player.op) {
+        pgLoadPlayerOperator(PG.player.op, skinName);
+    }
+}
+
+/**
+ * Build manual animation trigger buttons.
+ */
+function pgBuildAnimButtons(available) {
+    const container = document.getElementById('pg-anim-buttons');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const priority = ['Relax', 'Move', 'Interact', 'Special', 'Sit', 'Sleep', 'Default'];
+    const shown = [...new Set([...priority.filter(a => available.includes(a)), ...available])].slice(0, 7);
+
+    shown.forEach(anim => {
+        const btn = document.createElement('button');
+        btn.className = `pg-anim-btn${anim === PG.player.curAnim ? ' active' : ''}`;
+        btn.innerHTML = `${anim}`;
+        btn.onclick = () => {
+            document.querySelectorAll('.pg-anim-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            pgPlayPlayerAnim(anim, anim !== 'Interact' && anim !== 'Special');
+            pgUpdateStatusBadge(`${anim}`, '#00d2ff');
+        };
+        container.appendChild(btn);
+    });
+}
+
+function pgSetSpeed(val) {
+    PG.player.speedMultiplier = parseFloat(val);
+    document.getElementById('pg-speed-lbl').textContent = `x${PG.player.speedMultiplier.toFixed(1)}`;
+    if (PG.player.state) PG.player.state.timeScale = PG.player.speedMultiplier;
+}
+
+function pgToggleCameraFollow() {
+    PG.cameraFollow = !PG.cameraFollow;
+    const btn = document.getElementById('pg-cam-btn');
+    if (btn) {
+        btn.innerHTML = `<i data-lucide="video" size="13"></i> Camera: ${PG.cameraFollow ? 'Bám theo' : 'Tự do'}`;
+        lucide.createIcons();
+    }
+    showToast(`Camera: ${PG.cameraFollow ? 'Tự động bám theo nhân vật' : 'Chế độ cuộn tự do'}`);
+}
+
+function pgResetRoom() {
+    PG.player.x = 1600;
+    PG.player.y = 400;
+    PG.player.targetX = 1600;
+    PG.player.targetY = 400;
+    PG.player.isMoving = false;
+    PG.cameraX = 1600 - (PG.canvas?.width || 900) / 2;
+    pgPlayPlayerAnim('Relax', true);
+    pgUpdateStatusBadge('Relax (Đứng yên)', '#2ed573');
+    pgHideDestPin();
+    showToast('✓ Đã đưa nhân vật về giữa phòng');
+}
+
+/**
+ * Spawn a companion Chibi wandering in the room!
+ */
+async function pgSpawnCompanion() {
+    if (PG.companions.length >= 4) {
+        showToast('⚠ Đã đạt tối đa 4 đồng đội trong phòng');
+        return;
+    }
+
+    // Pick a random operator from the list
+    const randomOp = OPS[Math.floor(Math.random() * OPS.length)];
+    showToast(`Đang gọi đồng đội: ${randomOp.name_cn}...`);
+
+    try {
+        let opMeta = _assetCache.meta.get(randomOp.id);
+        if (!opMeta) {
+            const directUrl = `${CDN}${randomOp.id}/meta.json`;
+            let metaRes = await fetch(proxy(directUrl)).catch(() => null);
+            if (!metaRes || !metaRes.ok) metaRes = await fetch(directUrl);
+            if (metaRes && metaRes.ok) {
+                opMeta = await metaRes.json();
+                _assetCache.meta.set(randomOp.id, opMeta);
+            }
+        }
+
+        const skins = opMeta?.skin || {};
+        const firstSkinName = Object.keys(skins)[0] || '默认';
+        const skinData = skins[firstSkinName] || {};
+        const modelDat = skinData['基建'] || skinData[Object.keys(skinData)[0]];
+        const prefix = opMeta?.prefix || `${CDN}${randomOp.id}/`;
+        const fileRel = modelDat?.file;
+
+        const result = await loadSpineAssets(PG.gl, prefix, fileRel, 0.42, null);
+
+        const comp = {
+            op: randomOp,
+            skel: result.skel,
+            state: result.state,
+            bounds: result.bounds,
+            skelData: result.skelData,
+            x: PG.player.x + (Math.random() - 0.5) * 400,
+            y: PG.FLOOR_MIN_Y + Math.random() * (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y),
+            targetX: 0,
+            targetY: 0,
+            facing: Math.random() > 0.5 ? 1 : -1,
+            isMoving: false,
+            wanderTimer: 2 + Math.random() * 3,
+            depthScale: 1.0,
+            availableAnims: result.skelData.animations.map(a => a.name)
+        };
+
+        comp.state.setAnimation(0, 'Relax', true);
+        PG.companions.push(comp);
+        showToast(`✓ ${randomOp.name_cn} đã gia nhập sân chơi!`);
+    } catch(e) {
+        showToast(`Không thể gọi đồng đội: ${e.message}`);
+    }
+}
+
+/**
+ * Top Search Bar Autocomplete for Playground.
+ */
+function pgSearchOps(q) {
+    const resBox = document.getElementById('pg-search-results');
+    if (!q || !q.trim()) {
+        resBox.classList.remove('show');
+        return;
+    }
+    const query = q.toLowerCase();
+    const matches = OPS.filter(o => o.name_cn.toLowerCase().includes(query) || o.name_en.toLowerCase().includes(query) || o.id.toLowerCase().includes(query)).slice(0, 8);
+
+    if (matches.length === 0) {
+        resBox.innerHTML = '<div style="padding:10px;font-size:11px;color:var(--mt)">Không tìm thấy nhân vật</div>';
+    } else {
+        resBox.innerHTML = '';
+        matches.forEach(o => {
+            const item = document.createElement('div');
+            item.className = 'pg-res-item';
+            item.innerHTML = `<span style="font-weight:700;color:var(--ac)">${o.name_cn}</span> <span style="color:var(--mt)">(${o.name_en})</span> <span style="font-size:10px;margin-left:auto;color:#fdcb6e">${o.rarity}★</span>`;
+            item.onclick = () => {
+                document.getElementById('pg-search-input').value = `${o.name_cn} (${o.name_en})`;
+                resBox.classList.remove('show');
+                pgLoadPlayerOperator(o, '默认');
+            };
+            resBox.appendChild(item);
+        });
+    }
+    resBox.classList.add('show');
+}
+
+// Close search popup on outside click
+document.addEventListener('click', (e) => {
+    const wrap = document.querySelector('.pg-search-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+        document.getElementById('pg-search-results')?.classList.remove('show');
+    }
+});
 
 /* ═══════════════════════════════════════════════════════════
    TAB SWITCHING
@@ -1086,9 +2159,11 @@ async function initDormSpine() {
 function switchTab(tab) {
     document.getElementById('tab-viewer').style.display = tab==='viewer' ? 'grid' : 'none';
     document.getElementById('tab-game').classList.toggle('vis', tab==='game');
-    document.getElementById('tab-eng').classList.toggle('vis', tab==='eng');
-    ['viewer','game','eng'].forEach(t => document.getElementById(`tb-${t}`).classList.toggle('active', t===tab));
-    if (tab==='game') setTimeout(initDormSpine, 80);
+    ['viewer','game'].forEach(t => document.getElementById(`tb-${t}`)?.classList.toggle('active', t===tab));
+
+    if (tab === 'game') {
+        setTimeout(initPlayground, 60);
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1097,6 +2172,7 @@ function switchTab(tab) {
 let _tt;
 function showToast(msg) {
     const t = document.getElementById('toast');
+    if (!t) return;
     document.getElementById('toast-text').textContent = msg;
     t.classList.add('show');
     clearTimeout(_tt);
@@ -1104,19 +2180,14 @@ function showToast(msg) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════════════ */
-/* ═══════════════════════════════════════════════════════════
-   WAIT FOR SPINE — poll until spine global is ready, then init
+   INIT & BOOTSTRAP
 ═══════════════════════════════════════════════════════════ */
 function waitForSpine(callback, attempts = 0) {
     if (typeof spine !== 'undefined' && spine.webgl && spine.webgl.SceneRenderer) {
-        // Hide loading cover
         const cover = document.getElementById('spine-loading-cover');
         if (cover) { cover.classList.add('hidden'); setTimeout(() => cover.remove(), 500); }
         callback();
     } else if (attempts < 100) {
-        // Retry every 100ms (max 10 seconds)
         setTimeout(() => waitForSpine(callback, attempts + 1), 100);
     } else {
         const cover = document.getElementById('spine-loading-cover');
@@ -1127,22 +2198,16 @@ function waitForSpine(callback, attempts = 0) {
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
     document.getElementById('tab-game').classList.remove('vis');
-    document.getElementById('tab-eng').classList.remove('vis');
     buildAnimGrid([]);
     renderList(visOps());
 
-    // Resize canvas when window resizes
     window.addEventListener('resize', () => {
         const c = document.getElementById('spine-canvas');
-        if (c && gl) { c.width=c.clientWidth; c.height=c.clientHeight; }
+        if (c && gl) { c.width = c.clientWidth; c.height = c.clientHeight; }
     });
 
-    // Wait for Spine runtime to be available before loading any model
     waitForSpine(async () => {
-        // Load local file inventory first
         await loadLocalFilesList();
-
-        // Select first operator and load
         const first = OPS.find(o => o.id==='char_002_amiya') || OPS[0];
         if (first) selectOp(first);
     });
