@@ -899,17 +899,11 @@ async function loadSpineAssets(glCtx, prefix, fileRel, scale = 0.5, localUrls = 
     }
 
     const atlas = new spine.TextureAtlas(atlasText, (_path) => {
-        const tex = new spine.webgl.GLTexture(glCtx, pngImg, true);
-        tex.setFilters(spine.TextureFilter.MipMapLinearLinear, spine.TextureFilter.Linear);
-        return tex;
+        // NOTE: Do NOT use useMipMaps=true here — Arknights atlases are NPOT (non-power-of-two).
+        // WebGL1 silently makes NPOT+mipmap textures "incomplete", rendering as solid black.
+        // LINEAR filter is sufficient; hardware antialias on the WebGL context handles smoothness.
+        return new spine.webgl.GLTexture(glCtx, pngImg, false);
     });
-    if (atlas.pages) {
-        atlas.pages.forEach(p => {
-            if (p.texture) {
-                p.texture.setFilters(spine.TextureFilter.MipMapLinearLinear, spine.TextureFilter.Linear);
-            }
-        });
-    }
 
     const loader   = new spine.AtlasAttachmentLoader(atlas);
     const reader   = new spine.SkeletonBinary(loader);
