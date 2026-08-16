@@ -1643,6 +1643,10 @@ function pgHandleCanvasClick(clickX, clickY) {
     const clampedTargetY = Math.max(PG.FLOOR_MIN_Y, Math.min(PG.FLOOR_MAX_Y, worldY));
     const clampedTargetX = Math.max(80, Math.min(PG.ROOM_W - 80, worldX));
 
+    // Cancel any active interaction timer/lock immediately for instant responsiveness
+    p.interactToken = (p.interactToken || 0) + 1;
+    p.isInteracting = false;
+    p.interactLockUntil = 0;
     p.targetX = clampedTargetX;
     p.targetY = clampedTargetY;
     p.isMoving = true;
@@ -1663,6 +1667,9 @@ function pgTriggerPlayerInteraction() {
     if (p.isInteracting && now < p.interactLockUntil) {
         return;
     }
+
+    p.interactToken = (p.interactToken || 0) + 1;
+    const currentToken = p.interactToken;
 
     p.isInteracting = true;
     p.isMoving = false;
@@ -1696,20 +1703,23 @@ function pgTriggerPlayerInteraction() {
 
     // Play animation
     const entry = pgPlayPlayerAnim(chosenAnim, false);
-    const duration = (entry && entry.animation) ? Math.max(entry.animation.duration, 1.4) : 1.6;
+    const duration = (entry && entry.animation) ? Math.max(entry.animation.duration, 1.2) : 1.5;
     p.interactLockUntil = now + (duration * 1000) / p.speedMultiplier;
 
     // Show floating emote bubble over head
     pgShowEmote(emote, p.x, p.y, p.depthScale);
     pgUpdateStatusBadge(`${chosenAnim} (Tương tác)`, '#fdcb6e');
 
-    // Return to Relax when finished
+    // Return to Relax when finished (if token matches and not moving)
     setTimeout(() => {
-        if (p.isInteracting && !p.isMoving) {
+        if (p.interactToken === currentToken) {
             p.isInteracting = false;
-            const idleAnim = p.availableAnims.includes('Relax') ? 'Relax' : 'Default';
-            pgPlayPlayerAnim(idleAnim, true);
-            pgUpdateStatusBadge(`${idleAnim} (Đứng yên)`, '#2ed573');
+            p.interactLockUntil = 0;
+            if (!p.isMoving) {
+                const idleAnim = p.availableAnims.includes('Relax') ? 'Relax' : 'Default';
+                pgPlayPlayerAnim(idleAnim, true);
+                pgUpdateStatusBadge(`${idleAnim} (Đứng yên)`, '#2ed573');
+            }
         }
     }, (duration * 1000) / p.speedMultiplier);
 }
@@ -1841,13 +1851,16 @@ function pgUpdatePlayerPhysics(delta) {
     if (PG.keys.w || PG.keys.ArrowUp)    ky -= 1; // Up into room (further)
     if (PG.keys.s || PG.keys.ArrowDown)  ky += 1; // Down closer to screen
 
-    if ((kx !== 0 || ky !== 0) && !p.isInteracting) {
+    if (kx !== 0 || ky !== 0) {
+        p.interactToken = (p.interactToken || 0) + 1;
+        p.isInteracting = false;
+        p.interactLockUntil = 0;
         p.isMoving = true;
         p.targetX = p.x + kx * 400;
         p.targetY = p.y + ky * 400;
     }
 
-    if (p.isMoving && !p.isInteracting) {
+    if (p.isMoving) {
         const dx = p.targetX - p.x;
         const dy = p.targetY - p.y;
         const dist = Math.hypot(dx, dy);
@@ -2181,6 +2194,12 @@ function pgBuildAnimButtons(available) {
         btn.onclick = () => {
             document.querySelectorAll('.pg-anim-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            const p = PG.player;
+            p.interactToken = (p.interactToken || 0) + 1;
+            p.isInteracting = (anim === 'Interact' || anim === 'Special');
+            p.interactLockUntil = p.isInteracting ? performance.now() + 1500 : 0;
+            p.isMoving = (anim === 'Move');
+            if (anim !== 'Move') pgHideDestPin();
             pgPlayPlayerAnim(anim, anim !== 'Interact' && anim !== 'Special');
             pgUpdateStatusBadge(`${anim}`, '#00d2ff');
         };
@@ -2205,11 +2224,15 @@ function pgToggleCameraFollow() {
 }
 
 function pgResetRoom() {
-    PG.player.x = 3200;
-    PG.player.y = 420;
-    PG.player.targetX = 3200;
-    PG.player.targetY = 420;
-    PG.player.isMoving = false;
+    const p = PG.player;
+    p.interactToken = (p.interactToken || 0) + 1;
+    p.isInteracting = false;
+    p.interactLockUntil = 0;
+    p.x = 3200;
+    p.y = 420;
+    p.targetX = 3200;
+    p.targetY = 420;
+    p.isMoving = false;
     PG.cameraX = 3200 - (PG.canvas?.width || 900) / 2;
     pgPlayPlayerAnim('Relax', true);
     pgUpdateStatusBadge('Relax (Đứng yên)', '#2ed573');
