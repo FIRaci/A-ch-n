@@ -646,6 +646,12 @@
             <span class="badge" id="pg-badge-comp-count" style="color:#e8c96e">Đồng đội: 0/32</span>
         </div>
         <div class="pg-action-group">
+            <select class="sel" id="pg-theme-sel" onchange="pgChangeThemePreset(this.value)" style="width:195px;margin:0;padding:6px 10px;font-size:11px">
+                <option value="default">Phòng Mặc Định (White Room)</option>
+                <option value="furni_set_BSsafehouse" selected>黑钢国际安全屋 (Blacksteel)</option>
+                <option value="furni_set_penguin">企鹅物流安全屋 (Penguin)</option>
+                <option value="furni_set_warehouse">货运仓库 (Warehouse)</option>
+            </select>
             <button class="btn btn-ac" onclick="pgOpenCompanionModal()"><i data-lucide="user-plus" size="13"></i> Chọn Đồng Đội (+)</button>
             <button class="btn" id="pg-cam-btn" onclick="pgToggleCameraFollow()"><i data-lucide="video" size="13"></i> Camera: Bám theo</button>
             <button class="btn" onclick="pgResetRoom()"><i data-lucide="rotate-ccw" size="13"></i> Căn giữa</button>
@@ -2438,8 +2444,10 @@ function pgDrawDestPin(ctx, camX) {
     ctx.restore();
 }
 
+const _furnitureImgCache = new Map();
+
 /**
- * Draw all interactive furniture items (Chair & Bed) in the 2.5D Room.
+ * Draw all interactive furniture items (Chair, Bed, Sprites) in the 2.5D Room.
  */
 function pgDrawFurniture(ctx, camX) {
     if (!PG.furniture) return;
@@ -2450,12 +2458,69 @@ function pgDrawFurniture(ctx, camX) {
         const scale = 0.82 + ((sy - PG.FLOOR_MIN_Y) / (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y)) * 0.28;
         const isNear = (PG.nearestFurniture === item);
 
-        if (item.type === 'chair') {
+        if (item.imageUrl) {
+            pgDrawSpriteFurniture(ctx, item, sx, sy, scale, isNear);
+        } else if (item.type === 'chair') {
             pgDrawChair(ctx, sx, sy, scale, isNear);
         } else if (item.type === 'bed') {
             pgDrawBed(ctx, sx, sy, scale, isNear);
         }
     }
+}
+
+/**
+ * Draw image sprite based furniture (from crawled Arknights themes like Blacksteel Safehouse).
+ */
+function pgDrawSpriteFurniture(ctx, item, sx, sy, scale, isNear) {
+    if (!_furnitureImgCache.has(item.imageUrl)) {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.src = item.imageUrl;
+        _furnitureImgCache.set(item.imageUrl, img);
+    }
+    const img = _furnitureImgCache.get(item.imageUrl);
+
+    ctx.save();
+    const w = (item.width || 2) * 36 * scale;
+    const h = (item.height || 2) * 36 * scale;
+
+    // Drop shadow
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.28)';
+    ctx.beginPath();
+    ctx.ellipse(sx, sy + 3 * scale, (w * 0.42), (10 * scale), 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Proximity glowing aura
+    if (isNear) {
+        ctx.save();
+        const pulse = 1.0 + Math.sin(performance.now() * 0.008) * 0.08;
+        ctx.shadowColor = '#00d2ff';
+        ctx.shadowBlur = 14;
+        ctx.strokeStyle = '#00d2ff';
+        ctx.lineWidth = 2 * scale;
+        ctx.beginPath();
+        ctx.ellipse(sx, sy + 3 * scale, (w * 0.48) * pulse, (13 * scale) * pulse, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    if (img && img.complete && img.naturalWidth > 0) {
+        const drawH = (img.naturalHeight / img.naturalWidth) * w;
+        ctx.drawImage(img, sx - w / 2, sy - drawH + (6 * scale), w, drawH);
+    } else {
+        // High-tech placeholder card while asset loads
+        ctx.fillStyle = '#1e293b';
+        ctx.strokeStyle = '#00d2ff';
+        ctx.lineWidth = 1.2;
+        ctx.fillRect(sx - w / 2, sy - h, w, h);
+        ctx.strokeRect(sx - w / 2, sy - h, w, h);
+        ctx.fillStyle = '#00d2ff';
+        ctx.font = `${Math.max(8, Math.round(9 * scale))}px "JetBrains Mono", monospace`;
+        ctx.textAlign = 'center';
+        ctx.fillText(item.name || 'Furniture', sx, sy - h / 2);
+    }
+
+    ctx.restore();
 }
 
 /**
@@ -2804,6 +2869,86 @@ function pgInteractWithFurniture(item) {
     pgPlayPlayerAnim(targetAnim, true);
     pgUpdateStatusBadge(`${targetAnim} (${item.statusText})`, '#e8c96e');
     showToast(`✓ ${item.name}: ${item.actionText}`);
+}
+
+/**
+ * Switch dormitory room preset theme (Blacksteel, Penguin Logistics, Warehouse, etc.)
+ */
+async function pgChangeThemePreset(themeId) {
+    if (themeId === 'default') {
+        PG.furniture = [
+            { id: 'chair_01', type: 'chair', name: 'Ghế Chỉ Huy', x: 2950, y: 430, anim: 'Sit', promptText: 'Ngồi ghế (Sit)', actionText: 'Đang ngồi thư giãn', statusText: 'Đang ngồi', hitRadius: 55 },
+            { id: 'bed_01', type: 'bed', name: 'Giường Điều Trị', x: 3520, y: 430, anim: 'Sleep', promptText: 'Nằm ngủ (Sleep)', actionText: 'Đang nằm nghỉ ngơi', statusText: 'Đang ngủ', hitRadius: 90 }
+        ];
+        showToast('✓ Đã tải phòng mặc định Rhodes Island');
+        return;
+    }
+
+    try {
+        let db = window._furnitureDb;
+        if (!db) {
+            const resp = await fetch('furniture_database.json');
+            db = await resp.json();
+            window._furnitureDb = db;
+        }
+
+        const theme = db.themes && db.themes[themeId];
+        if (!theme) {
+            showToast('Chưa tìm thấy chủ đề phòng');
+            return;
+        }
+
+        const originX = 2600;
+        const horizonY = 320;
+        const tileW = 34.0;
+        const tileH = 22.0;
+
+        const newFurniture = [];
+        for (const item of theme.quickSetup) {
+            const gridX = item.gridX || 0;
+            const gridY = item.gridY || 0;
+            const rawW = item.width || 1;
+            const rawD = item.depth || 1;
+            const dir = item.dir || 0;
+            const footW = (dir === 1 ? rawD : rawW);
+            const footD = (dir === 1 ? rawW : rawD);
+
+            let wx = originX + (gridX + footW / 2.0) * tileW;
+            let wy = horizonY + (gridY + footD) * tileH;
+            if (item.location === 'WALL') {
+                wy = horizonY - (gridY * 18.0) - 20.0;
+            } else if (item.location === 'CEILING') {
+                wy = 60.0 + gridY * 12.0;
+            } else if (item.location === 'CARPET') {
+                wy = horizonY + (gridY + footD / 2.0) * tileH;
+            }
+
+            const anim = item.animMapping || 'Relax';
+            newFurniture.push({
+                id: item.furnitureId,
+                name: item.name,
+                x: wx,
+                y: wy,
+                width: rawW,
+                depth: rawD,
+                height: item.height || 1,
+                location: item.location,
+                subType: item.subType,
+                anim: anim,
+                promptText: `${anim === 'Sit' ? 'Ngồi' : (anim === 'Sleep' ? 'Nằm' : 'Tương tác')} (${anim})`,
+                actionText: `Đang tương tác với ${item.name}`,
+                statusText: anim,
+                hitRadius: Math.max(45, (rawW * 18)),
+                imageUrl: item.imageUrl
+            });
+        }
+
+        PG.furniture = newFurniture;
+        showToast(`✓ Đã tải chủ đề: ${theme.name} (${newFurniture.length} vật dụng)`);
+    } catch(err) {
+        console.error('Failed to load theme preset:', err);
+        showToast('Lỗi khi tải dữ liệu phòng');
+    }
 }
 
 function pgUpdateStatusBadge(text, color = '#2ed573') {
