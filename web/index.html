@@ -294,36 +294,6 @@
             opacity: 1;
         }
 
-        /* Floating Emote Bubble */
-        .pg-emote-bubble {
-            position: absolute;
-            transform: translate(-50%, -100%) scale(0);
-            background: rgba(255, 255, 255, 0.95);
-            color: #0f172a;
-            font-weight: 800;
-            font-size: 16px;
-            padding: 6px 14px;
-            border-radius: 18px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-            pointer-events: none;
-            z-index: 30;
-            transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid #00d2ff;
-        }
-        .pg-emote-bubble.show {
-            transform: translate(-50%, -100%) scale(1.1);
-        }
-        .pg-emote-bubble::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 6px solid #00d2ff;
-        }
-
         .pg-hint {
             position: absolute;
             bottom: 12px;
@@ -631,10 +601,8 @@
         <canvas id="pg-canvas"></canvas>
         <!-- Click to move destination pin -->
         <div class="pg-dest-pin" id="pg-dest-pin"></div>
-        <!-- Interaction Emote Bubble -->
-        <div class="pg-emote-bubble" id="pg-emote-bubble">♡</div>
         <!-- Instructions hint -->
-        <div class="pg-hint">💡 Click sàn hoặc dùng <b>W A S D / Phím Mũi Tên</b> để di chuyển · <b>Click nhân vật</b> để tương tác (Interact/Special)</div>
+        <div class="pg-hint">💡 <b>Click nhân vật</b> để chuyển quyền điều khiển · Dùng <b>W A S D / Phím Mũi Tên</b> hoặc click sàn để di chuyển</div>
     </div>
 
     <!-- Bottom HUD Bar -->
@@ -1609,37 +1577,38 @@ async function pgLoadPlayerOperator(op, skinName = '默认') {
  */
 function pgHandleCanvasClick(clickX, clickY) {
     const worldX = clickX + PG.cameraX;
-    const worldY = clickY; // Screen top-down Y
+    const worldY = clickY;
 
-    // Check if clicked on player character bounds
+    // 1. Check if clicked on active player character (trigger interaction)
     const p = PG.player;
     if (p.skel) {
         const pScreenX = p.x - PG.cameraX;
         const pScreenY = p.y;
-        const hitRadiusX = 45 * p.depthScale;
-        const hitHeight  = 130 * p.depthScale;
+        const hitRadiusX = 48 * p.depthScale;
+        const hitHeight  = 135 * p.depthScale;
 
         // Bounding box from feet upwards
-        if (Math.abs(clickX - pScreenX) < hitRadiusX && clickY <= pScreenY + 10 && clickY >= pScreenY - hitHeight) {
+        if (Math.abs(clickX - pScreenX) < hitRadiusX && clickY <= pScreenY + 12 && clickY >= pScreenY - hitHeight) {
             pgTriggerPlayerInteraction();
             return;
         }
     }
 
-    // Check if clicked on any companion character
-    for (const comp of PG.companions) {
+    // 2. Check if clicked on any companion character -> SWITCH CONTROL TO THAT CHARACTER!
+    for (let i = 0; i < PG.companions.length; i++) {
+        const comp = PG.companions[i];
         const cScreenX = comp.x - PG.cameraX;
         const cScreenY = comp.y;
-        const hitRadiusX = 45 * comp.depthScale;
-        const hitHeight  = 130 * comp.depthScale;
+        const hitRadiusX = 48 * comp.depthScale;
+        const hitHeight  = 135 * comp.depthScale;
 
-        if (Math.abs(clickX - cScreenX) < hitRadiusX && clickY <= cScreenY + 10 && clickY >= cScreenY - hitHeight) {
-            pgTriggerCompanionInteraction(comp);
+        if (Math.abs(clickX - cScreenX) < hitRadiusX && clickY <= cScreenY + 12 && clickY >= cScreenY - hitHeight) {
+            pgSwitchControlledCharacter(comp);
             return;
         }
     }
 
-    // Otherwise: Click to Move on the Walkable Floor
+    // 3. Otherwise: Click to Move on the Walkable Floor
     const clampedTargetY = Math.max(PG.FLOOR_MIN_Y, Math.min(PG.FLOOR_MAX_Y, worldY));
     const clampedTargetX = Math.max(80, Math.min(PG.ROOM_W - 80, worldX));
 
@@ -1656,8 +1625,89 @@ function pgHandleCanvasClick(clickX, clickY) {
 }
 
 /**
- * Trigger player interaction (50/50 Interact or Special) with Cooldown Lock & Emote.
- * Strictly uses ♡ or ✨ (no music note ♪).
+ * Switch active player control to another companion character in the room!
+ */
+function pgSwitchControlledCharacter(targetComp) {
+    const idx = PG.companions.indexOf(targetComp);
+    if (idx === -1) return;
+
+    // 1. Remove target from companions list
+    PG.companions.splice(idx, 1);
+
+    // 2. Convert old player into companion
+    const oldPlayerAsComp = {
+        op: PG.player.op,
+        meta: PG.player.meta,
+        skin: PG.player.skin,
+        skel: PG.player.skel,
+        state: PG.player.state,
+        bounds: PG.player.bounds,
+        skelData: PG.player.skelData,
+        x: PG.player.x,
+        y: PG.player.y,
+        targetX: 0,
+        targetY: 0,
+        facing: PG.player.facing,
+        isMoving: false,
+        wanderTimer: 3 + Math.random() * 4,
+        depthScale: PG.player.depthScale,
+        availableAnims: PG.player.availableAnims
+    };
+    if (oldPlayerAsComp.state) {
+        oldPlayerAsComp.state.setAnimation(0, 'Relax', true);
+    }
+    PG.companions.push(oldPlayerAsComp);
+
+    // 3. Promote targetComp to active PG.player
+    PG.player = {
+        op: targetComp.op,
+        meta: targetComp.meta || _assetCache.meta.get(targetComp.op.id),
+        skin: targetComp.skin || '默认',
+        x: targetComp.x,
+        y: targetComp.y,
+        targetX: targetComp.x,
+        targetY: targetComp.y,
+        facing: targetComp.facing || 1,
+        isMoving: false,
+        isInteracting: false,
+        interactLockUntil: 0,
+        interactToken: (PG.player.interactToken || 0) + 1,
+        speed: 170,
+        speedMultiplier: PG.player.speedMultiplier || 1.0,
+        curAnim: 'Relax',
+        skel: targetComp.skel,
+        state: targetComp.state,
+        bounds: targetComp.bounds,
+        skelData: targetComp.skelData,
+        depthScale: targetComp.depthScale,
+        availableAnims: targetComp.availableAnims || []
+    };
+
+    // 4. Update HUD
+    document.getElementById('pg-badge-name').textContent = `${PG.player.op.name_cn} (${PG.player.op.name_en})`;
+    document.getElementById('pg-badge-skin').textContent = PG.player.skin;
+    pgUpdateStatusBadge('Relax (Đang điều khiển)', '#00d2ff');
+    pgBuildSkinSelect(PG.player.meta);
+    pgBuildAnimButtons(PG.player.availableAnims);
+
+    // 5. Trigger cheerful greeting/interaction on the newly selected character!
+    const anims = PG.player.availableAnims;
+    const switchAnim = anims.includes('Interact') ? 'Interact' : (anims.includes('Special') ? 'Special' : 'Relax');
+    if (switchAnim !== 'Relax') {
+        pgPlayPlayerAnim(switchAnim, false);
+        setTimeout(() => {
+            if (!PG.player.isMoving) {
+                pgPlayPlayerAnim('Relax', true);
+                pgUpdateStatusBadge('Relax (Đứng yên)', '#2ed573');
+            }
+        }, 1200);
+    }
+
+    showToast(`🎮 Chuyển điều khiển: ${PG.player.op.name_cn} (${PG.player.op.name_en})`);
+}
+
+/**
+ * Trigger player interaction (50/50 Interact or Special) with Cooldown Lock.
  */
 function pgTriggerPlayerInteraction() {
     const p = PG.player;
@@ -1677,28 +1727,18 @@ function pgTriggerPlayerInteraction() {
 
     const anims = p.availableAnims;
     let chosenAnim = 'Interact';
-    let emote = '♡';
 
     const hasSpecial  = anims.includes('Special');
     const hasInteract = anims.includes('Interact');
 
     if (hasSpecial && hasInteract) {
-        if (Math.random() < 0.5) {
-            chosenAnim = 'Special';
-            emote = '✨';
-        } else {
-            chosenAnim = 'Interact';
-            emote = '♡';
-        }
+        chosenAnim = Math.random() < 0.5 ? 'Special' : 'Interact';
     } else if (hasSpecial) {
         chosenAnim = 'Special';
-        emote = '✨';
     } else if (hasInteract) {
         chosenAnim = 'Interact';
-        emote = '♡';
     } else {
         chosenAnim = anims[0] || 'Default';
-        emote = '♡';
     }
 
     // Play animation
@@ -1706,8 +1746,6 @@ function pgTriggerPlayerInteraction() {
     const duration = (entry && entry.animation) ? Math.max(entry.animation.duration, 1.2) : 1.5;
     p.interactLockUntil = now + (duration * 1000) / p.speedMultiplier;
 
-    // Show floating emote bubble over head
-    pgShowEmote(emote, p.x, p.y, p.depthScale);
     pgUpdateStatusBadge(`${chosenAnim} (Tương tác)`, '#fdcb6e');
 
     // Return to Relax when finished (if token matches and not moving)
@@ -1729,7 +1767,6 @@ function pgTriggerCompanionInteraction(comp) {
     const chosenAnim = anims.includes('Interact') ? 'Interact' : (anims.includes('Special') ? 'Special' : 'Default');
     comp.state.setAnimation(0, chosenAnim, false);
     comp.state.addAnimation(0, 'Relax', true, 0);
-    pgShowEmote(chosenAnim === 'Special' ? '✨' : '♡', comp.x, comp.y, comp.depthScale);
 }
 
 function pgPlayPlayerAnim(animName, loop = true) {
@@ -2096,6 +2133,30 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
             ctx.beginPath();
             ctx.ellipse(sx, sy, 22 * c.depthScale, 6.5 * c.depthScale, 0, 0, Math.PI * 2);
             ctx.fill();
+
+            // Active Controlled Character High-Tech Glowing Indicator Ring
+            if (c === PG.player) {
+                ctx.save();
+                const pulse = 1.0 + Math.sin(performance.now() * 0.006) * 0.08;
+                ctx.shadowColor = '#00d2ff';
+                ctx.shadowBlur = 10;
+                ctx.strokeStyle = '#00d2ff';
+                ctx.lineWidth = 2.2;
+                ctx.beginPath();
+                ctx.ellipse(sx, sy, 42 * c.depthScale * pulse, 14 * c.depthScale * pulse, 0, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Small tactical top chevron pointing down above head
+                ctx.fillStyle = '#00d2ff';
+                const headY = sy - (120 * c.depthScale);
+                ctx.beginPath();
+                ctx.moveTo(sx, headY - 10);
+                ctx.lineTo(sx - 5, headY - 18);
+                ctx.lineTo(sx + 5, headY - 18);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
         }
     }
 }
@@ -2114,28 +2175,6 @@ function pgShowDestPin(screenX, screenY) {
 function pgHideDestPin() {
     const pin = document.getElementById('pg-dest-pin');
     if (pin) pin.classList.remove('active');
-}
-
-/**
- * Show floating emote bubble over Chibi's head.
- */
-let _emoteTimer;
-function pgShowEmote(text, worldX, worldY, scale) {
-    const el = document.getElementById('pg-emote-bubble');
-    if (!el) return;
-
-    const screenX = worldX - PG.cameraX;
-    const screenY = worldY - (115 * scale);
-
-    el.textContent = text;
-    el.style.left = `${screenX}px`;
-    el.style.top  = `${screenY}px`;
-    el.classList.add('show');
-
-    clearTimeout(_emoteTimer);
-    _emoteTimer = setTimeout(() => {
-        el.classList.remove('show');
-    }, 1400);
 }
 
 function pgUpdateStatusBadge(text, color = '#2ed573') {
