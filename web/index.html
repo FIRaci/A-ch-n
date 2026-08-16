@@ -602,7 +602,7 @@
         <!-- Click to move destination pin -->
         <div class="pg-dest-pin" id="pg-dest-pin"></div>
         <!-- Instructions hint -->
-        <div class="pg-hint">💡 <b>Click nhân vật</b> để chuyển quyền điều khiển · Dùng <b>W A S D / Phím Mũi Tên</b> hoặc click sàn để di chuyển</div>
+        <div class="pg-hint">💡 <b>Click nhân vật</b> để chuyển điều khiển · <b>W A S D / Phím Mũi Tên</b> di chuyển · <b>Phím Space (Cách)</b> để dừng lại</div>
     </div>
 
     <!-- Bottom HUD Bar -->
@@ -899,8 +899,17 @@ async function loadSpineAssets(glCtx, prefix, fileRel, scale = 0.5, localUrls = 
     }
 
     const atlas = new spine.TextureAtlas(atlasText, (_path) => {
-        return new spine.webgl.GLTexture(glCtx, pngImg);
+        const tex = new spine.webgl.GLTexture(glCtx, pngImg, true);
+        tex.setFilters(spine.TextureFilter.MipMapLinearLinear, spine.TextureFilter.Linear);
+        return tex;
     });
+    if (atlas.pages) {
+        atlas.pages.forEach(p => {
+            if (p.texture) {
+                p.texture.setFilters(spine.TextureFilter.MipMapLinearLinear, spine.TextureFilter.Linear);
+            }
+        });
+    }
 
     const loader   = new spine.AtlasAttachmentLoader(atlas);
     const reader   = new spine.SkeletonBinary(loader);
@@ -998,12 +1007,15 @@ function startRenderLoop(canvas) {
     function loop() {
         if (!skeleton || !animState || !renderer || !gl) return;
 
-        // Resize canvas to match CSS layout
-        const cw = canvas.clientWidth  || canvas.width;
-        const ch = Math.max(canvas.clientHeight || canvas.height, 200);
-        if (canvas.width !== cw || canvas.height !== ch) {
-            canvas.width  = cw;
-            canvas.height = ch;
+        // Resize canvas to match CSS layout with High-DPI support
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const cw = canvas.clientWidth  || 600;
+        const ch = Math.max(canvas.clientHeight || 400, 200);
+        const realW = Math.floor(cw * dpr);
+        const realH = Math.floor(ch * dpr);
+        if (canvas.width !== realW || canvas.height !== realH) {
+            canvas.width  = realW;
+            canvas.height = realH;
         }
 
         // Advance time
@@ -1017,16 +1029,13 @@ function startRenderLoop(canvas) {
             skeleton.updateWorldTransform();
         }
 
-        // ── Camera: comfortable natural framing (full body from ears to boots) ──
         // ── Camera: comfortable natural framing (always centered on skeleton) ──
-        const vpW = canvas.width;
-        const vpH = canvas.height;
-        renderer.camera.viewportWidth  = vpW;
-        renderer.camera.viewportHeight = vpH;
+        renderer.camera.viewportWidth  = cw;
+        renderer.camera.viewportHeight = ch;
 
         // Scale primarily by height so vertical centering is ALWAYS preserved even on narrow viewports/F12
-        const baseZoomY = (bounds.h || 180) / (vpH * 0.48);
-        const baseZoomX = (bounds.w || 140) / (vpW * 0.72);
+        const baseZoomY = (bounds.h || 180) / (ch * 0.48);
+        const baseZoomX = (bounds.w || 140) / (cw * 0.72);
         const baseZoom  = Math.max(baseZoomY, baseZoomX);
 
         // Apply pan translation in world space (scaled with zoom)
@@ -1037,7 +1046,7 @@ function startRenderLoop(canvas) {
         // ── Render ──
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.viewport(0, 0, vpW, vpH);
+        gl.viewport(0, 0, realW, realH);
 
         renderer.begin();
         renderer.drawSkeleton(skeleton, true);   // premultipliedAlpha = true (AK assets)
@@ -1106,7 +1115,7 @@ async function renderOperator(op, opMeta, skinName, modelType, animName) {
     const canvas  = document.getElementById('spine-canvas');
 
     if (!gl) {
-        gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false });
+        gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: true, powerPreference: 'high-performance' });
         if (!gl) throw new Error('WebGL không được hỗ trợ trong trình duyệt này!');
         renderer = new spine.webgl.SceneRenderer(canvas, gl);
     }
@@ -1419,7 +1428,7 @@ async function initPlayground() {
 
     // Init WebGL Context for Playground
     if (!PG.gl) {
-        PG.gl = PG.canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false });
+        PG.gl = PG.canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: true, powerPreference: 'high-performance' });
         if (PG.gl) {
             PG.renderer = new spine.webgl.SceneRenderer(PG.canvas, PG.gl);
         }
@@ -1465,6 +1474,24 @@ async function initPlayground() {
         // Keyboard Controls
         window.addEventListener('keydown', (e) => {
             const k = e.key;
+
+            // Spacebar: Stop moving immediately
+            if (e.code === 'Space' || k === ' ') {
+                e.preventDefault();
+                const p = PG.player;
+                p.interactToken = (p.interactToken || 0) + 1;
+                p.isMoving = false;
+                p.isInteracting = false;
+                p.interactLockUntil = 0;
+                p.targetX = p.x;
+                p.targetY = p.y;
+                pgHideDestPin();
+                const idleAnim = p.availableAnims.includes('Relax') ? 'Relax' : 'Default';
+                pgPlayPlayerAnim(idleAnim, true);
+                pgUpdateStatusBadge(`${idleAnim} (Đã dừng)`, '#2ed573');
+                return;
+            }
+
             if (k in PG.keys) {
                 PG.keys[k] = true;
                 // If pressing movement key, cancel manual click target and move directly
@@ -1800,15 +1827,19 @@ function startPlaygroundLoop() {
         const gl     = PG.gl;
         if (!canvas || !gl || !PG.renderer) return;
 
-        // Resize canvas if needed
-        const cw = Math.floor(canvas.clientWidth  || canvas.width || 900);
-        const ch = Math.floor(canvas.clientHeight || canvas.height || 620);
-        if (canvas.width !== cw || canvas.height !== ch) {
-            canvas.width  = cw;
-            canvas.height = ch;
+        // Resize canvas if needed (with devicePixelRatio for ultra-smooth HD rendering)
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const cw = Math.floor(canvas.clientWidth  || 900);
+        const ch = Math.floor(canvas.clientHeight || 620);
+        const realW = Math.floor(cw * dpr);
+        const realH = Math.floor(ch * dpr);
+
+        if (canvas.width !== realW || canvas.height !== realH) {
+            canvas.width  = realW;
+            canvas.height = realH;
             if (PG.bgCanvas) {
-                PG.bgCanvas.width  = cw;
-                PG.bgCanvas.height = ch;
+                PG.bgCanvas.width  = realW;
+                PG.bgCanvas.height = realH;
             }
             PG.ROOM_H = ch;
         }
@@ -1831,7 +1862,10 @@ function startPlaygroundLoop() {
             PG.bgCtx = PG.bgCanvas.getContext('2d');
         }
         if (PG.bgCtx) {
+            PG.bgCtx.save();
+            PG.bgCtx.scale(dpr, dpr);
             pgDrawSciFiRoomBackground(PG.bgCtx, cw, ch);
+            PG.bgCtx.restore();
         }
 
         // ── 5. Clear WebGL Canvas with Transparent Alpha ──
@@ -1850,7 +1884,7 @@ function startPlaygroundLoop() {
         PG.renderer.camera.position.y = ch / 2;
         PG.renderer.camera.zoom = 1.0;
 
-        gl.viewport(0, 0, cw, ch);
+        gl.viewport(0, 0, realW, realH);
 
         PG.renderer.begin();
         for (const char of allChars) {
