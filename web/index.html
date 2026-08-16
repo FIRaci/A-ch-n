@@ -35,9 +35,10 @@
             --r3:#7799bb;       /* 3★ steel blue */
             --rad:4px;          /* AK uses sharp corners */
             --rsm:2px;
-            /* AK red accent for secondary actions */
-            --ak-red:#e02020;
-            --ak-red-dim:rgba(224,32,32,0.18);
+            /* AK tactical cyan/blue accent */
+            --ak-blue:#00d2ff;
+            --ak-blue-dim:rgba(0,210,255,0.16);
+            --ak-blue-hover:#38bdf8;
         }
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
@@ -51,17 +52,17 @@
             position:sticky;top:0;z-index:100}
         /* AK diagonal accent stripe on header left edge */
         header::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
-            background:var(--ak-red)}
+            background:var(--ak-blue)}
         .brand{display:flex;align-items:center;gap:12px}
-        .brand-logo{width:38px;height:38px;border-radius:0;background:#e02020;
+        .brand-logo{width:38px;height:38px;border-radius:0;background:linear-gradient(135deg,#00d2ff,#0284c7);
             display:flex;align-items:center;justify-content:center;clip-path:polygon(0 0,100% 0,85% 100%,0 100%)}
         .brand h1{font-size:17px;font-weight:800;letter-spacing:.5px;color:#ffffff;text-transform:uppercase}
-        .brand-sub{font-size:9px;color:var(--mt);text-transform:uppercase;letter-spacing:2px;font-weight:700}
+        .brand-sub{font-size:9px;color:var(--ak-blue);text-transform:uppercase;letter-spacing:2px;font-weight:700}
         .nav{display:flex;gap:2px;background:var(--bg2);padding:3px;border-radius:0;border:1px solid var(--border)}
         .tab-btn{background:transparent;border:none;color:var(--mt);padding:7px 16px;font-size:11px;font-weight:700;
             border-radius:0;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.8px}
         .tab-btn:hover{color:var(--text);background:rgba(255,255,255,.06)}
-        .tab-btn.active{background:var(--ak-red);color:#fff;box-shadow:none}
+        .tab-btn.active{background:var(--ak-blue);color:#0a0d14;box-shadow:0 0 14px rgba(0,210,255,0.3)}
 
         /* ── Main layout ─────────────────────────────────── */
         main{flex:1;padding:18px 26px;max-width:1700px;margin:0 auto;width:100%;
@@ -151,8 +152,8 @@
             border-radius:0;font-size:11px;font-weight:700;cursor:pointer;
             display:inline-flex;align-items:center;gap:6px;transition:all .15s;text-transform:uppercase;letter-spacing:.5px}
         .btn:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35)}
-        .btn-ac{background:var(--ak-red);border-color:var(--ak-red);color:#fff}
-        .btn-ac:hover{background:#c01818;border-color:#c01818;transform:none;opacity:1}
+        .btn-ac{background:var(--ak-blue);border-color:var(--ak-blue);color:#0a0d14;font-weight:800}
+        .btn-ac:hover{background:var(--ak-blue-hover);border-color:var(--ak-blue-hover);color:#0a0d14;transform:none;opacity:1}
         .slider-wrap{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mt)}
         .slider-wrap input[type=range]{accent-color:#fff;cursor:pointer;width:100px}
 
@@ -178,7 +179,7 @@
             background: #0e0e0e;
             border-radius: 0;
             border: 1px solid var(--border);
-            border-left: 2px solid var(--ak-red);
+            border-left: 2px solid var(--ak-blue);
             padding: 14px;
             flex-direction: column;
             gap: 12px;
@@ -194,7 +195,7 @@
             background: #141414;
             border: 1px solid var(--border);
             border-radius: 0;
-            border-left: 2px solid var(--ak-red);
+            border-left: 2px solid var(--ak-blue);
             padding: 10px 14px;
         }
         .pg-search-wrap {
@@ -305,7 +306,7 @@
             transform: translateX(-50%);
             background: rgba(14, 14, 14, 0.88);
             border: 1px solid rgba(255,255,255,.12);
-            border-left: 2px solid var(--ak-red);
+            border-left: 2px solid var(--ak-blue);
             color: #aaaaaa;
             padding: 5px 16px;
             border-radius: 0;
@@ -416,7 +417,7 @@
         .pg-modal-card {
             background: #141414;
             border: 1px solid rgba(255,255,255,.14);
-            border-top: 2px solid var(--ak-red);
+            border-top: 2px solid var(--ak-blue);
             border-radius: 0;
             width: 860px;
             max-width: 96vw;
@@ -482,15 +483,15 @@
             border-left: 2px solid #fff;
         }
         .pg-comp-card.in-room {
-            border-color: var(--ak-red);
-            background: var(--ak-red-dim);
+            border-color: var(--ak-blue);
+            background: var(--ak-blue-dim);
         }
         .pg-comp-card.in-room::after {
             content: '✓';
             position: absolute;
             top: 4px; right: 6px;
             font-size: 10px;
-            color: var(--ak-red);
+            color: var(--ak-blue);
             font-weight: 800;
         }
         .pg-comp-card .op-av {
