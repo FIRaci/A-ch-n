@@ -248,7 +248,7 @@
         .pg-viewport-container {
             position: relative;
             width: 100%;
-            height: 540px;
+            height: 620px;
             border-radius: var(--rsm);
             overflow: hidden;
             border: 1px solid var(--border);
@@ -382,6 +382,103 @@
         .pg-anim-btn:hover { background: rgba(0, 210, 255, 0.15); border-color: var(--ac); }
         .pg-anim-btn.active { background: var(--ac); color: #0a0d14; border-color: var(--ac); }
 
+        /* Modal Backdrop & Container */
+        .pg-modal-backdrop {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 15, 26, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity .25s ease;
+        }
+        .pg-modal-backdrop.show {
+            display: flex;
+            opacity: 1;
+        }
+        .pg-modal-card {
+            background: #111622;
+            border: 1px solid var(--border);
+            border-radius: var(--rad);
+            width: 720px;
+            max-width: 95vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            transform: scale(0.95);
+            transition: transform .25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .pg-modal-backdrop.show .pg-modal-card {
+            transform: scale(1);
+        }
+        .pg-modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .pg-modal-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pg-modal-body {
+            padding: 16px 20px;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .pg-comp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .pg-comp-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--rsm);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .pg-comp-card:hover {
+            border-color: var(--ac);
+            background: rgba(0, 210, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 210, 255, 0.15);
+        }
+        .pg-comp-card .op-av {
+            width: 44px;
+            height: 44px;
+            font-size: 18px;
+        }
+        .pg-modal-footer {
+            padding: 14px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
         .toast{position:fixed;bottom:22px;right:22px;background:#1a2236;color:#fff;padding:11px 18px;border-radius:8px;border-left:4px solid var(--ac);box-shadow:0 10px 30px rgba(0,0,0,.5);display:flex;align-items:center;gap:9px;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1)}
         .toast.show{transform:translateY(0);opacity:1}
     </style>
@@ -510,16 +607,17 @@
     <div class="pg-top-bar">
         <div class="pg-search-wrap">
             <i data-lucide="search" size="15"></i>
-            <input type="text" id="pg-search-input" placeholder="Tìm & chuyển nhân vật (Amiya, Surtr, Chen...)" oninput="pgSearchOps(this.value)">
+            <input type="text" id="pg-search-input" placeholder="Tìm & chuyển nhân vật chính (Amiya, Surtr...)" oninput="pgSearchOps(this.value)">
             <div class="pg-search-results" id="pg-search-results"></div>
         </div>
         <div class="pg-status-badge">
             <span class="badge" id="pg-badge-name">阿米娅 (Amiya)</span>
             <span class="badge" id="pg-badge-skin" style="color:#00d2ff">默认</span>
             <span class="badge" id="pg-badge-state" style="color:#2ed573">Relax (Đứng yên)</span>
+            <span class="badge" id="pg-badge-comp-count" style="color:#a5b4fc">Đồng đội: 0/16</span>
         </div>
         <div class="pg-action-group">
-            <button class="btn btn-ac" onclick="pgSpawnCompanion()"><i data-lucide="user-plus" size="13"></i> Gọi Đồng Đội (+)</button>
+            <button class="btn btn-ac" onclick="pgOpenCompanionModal()"><i data-lucide="user-plus" size="13"></i> Chọn Đồng Đội (+)</button>
             <button class="btn" id="pg-cam-btn" onclick="pgToggleCameraFollow()"><i data-lucide="video" size="13"></i> Camera: Bám theo</button>
             <button class="btn" onclick="pgResetRoom()"><i data-lucide="rotate-ccw" size="13"></i> Căn giữa</button>
         </div>
@@ -556,6 +654,45 @@
             <div class="slider-wrap">
                 <input type="range" id="pg-speed-sl" min="0.5" max="2.0" step="0.1" value="1.0" oninput="pgSetSpeed(this.value)">
                 <span id="pg-speed-lbl" style="min-width:30px">x1.0</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════ COMPANION SELECTION MODAL ══════════════ -->
+<div class="pg-modal-backdrop" id="pg-companion-modal" onclick="pgHandleModalBackdropClick(event)">
+    <div class="pg-modal-card">
+        <div class="pg-modal-header">
+            <div class="pg-modal-title">
+                <i data-lucide="users" size="18" color="#00d2ff"></i> Chọn Đồng Đội Vào Phòng Sân Chơi
+            </div>
+            <button class="btn" onclick="pgCloseCompanionModal()" style="padding:4px 8px"><i data-lucide="x" size="16"></i></button>
+        </div>
+        <div class="pg-modal-body">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                <div class="search-box" style="flex:1;min-width:200px">
+                    <i data-lucide="search" size="14"></i>
+                    <input type="text" id="pg-comp-search" placeholder="Tìm kiếm tên Trung, Anh, hoặc ID..." oninput="pgFilterCompanionModal()">
+                </div>
+                <div class="filter-tags" style="margin:0">
+                    <button class="tag-btn active" onclick="pgSetCompFilter('ALL',this)">Tất cả</button>
+                    <button class="tag-btn" onclick="pgSetCompFilter(6,this)">6 ★</button>
+                    <button class="tag-btn" onclick="pgSetCompFilter(5,this)">5 ★</button>
+                    <button class="tag-btn" onclick="pgSetCompFilter(4,this)">4 ★</button>
+                    <button class="tag-btn" onclick="pgSetCompFilter(3,this)">3 ★</button>
+                </div>
+            </div>
+            <div class="pg-comp-grid" id="pg-comp-grid">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+        <div class="pg-modal-footer">
+            <div style="font-size:12px;color:var(--mt)">
+                Đang có: <b id="pg-modal-comp-count" style="color:var(--ac)">0 / 16</b> đồng đội trong phòng
+            </div>
+            <div style="display:flex;gap:8px">
+                <button class="btn" onclick="pgDismissAllCompanions()" style="color:#ff7675"><i data-lucide="user-x" size="13"></i> Thu hồi tất cả</button>
+                <button class="btn btn-ac" onclick="pgSpawnRandomCompanion()"><i data-lucide="shuffle" size="13"></i> Gọi ngẫu nhiên</button>
             </div>
         </div>
     </div>
@@ -1233,7 +1370,7 @@ async function loadLocalFilesList() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   2.5D CHIBI PLAYGROUND ENGINE (Rhodes Island Sci-Fi White Room)
+   2.5D CHIBI PLAYGROUND ENGINE (Massive Rhodes Island White Room)
 ═══════════════════════════════════════════════════════════ */
 const PG = {
     canvas: null,
@@ -1244,12 +1381,12 @@ const PG = {
     rafId: null,
     lastTs: null,
 
-    // World & Room Dimensions
-    ROOM_W: 3200,
-    ROOM_H: 600,
+    // World & Room Dimensions (Massive 6,400px Room)
+    ROOM_W: 6400,
+    ROOM_H: 620,
     HORIZON_Y: 230,      // Horizon line separating back wall and floor
-    FLOOR_MIN_Y: 260,    // Top walkable bound (far in room)
-    FLOOR_MAX_Y: 530,    // Bottom walkable bound (near foreground)
+    FLOOR_MIN_Y: 250,    // Top walkable bound (far depth in room)
+    FLOOR_MAX_Y: 580,    // Bottom walkable bound (foreground)
 
     // Camera
     cameraX: 0,
@@ -1264,10 +1401,10 @@ const PG = {
         op: null,
         meta: null,
         skin: '默认',
-        x: 1600,
-        y: 400,
-        targetX: 1600,
-        targetY: 400,
+        x: 3200,
+        y: 420,
+        targetX: 3200,
+        targetY: 420,
         facing: 1,           // 1 = facing right, -1 = facing left
         isMoving: false,
         isInteracting: false,
@@ -1283,12 +1420,15 @@ const PG = {
         availableAnims: []
     },
 
-    // Companion Chibis wandering in the room
+    // Companion Chibis wandering in the room (Max 16)
+    MAX_COMPANIONS: 16,
     companions: [],
 
     // Key inputs
     keys: { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false }
 };
+
+let pgCompFilterVal = 'ALL';
 
 /**
  * Initialize or switch to the 2.5D Playground tab.
@@ -1301,7 +1441,7 @@ async function initPlayground() {
 
     // Set high-DPI canvas dimensions
     const cw = container.clientWidth || 900;
-    const ch = container.clientHeight || 540;
+    const ch = container.clientHeight || 620;
     PG.canvas.width   = cw;
     PG.canvas.height  = ch;
     PG.bgCanvas.width = cw;
@@ -1375,9 +1515,13 @@ async function initPlayground() {
         window.addEventListener('resize', () => {
             if (PG.canvas && document.getElementById('tab-game').classList.contains('vis')) {
                 const ncw = container.clientWidth || 900;
-                const nch = container.clientHeight || 540;
+                const nch = container.clientHeight || 620;
                 PG.canvas.width = ncw;
                 PG.canvas.height = nch;
+                if (PG.bgCanvas) {
+                    PG.bgCanvas.width = ncw;
+                    PG.bgCanvas.height = nch;
+                }
                 PG.ROOM_H = nch;
             }
         });
@@ -1392,6 +1536,8 @@ async function initPlayground() {
     // Center camera on player
     PG.cameraX = Math.max(0, Math.min(PG.ROOM_W - PG.canvas.width, PG.player.x - PG.canvas.width / 2));
     PG.targetCameraX = PG.cameraX;
+
+    pgUpdateCompanionCountBadge();
 
     // Start 60 FPS Playground Render & Physics Loop
     startPlaygroundLoop();
@@ -1507,6 +1653,7 @@ function pgHandleCanvasClick(clickX, clickY) {
 
 /**
  * Trigger player interaction (50/50 Interact or Special) with Cooldown Lock & Emote.
+ * Strictly uses ♡ or ✨ (no music note ♪).
  */
 function pgTriggerPlayerInteraction() {
     const p = PG.player;
@@ -1534,17 +1681,17 @@ function pgTriggerPlayerInteraction() {
             emote = '✨';
         } else {
             chosenAnim = 'Interact';
-            emote = Math.random() < 0.5 ? '♡' : '♪';
+            emote = '♡';
         }
     } else if (hasSpecial) {
         chosenAnim = 'Special';
         emote = '✨';
     } else if (hasInteract) {
         chosenAnim = 'Interact';
-        emote = Math.random() < 0.5 ? '♡' : '♪';
+        emote = '♡';
     } else {
         chosenAnim = anims[0] || 'Default';
-        emote = '!';
+        emote = '♡';
     }
 
     // Play animation
@@ -1572,7 +1719,7 @@ function pgTriggerCompanionInteraction(comp) {
     const chosenAnim = anims.includes('Interact') ? 'Interact' : (anims.includes('Special') ? 'Special' : 'Default');
     comp.state.setAnimation(0, chosenAnim, false);
     comp.state.addAnimation(0, 'Relax', true, 0);
-    pgShowEmote('♡', comp.x, comp.y, comp.depthScale);
+    pgShowEmote(chosenAnim === 'Special' ? '✨' : '♡', comp.x, comp.y, comp.depthScale);
 }
 
 function pgPlayPlayerAnim(animName, loop = true) {
@@ -1608,7 +1755,7 @@ function startPlaygroundLoop() {
 
         // Resize canvas if needed
         const cw = Math.floor(canvas.clientWidth  || canvas.width || 900);
-        const ch = Math.floor(canvas.clientHeight || canvas.height || 540);
+        const ch = Math.floor(canvas.clientHeight || canvas.height || 620);
         if (canvas.width !== cw || canvas.height !== ch) {
             canvas.width  = cw;
             canvas.height = ch;
@@ -1750,7 +1897,7 @@ function pgUpdateCompanions(delta) {
             // Pick a new random target point every 4-8 seconds
             comp.wanderTimer = 4 + Math.random() * 5;
             if (Math.random() < 0.65) {
-                comp.targetX = comp.x + (Math.random() - 0.5) * 500;
+                comp.targetX = comp.x + (Math.random() - 0.5) * 600;
                 comp.targetY = PG.FLOOR_MIN_Y + Math.random() * (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y);
                 comp.isMoving = true;
                 comp.state.setAnimation(0, 'Move', true);
@@ -1782,7 +1929,7 @@ function pgUpdateCompanions(delta) {
 }
 
 /**
- * Draw the Minimalist Sci-Fi Rhodes Island White Room Background.
+ * Draw the Minimalist Sci-Fi Rhodes Island White Room Background (Expanded 6,400px Multi-Sector).
  */
 function pgDrawSciFiRoomBackground(ctx, cw, ch) {
     ctx.clearRect(0, 0, cw, ch);
@@ -1798,7 +1945,7 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
     ctx.fillStyle = wallGrad;
     ctx.fillRect(0, 0, cw, horizon);
 
-    // Architectural Vertical Seams every 360px in world coords
+    // Architectural Vertical Seams every 360px across the entire 6,400px world
     ctx.strokeStyle = 'rgba(148, 163, 184, 0.5)';
     ctx.lineWidth = 1.5;
     const startSeam = Math.floor(camX / 360) * 360;
@@ -1838,30 +1985,37 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
     ctx.fillStyle = glowGrad;
     ctx.fillRect(0, 12, cw, 88);
 
-    // Rhodes Island Center Watermark Emblem
-    const centerSx = 1600 - camX;
-    if (centerSx > -300 && centerSx < cw + 300) {
-        ctx.save();
-        ctx.strokeStyle = 'rgba(100, 116, 139, 0.35)';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(centerSx, 38);
-        ctx.lineTo(centerSx - 65, 165);
-        ctx.lineTo(centerSx + 65, 165);
-        ctx.closePath();
-        ctx.stroke();
-        ctx.fillStyle = 'rgba(100, 116, 139, 0.08)';
-        ctx.fill();
+    // ── Multi-Sector Architectural Emblems across 6,400px ──
+    const sectors = [
+        { x: 1600, title: 'SEC-02 // R&D DIVISION', code: 'BIOMEDICAL LAB 04' },
+        { x: 3200, title: 'RHODES ISLAND', code: 'SEC-01 // COMMAND CENTER' },
+        { x: 4800, title: 'SEC-03 // ENGINEERING', code: 'WORKSHOP & FABRICATION' }
+    ];
 
-        // Inner RI logo text
-        ctx.fillStyle = 'rgba(100, 116, 139, 0.5)';
-        ctx.font = 'bold 13px system-ui, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('RHODES ISLAND', centerSx, 125);
-        ctx.font = '10px monospace';
-        ctx.fillText('SEC-01 // BASE LAB', centerSx, 142);
-        ctx.restore();
-    }
+    sectors.forEach(sec => {
+        const secSx = sec.x - camX;
+        if (secSx > -300 && secSx < cw + 300) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(100, 116, 139, 0.35)';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(secSx, 38);
+            ctx.lineTo(secSx - 65, 165);
+            ctx.lineTo(secSx + 65, 165);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(100, 116, 139, 0.08)';
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(100, 116, 139, 0.55)';
+            ctx.font = 'bold 13px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(sec.title, secSx, 125);
+            ctx.font = '10px monospace';
+            ctx.fillText(sec.code, secSx, 142);
+            ctx.restore();
+        }
+    });
 
     // ── 2. Perspective Floor (Clean White Sci-Fi Tiles with Depth) ──
     const floorGrad = ctx.createLinearGradient(0, horizon, 0, ch);
@@ -1958,7 +2112,7 @@ function pgShowEmote(text, worldX, worldY, scale) {
     if (!el) return;
 
     const screenX = worldX - PG.cameraX;
-    const screenY = worldY - (175 * scale);
+    const screenY = worldY - (115 * scale);
 
     el.textContent = text;
     el.style.left = `${screenX}px`;
@@ -1977,6 +2131,14 @@ function pgUpdateStatusBadge(text, color = '#2ed573') {
         el.textContent = text;
         el.style.color = color;
     }
+}
+
+function pgUpdateCompanionCountBadge() {
+    const count = PG.companions.length;
+    const badge = document.getElementById('pg-badge-comp-count');
+    if (badge) badge.textContent = `Đồng đội: ${count}/${PG.MAX_COMPANIONS}`;
+    const modalCount = document.getElementById('pg-modal-comp-count');
+    if (modalCount) modalCount.textContent = `${count} / ${PG.MAX_COMPANIONS}`;
 }
 
 /**
@@ -2043,40 +2205,104 @@ function pgToggleCameraFollow() {
 }
 
 function pgResetRoom() {
-    PG.player.x = 1600;
-    PG.player.y = 400;
-    PG.player.targetX = 1600;
-    PG.player.targetY = 400;
+    PG.player.x = 3200;
+    PG.player.y = 420;
+    PG.player.targetX = 3200;
+    PG.player.targetY = 420;
     PG.player.isMoving = false;
-    PG.cameraX = 1600 - (PG.canvas?.width || 900) / 2;
+    PG.cameraX = 3200 - (PG.canvas?.width || 900) / 2;
     pgPlayPlayerAnim('Relax', true);
     pgUpdateStatusBadge('Relax (Đứng yên)', '#2ed573');
     pgHideDestPin();
     showToast('✓ Đã đưa nhân vật về giữa phòng');
 }
 
-/**
- * Spawn a companion Chibi wandering in the room!
- */
-async function pgSpawnCompanion() {
-    if (PG.companions.length >= 4) {
-        showToast('⚠ Đã đạt tối đa 4 đồng đội trong phòng');
+/* ═══════════════════════════════════════════════════════════
+   COMPANION SELECTION MODAL & SPAWNER
+═══════════════════════════════════════════════════════════ */
+function pgOpenCompanionModal() {
+    const modal = document.getElementById('pg-companion-modal');
+    if (!modal) return;
+    modal.classList.add('show');
+    pgUpdateCompanionCountBadge();
+    pgRenderCompanionModalGrid();
+}
+
+function pgCloseCompanionModal() {
+    document.getElementById('pg-companion-modal')?.classList.remove('show');
+}
+
+function pgHandleModalBackdropClick(e) {
+    if (e.target.id === 'pg-companion-modal') {
+        pgCloseCompanionModal();
+    }
+}
+
+function pgSetCompFilter(val, btn) {
+    pgCompFilterVal = val;
+    document.querySelectorAll('#pg-companion-modal .tag-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    pgRenderCompanionModalGrid();
+}
+
+function pgFilterCompanionModal() {
+    pgRenderCompanionModalGrid();
+}
+
+function pgRenderCompanionModalGrid() {
+    const grid = document.getElementById('pg-comp-grid');
+    if (!grid) return;
+
+    const q = (document.getElementById('pg-comp-search')?.value || '').toLowerCase().trim();
+    const filtered = OPS.filter(op => {
+        const matchQuery = !q || op.name_cn.toLowerCase().includes(q) || op.name_en.toLowerCase().includes(q) || op.id.toLowerCase().includes(q);
+        if (!matchQuery) return false;
+        if (pgCompFilterVal === 'ALL') return true;
+        return op.rarity === pgCompFilterVal;
+    });
+
+    grid.innerHTML = '';
+    if (filtered.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;padding:24px;text-align:center;color:var(--mt);font-size:12px">Không tìm thấy nhân vật nào phù hợp</div>';
         return;
     }
 
-    // Pick a random operator from the list
-    const randomOp = OPS[Math.floor(Math.random() * OPS.length)];
-    showToast(`Đang gọi đồng đội: ${randomOp.name_cn}...`);
+    filtered.slice(0, 60).forEach(op => {
+        const card = document.createElement('div');
+        card.className = 'pg-comp-card';
+        card.innerHTML = `
+            <div class="op-av s${Math.min(op.rarity, 6)}">${op.name_cn.charAt(0)}</div>
+            <div style="font-weight:700;font-size:12px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%">${op.name_cn}</div>
+            <div style="font-size:10px;color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%">${op.name_en}</div>
+            <span style="font-size:10px;color:#fdcb6e">${op.rarity} ★</span>
+        `;
+        card.onclick = () => {
+            pgSelectAndSpawnCompanion(op);
+        };
+        grid.appendChild(card);
+    });
+}
+
+/**
+ * Spawn a specific companion chosen by the user.
+ */
+async function pgSelectAndSpawnCompanion(op) {
+    if (PG.companions.length >= PG.MAX_COMPANIONS) {
+        showToast(`⚠ Đã đạt tối đa ${PG.MAX_COMPANIONS} đồng đội trong phòng`);
+        return;
+    }
+
+    showToast(`Đang nạp đồng đội: ${op.name_cn}...`);
 
     try {
-        let opMeta = _assetCache.meta.get(randomOp.id);
+        let opMeta = _assetCache.meta.get(op.id);
         if (!opMeta) {
-            const directUrl = `${CDN}${randomOp.id}/meta.json`;
+            const directUrl = `${CDN}${op.id}/meta.json`;
             let metaRes = await fetch(proxy(directUrl)).catch(() => null);
             if (!metaRes || !metaRes.ok) metaRes = await fetch(directUrl);
             if (metaRes && metaRes.ok) {
                 opMeta = await metaRes.json();
-                _assetCache.meta.set(randomOp.id, opMeta);
+                _assetCache.meta.set(op.id, opMeta);
             }
         }
 
@@ -2084,18 +2310,19 @@ async function pgSpawnCompanion() {
         const firstSkinName = Object.keys(skins)[0] || '默认';
         const skinData = skins[firstSkinName] || {};
         const modelDat = skinData['基建'] || skinData[Object.keys(skinData)[0]];
-        const prefix = opMeta?.prefix || `${CDN}${randomOp.id}/`;
+        const prefix = opMeta?.prefix || `${CDN}${op.id}/`;
         const fileRel = modelDat?.file;
 
-        const result = await loadSpineAssets(PG.gl, prefix, fileRel, 0.42, null);
+        const localUrls = findLocalFiles(op.name_cn, firstSkinName, '基建');
+        const result = await loadSpineAssets(PG.gl, prefix, fileRel, 0.42, localUrls);
 
         const comp = {
-            op: randomOp,
+            op: op,
             skel: result.skel,
             state: result.state,
             bounds: result.bounds,
             skelData: result.skelData,
-            x: PG.player.x + (Math.random() - 0.5) * 400,
+            x: PG.player.x + (Math.random() - 0.5) * 500,
             y: PG.FLOOR_MIN_Y + Math.random() * (PG.FLOOR_MAX_Y - PG.FLOOR_MIN_Y),
             targetX: 0,
             targetY: 0,
@@ -2108,10 +2335,26 @@ async function pgSpawnCompanion() {
 
         comp.state.setAnimation(0, 'Relax', true);
         PG.companions.push(comp);
-        showToast(`✓ ${randomOp.name_cn} đã gia nhập sân chơi!`);
+        pgUpdateCompanionCountBadge();
+        showToast(`✓ ${op.name_cn} (${op.name_en}) đã bước vào phòng!`);
     } catch(e) {
-        showToast(`Không thể gọi đồng đội: ${e.message}`);
+        showToast(`Không thể nạp đồng đội: ${e.message}`);
     }
+}
+
+function pgSpawnRandomCompanion() {
+    const randomOp = OPS[Math.floor(Math.random() * OPS.length)];
+    pgSelectAndSpawnCompanion(randomOp);
+}
+
+function pgDismissAllCompanions() {
+    if (PG.companions.length === 0) {
+        showToast('Hiện không có đồng đội nào trong phòng');
+        return;
+    }
+    PG.companions = [];
+    pgUpdateCompanionCountBadge();
+    showToast('✓ Đã thu hồi toàn bộ đồng đội');
 }
 
 /**
