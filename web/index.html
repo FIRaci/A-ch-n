@@ -589,6 +589,14 @@
             <div class="code-box" id="cli-box" onclick="copyCmd()">python ak_crawler.py --name "..."</div>
             <div style="font-size:10px;color:var(--mt);margin-top:4px">↑ Click để copy</div>
         </div>
+
+        <!-- Official Operator Illustration Portrait from yuanyan3060/ArknightsGameResource -->
+        <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px">
+            <label class="lbl"><i data-lucide="image" size="12"></i> MINH HOẠ GỐC (PORTRAIT):</label>
+            <div id="op-portrait-container" style="width:100%;height:200px;background:#111;border:1px solid var(--border);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+                <img id="op-portrait-img" src="https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/portrait/char_002_amiya_1.png" alt="Operator Portrait" style="max-height:100%;max-width:100%;object-fit:contain;transition:opacity .2s;" onerror="this.src='https://fastly.jsdelivr.net/gh/yuanyan3060/ArknightsGameResource@main/portrait/char_002_amiya_1.png';">
+            </div>
+        </div>
     </div>
 </main>
 
@@ -1197,8 +1205,16 @@ function renderList(list) {
         const d  = document.createElement('div');
         d.className = `op-item${op.id === curOp?.id ? ' active' : ''}`;
         d.onclick   = () => selectOp(op);
+        
+        const avUrl = `https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/avatar/${op.id}.png`;
+        const cdnAv = `https://fastly.jsdelivr.net/gh/yuanyan3060/ArknightsGameResource@main/avatar/${op.id}.png`;
+        const prtsAv = `https://torappu.prts.wiki/assets/avatar/${op.id}.png`;
+
         d.innerHTML = `
-          <div class="op-av s${Math.min(op.rarity,6)}">${op.name_cn.charAt(0)}</div>
+          <div class="op-av s${Math.min(op.rarity,6)}" style="overflow:hidden;position:relative;background:#181818">
+            <img src="${avUrl}" onerror="this.onerror=()=>this.src='${prtsAv}';this.src='${cdnAv}';" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:2" alt="">
+            <span style="position:relative;z-index:1">${op.name_cn.charAt(0)}</span>
+          </div>
           <div class="op-info">
             <div class="op-cn">${op.name_cn}${dl?'<span class="dl-badge">✓</span>':''}</div>
             <div class="op-en">${op.name_en} · ${op.id}</div>
@@ -1225,6 +1241,22 @@ function selectOp(op) {
     document.getElementById('badge-rarity').textContent = `${op.rarity} ★`;
     document.getElementById('badge-model').textContent  = '基建 (Chibi SD)';
     document.getElementById('cli-box').textContent      = `python ak_crawler.py --name "${op.name_cn}"`;
+
+    // Update portrait art from yuanyan3060/ArknightsGameResource
+    const portraitImg = document.getElementById('op-portrait-img');
+    if (portraitImg) {
+        const rawPt = `https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/portrait/${op.id}_1.png`;
+        const cdnPt = `https://fastly.jsdelivr.net/gh/yuanyan3060/ArknightsGameResource@main/portrait/${op.id}_1.png`;
+        const prtsPt = `https://torappu.prts.wiki/assets/avatar/${op.id}.png`;
+        portraitImg.src = rawPt;
+        portraitImg.onerror = () => {
+            portraitImg.onerror = () => {
+                portraitImg.src = prtsPt;
+            };
+            portraitImg.src = cdnPt;
+        };
+    }
+
     renderList(visOps());
     showToast(`Đã chọn: ${op.name_cn}`);
     loadOperator(op, curSkin, curModel, curAnim);
@@ -2583,8 +2615,16 @@ function pgRenderCompanionModalGrid() {
         const isInRoom = currentInRoom.has(op.id);
         const card = document.createElement('div');
         card.className = 'pg-comp-card' + (isInRoom ? ' in-room' : '');
+        
+        const avUrl = `https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/avatar/${op.id}.png`;
+        const cdnAv = `https://fastly.jsdelivr.net/gh/yuanyan3060/ArknightsGameResource@main/avatar/${op.id}.png`;
+        const prtsAv = `https://torappu.prts.wiki/assets/avatar/${op.id}.png`;
+
         card.innerHTML = `
-            <div class="op-av s${Math.min(op.rarity, 6)}">${op.name_cn.charAt(0)}</div>
+            <div class="op-av s${Math.min(op.rarity, 6)}" style="width:46px;height:46px;border-radius:4px;overflow:hidden;position:relative;background:#181818">
+                <img src="${avUrl}" onerror="this.onerror=()=>this.src='${prtsAv}';this.src='${cdnAv}';" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:2" alt="">
+                <span style="position:relative;z-index:1;font-size:16px">${op.name_cn.charAt(0)}</span>
+            </div>
             <div style="font-weight:700;font-size:11px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%">${op.name_cn}</div>
             <div style="font-size:9px;color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%">${op.name_en}</div>
             <span style="font-size:10px;color:var(--r${Math.min(op.rarity,6)})">${op.rarity} ★</span>
