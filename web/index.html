@@ -608,6 +608,17 @@
             <span class="badge" id="pg-badge-comp-count" style="color:#e8c96e">Đồng đội: 0/32</span>
         </div>
         <div class="pg-action-group">
+            <select class="sel" id="pg-facility-sel" onchange="pgChangeFacility(this.value)" style="width:205px;margin:0;padding:5px 9px;font-size:11px;font-weight:700;background:#181818;border-color:rgba(255,255,255,0.22);color:#fff">
+                <option value="CONTROL" selected>🏛️ 控制中枢 (Control Center)</option>
+                <option value="TRADING">📦 贸易站 (Trading Post)</option>
+                <option value="MANUFACTURE">⚙️ 制造站 (Factory)</option>
+                <option value="WORKSHOP">🔧 加工站 (Workshop)</option>
+                <option value="MEETING">📁 会客室 (Reception Room)</option>
+                <option value="HIRE">💼 办公室 (HR Office)</option>
+                <option value="TRAINING">⚔️ 训练室 (Training Room)</option>
+                <option value="DORMITORY">🛋️ 宿舍 (Dormitory)</option>
+                <option value="WHITE_ROOM">🌐 全息测试场 (White Room)</option>
+            </select>
             <button class="btn btn-ac" onclick="pgOpenCompanionModal()"><i data-lucide="user-plus" size="13"></i> Chọn Đồng Đội (+)</button>
             <button class="btn" id="pg-cam-btn" onclick="pgToggleCameraFollow()"><i data-lucide="video" size="13"></i> Camera: Bám theo</button>
             <button class="btn" onclick="pgResetRoom()"><i data-lucide="rotate-ccw" size="13"></i> Căn giữa</button>
@@ -1372,12 +1383,71 @@ const PG = {
     rafId: null,
     lastTs: null,
 
-    // World & Room Dimensions (Massive 8,000px Room)
-    ROOM_W: 8000,
+    // Current Selected Facility
+    currentFacility: 'CONTROL',
+    FACILITIES: {
+        CONTROL: {
+            name_cn: '控制中枢', name_en: 'Control Center', code: 'SEC-00 // TACTICAL BRIDGE', subCode: 'PRTS COMMAND CORE & NEURAL LINK',
+            themeColor: '#00d2ff', ambientGlow: 'rgba(0, 210, 255, 0.14)',
+            wallGrad: ['#0f172a', '#1e293b', '#334155'], floorGrad: ['#1e293b', '#0f172a', '#080c14'],
+            roomW: 4200, horizonY: 260, floorMinY: 285, floorMaxY: 660, capacity: 5
+        },
+        TRADING: {
+            name_cn: '贸易站', name_en: 'Trading Post', code: 'SEC-01 // LOGISTICS & COMMERCE', subCode: 'LUNGMEN & COLUMBIA CONTRACTS',
+            themeColor: '#f59e0b', ambientGlow: 'rgba(245, 158, 11, 0.14)',
+            wallGrad: ['#1c1917', '#292524', '#44403c'], floorGrad: ['#292524', '#1c1917', '#0c0a09'],
+            roomW: 4200, horizonY: 260, floorMinY: 285, floorMaxY: 660, capacity: 3
+        },
+        MANUFACTURE: {
+            name_cn: '制造站', name_en: 'Factory', code: 'SEC-02 // AUTOMATED FACTORY', subCode: 'INDUSTRIAL LINE & EXP PRODUCTION',
+            themeColor: '#10b981', ambientGlow: 'rgba(16, 185, 129, 0.14)',
+            wallGrad: ['#064e3b', '#065f46', '#0f766e'], floorGrad: ['#0f3327', '#06261d', '#021812'],
+            roomW: 4200, horizonY: 260, floorMinY: 285, floorMaxY: 660, capacity: 3
+        },
+        WORKSHOP: {
+            name_cn: '加工站', name_en: 'Workshop', code: 'SEC-03 // PRECISION WORKSHOP', subCode: 'MATERIAL SYNTHESIS & CHIP BENCH',
+            themeColor: '#3b82f6', ambientGlow: 'rgba(59, 130, 246, 0.14)',
+            wallGrad: ['#172554', '#1e3a8a', '#2563eb'], floorGrad: ['#1e3a8a', '#0f172a', '#060e20'],
+            roomW: 4200, horizonY: 260, floorMinY: 285, floorMaxY: 660, capacity: 1
+        },
+        MEETING: {
+            name_cn: '会客室', name_en: 'Reception Room', code: 'SEC-04 // DIPLOMATIC RECEPTION', subCode: '7-FACTION CLUE NETWORK TERMINAL',
+            themeColor: '#a855f7', ambientGlow: 'rgba(168, 85, 247, 0.14)',
+            wallGrad: ['#2e1065', '#3b0764', '#581c87'], floorGrad: ['#240e4f', '#12052b', '#090217'],
+            roomW: 4200, horizonY: 260, floorMinY: 285, floorMaxY: 660, capacity: 2
+        },
+        HIRE: {
+            name_cn: '办公室', name_en: 'HR Office', code: 'SEC-05 // HR COMMUNICATIONS', subCode: 'RECRUITMENT & NETWORK CONTACTS',
+            themeColor: '#ec4899', ambientGlow: 'rgba(236, 72, 153, 0.14)',
+            wallGrad: ['#500724', '#700a34', '#9d174d'], floorGrad: ['#470922', '#21040f', '#0f0107'],
+            roomW: 4200, horizonY: 260, floorMinY: 285, floorMaxY: 660, capacity: 1
+        },
+        TRAINING: {
+            name_cn: '训练室', name_en: 'Training Room', code: 'SEC-06 // COMBAT SIMULATOR', subCode: 'SKILL MASTERY & TACTICAL DRILLS',
+            themeColor: '#ef4444', ambientGlow: 'rgba(239, 68, 68, 0.14)',
+            wallGrad: ['#450a0a', '#7f1d1d', '#b91c1c'], floorGrad: ['#450a0a', '#210404', '#0d0202'],
+            roomW: 4200, horizonY: 260, floorMinY: 285, floorMaxY: 660, capacity: 2
+        },
+        DORMITORY: {
+            name_cn: '宿舍', name_en: 'Dormitory', code: 'SEC-07 // REST & RECOVERY', subCode: 'COMFORT & MORALE RECHARGE',
+            themeColor: '#38bdf8', ambientGlow: 'rgba(56, 189, 248, 0.14)',
+            wallGrad: ['#0f172a', '#1e293b', '#334155'], floorGrad: ['#1e293b', '#0f172a', '#081b26'],
+            roomW: 4200, horizonY: 260, floorMinY: 285, floorMaxY: 660, capacity: 5
+        },
+        WHITE_ROOM: {
+            name_cn: '全息测试场', name_en: 'White Room', code: 'PRTS NEURAL LAB // DECK 04', subCode: '8000PX EXPANDED HOLOGRAM TESTBED',
+            themeColor: '#00d2ff', ambientGlow: 'rgba(0, 210, 255, 0.10)',
+            wallGrad: ['#f8fafc', '#f1f5f9', '#e2e8f0'], floorGrad: ['#f1f5f9', '#e2e8f0', '#cbd5e1'],
+            roomW: 8000, horizonY: 260, floorMinY: 285, floorMaxY: 680, capacity: 32
+        }
+    },
+
+    // World & Room Dimensions (Defaults to Control Center)
+    ROOM_W: 4200,
     ROOM_H: 720,
     HORIZON_Y: 260,      // Horizon line separating back wall and floor
     FLOOR_MIN_Y: 285,    // Top walkable bound (far depth in room)
-    FLOOR_MAX_Y: 680,    // Bottom walkable bound (foreground) — extended for bigger floor
+    FLOOR_MAX_Y: 660,    // Bottom walkable bound (foreground)
 
     // Camera
     cameraX: 0,
@@ -2032,41 +2102,82 @@ function pgUpdateCompanions(delta) {
 }
 
 /**
- * Draw the Pristine Sci-Fi Rhodes Island White Room Background (Expanded 8,000px Multi-Sector).
+ * Switch active Arknights Base Facility (Control Center, Trading Post, Factory, Workshop, etc.)
+ */
+function pgChangeFacility(facId) {
+    const fac = PG.FACILITIES[facId] || PG.FACILITIES.CONTROL;
+    PG.currentFacility = facId;
+    PG.ROOM_W = fac.roomW;
+    PG.HORIZON_Y = fac.horizonY;
+    PG.FLOOR_MIN_Y = fac.floorMinY;
+    PG.FLOOR_MAX_Y = fac.floorMaxY;
+
+    // Re-clamp player position
+    const p = PG.player;
+    p.x = Math.max(80, Math.min(PG.ROOM_W - 80, p.x));
+    p.y = Math.max(PG.FLOOR_MIN_Y, Math.min(PG.FLOOR_MAX_Y, p.y));
+    p.targetX = p.x;
+    p.targetY = p.y;
+
+    // Re-clamp companions
+    PG.companions.forEach(c => {
+        c.x = Math.max(80, Math.min(PG.ROOM_W - 80, c.x));
+        c.y = Math.max(PG.FLOOR_MIN_Y, Math.min(PG.FLOOR_MAX_Y, c.y));
+        c.targetX = c.x;
+        c.targetY = c.y;
+    });
+
+    // Center camera
+    if (PG.canvas) {
+        PG.cameraX = Math.max(0, Math.min(PG.ROOM_W - PG.canvas.width, p.x - PG.canvas.width / 2));
+    }
+
+    const selectEl = document.getElementById('pg-facility-sel');
+    if (selectEl && selectEl.value !== facId) selectEl.value = facId;
+
+    showToast(`✓ Đã chuyển đến: ${fac.name_cn} (${fac.name_en})`);
+}
+
+/**
+ * Draw Arknights Base Facility Background with facility-specific architectural themes,
+ * wall panels, holographic terminals, perspective floor grids, and ambient LEDs.
  */
 function pgDrawSciFiRoomBackground(ctx, cw, ch) {
     ctx.clearRect(0, 0, cw, ch);
 
+    const fac = PG.FACILITIES[PG.currentFacility] || PG.FACILITIES.CONTROL;
     const camX = PG.cameraX;
     const horizon = PG.HORIZON_Y;
 
-    // ── 1. Back Wall (High-Tech Rhodes Island White Wall Panels) ──
+    // ── 1. Back Wall Gradient ──
     const wallGrad = ctx.createLinearGradient(0, 0, 0, horizon);
-    wallGrad.addColorStop(0, '#f8fafc');
-    wallGrad.addColorStop(0.6, '#f1f5f9');
-    wallGrad.addColorStop(1, '#e2e8f0');
+    wallGrad.addColorStop(0, fac.wallGrad[0]);
+    wallGrad.addColorStop(0.6, fac.wallGrad[1]);
+    wallGrad.addColorStop(1, fac.wallGrad[2]);
     ctx.fillStyle = wallGrad;
     ctx.fillRect(0, 0, cw, horizon);
 
-    // Architectural Vertical Seams every 380px across the entire 8,000px world
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+    // Architectural Vertical Seams across the room
+    const isWhite = (PG.currentFacility === 'WHITE_ROOM');
+    ctx.strokeStyle = isWhite ? 'rgba(148, 163, 184, 0.45)' : 'rgba(255, 255, 255, 0.08)';
     ctx.lineWidth = 1.5;
-    const startSeam = Math.floor(camX / 380) * 380;
-    for (let wx = startSeam; wx <= camX + cw + 500; wx += 380) {
+    const seamGap = isWhite ? 380 : 320;
+    const startSeam = Math.floor(camX / seamGap) * seamGap;
+    for (let wx = startSeam; wx <= camX + cw + 500; wx += seamGap) {
         const sx = wx - camX;
         ctx.beginPath();
         ctx.moveTo(sx, 0);
         ctx.lineTo(sx, horizon);
         ctx.stroke();
 
-        // High-tech wall panel joint nodes
-        ctx.fillStyle = 'rgba(100, 116, 139, 0.35)';
+        // Wall panel joint node indicators
+        ctx.fillStyle = isWhite ? 'rgba(100, 116, 139, 0.35)' : fac.ambientGlow;
         ctx.fillRect(sx - 3, 70, 6, 14);
         ctx.fillRect(sx - 3, 170, 6, 14);
     }
 
     // Horizontal Wall Dividers
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+    ctx.strokeStyle = isWhite ? 'rgba(148, 163, 184, 0.35)' : 'rgba(255, 255, 255, 0.06)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, 77); ctx.lineTo(cw, 77);
@@ -2075,66 +2186,61 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
 
     // Overhead Sci-Fi Ambient Light Bar
     const lightGrad = ctx.createLinearGradient(0, 0, cw, 0);
-    lightGrad.addColorStop(0, 'rgba(0, 210, 255, 0.35)');
-    lightGrad.addColorStop(0.5, 'rgba(0, 210, 255, 0.85)');
-    lightGrad.addColorStop(1, 'rgba(0, 210, 255, 0.35)');
+    lightGrad.addColorStop(0, fac.ambientGlow);
+    lightGrad.addColorStop(0.5, fac.themeColor);
+    lightGrad.addColorStop(1, fac.ambientGlow);
     ctx.fillStyle = lightGrad;
     ctx.fillRect(0, 6, cw, 5);
 
     // Ambient soft downward glow below overhead light
-    const glowGrad = ctx.createLinearGradient(0, 11, 0, 110);
-    glowGrad.addColorStop(0, 'rgba(0, 210, 255, 0.10)');
-    glowGrad.addColorStop(1, 'rgba(0, 210, 255, 0)');
+    const glowGrad = ctx.createLinearGradient(0, 11, 0, 120);
+    glowGrad.addColorStop(0, fac.ambientGlow);
+    glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctx.fillStyle = glowGrad;
-    ctx.fillRect(0, 11, cw, 99);
+    ctx.fillRect(0, 11, cw, 109);
 
-    // ── Multi-Sector Rhodes Island Emblems across 8,000px ──
-    const sectors = [
-        { x: 1600, title: 'SEC-01 // TACTICAL BRIDGE', code: 'PRTS NEURAL LINK ONLINE' },
-        { x: 3200, title: 'RHODES ISLAND', code: 'MAIN COMMAND CENTER // DECK 04' },
-        { x: 4800, title: 'SEC-02 // BIOMEDICAL', code: 'ORIGINIUM RESEARCH & LABS' },
-        { x: 6400, title: 'SEC-03 // ENGINEERING', code: 'WORKSHOP & CORE REPOSITORIES' }
-    ];
-
-    sectors.forEach(sec => {
-        const secSx = sec.x - camX;
+    // ── Facility Tactical Emblems & Holographic Wall Consoles ──
+    const emblemSpacing = isWhite ? 1600 : 1200;
+    const startEmb = Math.floor(camX / emblemSpacing) * emblemSpacing;
+    for (let wx = startEmb; wx <= camX + cw + 600; wx += emblemSpacing) {
+        const secSx = wx - camX;
         if (secSx > -350 && secSx < cw + 350) {
             ctx.save();
-            ctx.strokeStyle = 'rgba(100, 116, 139, 0.35)';
-            ctx.lineWidth = 3.5;
+            ctx.strokeStyle = isWhite ? 'rgba(100, 116, 139, 0.35)' : `${fac.themeColor}55`;
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(secSx, 45);
-            ctx.lineTo(secSx - 70, 185);
-            ctx.lineTo(secSx + 70, 185);
+            ctx.lineTo(secSx - 65, 180);
+            ctx.lineTo(secSx + 65, 180);
             ctx.closePath();
             ctx.stroke();
-            ctx.fillStyle = 'rgba(100, 116, 139, 0.07)';
+            ctx.fillStyle = isWhite ? 'rgba(100, 116, 139, 0.07)' : fac.ambientGlow;
             ctx.fill();
 
-            ctx.fillStyle = 'rgba(71, 85, 105, 0.85)';
+            // Facility Title
+            ctx.fillStyle = isWhite ? 'rgba(71, 85, 105, 0.85)' : '#ffffff';
             ctx.font = 'bold 12px "Plus Jakarta Sans", system-ui, sans-serif';
             ctx.textAlign = 'center';
-            ctx.letterSpacing = '1px';
-            ctx.fillText(sec.title, secSx, 140);
+            ctx.fillText(fac.code, secSx, 138);
 
-            ctx.fillStyle = 'rgba(100, 116, 139, 0.65)';
+            // Subcode / Details
+            ctx.fillStyle = isWhite ? 'rgba(100, 116, 139, 0.65)' : fac.themeColor;
             ctx.font = '10px "JetBrains Mono", monospace';
-            ctx.letterSpacing = '0.5px';
-            ctx.fillText(sec.code, secSx, 158);
+            ctx.fillText(fac.subCode, secSx, 156);
             ctx.restore();
         }
-    });
+    }
 
-    // ── 2. Perspective Floor (Clean White/Platinum Sci-Fi Tiles with Depth) ──
+    // ── 2. Perspective Floor (Facility-Specific Texture & Depth) ──
     const floorGrad = ctx.createLinearGradient(0, horizon, 0, ch);
-    floorGrad.addColorStop(0, '#f1f5f9');
-    floorGrad.addColorStop(0.35, '#e2e8f0');
-    floorGrad.addColorStop(1, '#cbd5e1');
+    floorGrad.addColorStop(0, fac.floorGrad[0]);
+    floorGrad.addColorStop(0.35, fac.floorGrad[1]);
+    floorGrad.addColorStop(1, fac.floorGrad[2]);
     ctx.fillStyle = floorGrad;
     ctx.fillRect(0, horizon, cw, ch - horizon);
 
-    // Perspective Horizontal Depth Lines (Grid)
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.40)';
+    // Perspective Horizontal Depth Lines
+    ctx.strokeStyle = isWhite ? 'rgba(148, 163, 184, 0.40)' : 'rgba(255, 255, 255, 0.08)';
     ctx.lineWidth = 1;
     const depthYLines = [285, 315, 355, 405, 465, 535, 615, 700];
     for (const dy of depthYLines) {
@@ -2147,8 +2253,9 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
     }
 
     // Perspective Converging Longitudinal Lines
-    const startGrid = Math.floor(camX / 150) * 150;
-    for (let wx = startGrid; wx <= camX + cw + 500; wx += 150) {
+    const gridGap = isWhite ? 150 : 130;
+    const startGrid = Math.floor(camX / gridGap) * gridGap;
+    for (let wx = startGrid; wx <= camX + cw + 500; wx += gridGap) {
         const topSx = wx - camX;
         const bottomOffset = (wx - (camX + cw / 2)) * 0.60;
         const bottomSx = topSx + bottomOffset;
@@ -2161,25 +2268,27 @@ function pgDrawSciFiRoomBackground(ctx, cw, ch) {
 
     // Subtle Zone Watermarks on Floor
     ctx.save();
-    ctx.fillStyle = 'rgba(100, 116, 139, 0.10)';
-    ctx.font = '900 42px "JetBrains Mono", monospace';
+    ctx.fillStyle = isWhite ? 'rgba(100, 116, 139, 0.10)' : `${fac.themeColor}12`;
+    ctx.font = '900 38px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
-    for (let i = 1; i <= 5; i++) {
-        const zx = (i * 1500) - camX;
+    const zoneSpacing = isWhite ? 1500 : 1000;
+    const maxZones = isWhite ? 5 : 4;
+    for (let i = 1; i <= maxZones; i++) {
+        const zx = (i * zoneSpacing) - camX;
         if (zx > -200 && zx < cw + 200) {
-            ctx.fillText(`ZONE 0${i}`, zx, horizon + 140);
+            ctx.fillText(`${fac.name_cn} // ZONE 0${i}`, zx, horizon + 140);
         }
     }
     ctx.restore();
 
-    // Luminous Baseboard LED Strip & Dark Metallic Joint
-    ctx.fillStyle = '#334155';
+    // Luminous Baseboard LED Strip
+    ctx.fillStyle = isWhite ? '#334155' : '#0a0d14';
     ctx.fillRect(0, horizon - 2, cw, 3);
 
     ctx.save();
-    ctx.shadowColor = '#00d2ff';
+    ctx.shadowColor = fac.themeColor;
     ctx.shadowBlur = 12;
-    ctx.strokeStyle = '#00d2ff';
+    ctx.strokeStyle = fac.themeColor;
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.moveTo(0, horizon + 1);
